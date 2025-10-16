@@ -11,11 +11,6 @@ export default function WalletScreen() {
   const { wallets, totalBalance, addWallet, isLoading } = useWallets();
   const [showAdd, setShowAdd] = useState(false);
 
-          console.log("wallets :", wallets);
-        console.log("wallets?.length :", wallets?.length);
-        console.log("isLoading :", isLoading);
-
-
   return (
     <ScreenWrapper>
       <View style={{ padding: 20 }}>

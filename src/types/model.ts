@@ -128,6 +128,7 @@ export type TransactionType = {
   categories?: CategoryType; // joined category data
   category?: { id: string; name: string } | null;
   category_id?: string;
+  wallet_id?: string;
 };
 
 export interface InputProps extends TextInputProps {

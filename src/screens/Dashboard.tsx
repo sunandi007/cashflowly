@@ -54,7 +54,9 @@ export default function DashboardScreen() {
               Hello,
             </Typo>
             <Typo size={20} fontWeight={"500"} color={colors.neutral300}>
-              {profile?.full_name ? profile?.full_name : userEmail?.split("@")[0] || "User"}
+              {profile?.full_name
+                ? profile?.full_name
+                : userEmail?.split("@")[0] || "User"}
             </Typo>
           </View>
         </View>

@@ -6,9 +6,9 @@ import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import { verticalScale } from "@/utils/styling";
 import Typo from "@/components/Typo";
 import type { TransactionItemProps } from "@/types/model";
-import { useAuth } from "@/hooks/useAuth";
 import { formatDateToIndo, toTitleCase } from "@/utils/text";
 import IconComponent from "./Icons";
+import { useWallets } from "@/hooks/useWallets";
 
 /**
  * TransactionItem Component
@@ -20,8 +20,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   index,
   onEditPress,
 }) => {
-  const { session } = useAuth();
-  const userId = session?.user?.id;
+  const { wallets } = useWallets();
 
   return (
     <Animated.View
@@ -60,6 +59,17 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             textProps={{ numberOfLines: 1 }}
           >
             {item?.note as any}
+            {wallets?.length > 1 && (
+              <>
+                <Typo size={12} color={colors.neutral500}>
+                  {' '}•{' '}
+                </Typo>
+                <Typo size={12} color={colors.neutral300}>
+                  {wallets?.find((w) => w.id === item.wallet_id)?.name ||
+                    "No Wallet"}
+                </Typo>
+              </>
+            )}
           </Typo>
         </View>
 
