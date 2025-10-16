@@ -3,7 +3,7 @@ import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
 import { colors, radius, spacingX, spacingY } from "@/constant/theme";
 import { supabase } from "@/services/supabaseClient";
-import { accountOptionType } from "@/types/model";
+import { AccountOptionType } from "@/types/model";
 import { verticalScale } from "@/utils/styling";
 import React, { useState } from "react";
 import { Image } from "expo-image";
@@ -38,7 +38,7 @@ const ProfileScreen = () => {
     ]);
   };
 
-  const handlePress = async (item: accountOptionType) => {
+  const handlePress = async (item: AccountOptionType) => {
     if (item.title === "Logout") {
       showLogoutAlert();
     } else if (item.title === "Edit Profile") {

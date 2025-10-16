@@ -8,47 +8,33 @@ import {
   ViewStyle,
 } from "react-native";
 
+/* ===========================================
+ * WRAPPER COMPONENT TYPES
+ * ===========================================
+ */
 export type ScreenWrapperProps = {
   style?: ViewStyle;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export type ModalWrapperProps = {
   style?: ViewStyle;
-  children: React.ReactNode;
   bg?: string;
-};
-export type accountOptionType = {
-  title: string;
-  icon: React.ReactNode;
-  bgColor: string;
-  routeName?: any;
+  children: ReactNode;
 };
 
+/* ===========================================
+ * UI COMPONENT TYPES
+ * ===========================================
+ */
 export type TypoProps = {
   size?: number;
   color?: string;
   fontWeight?: TextStyle["fontWeight"];
-  children: any | null;
+  children: ReactNode;
   style?: TextStyle;
   textProps?: TextProps;
 };
-
-// export type IconComponent = React.ComponentType<{
-//   height?: number;
-//   width?: number;
-//   strokeWidth?: number;
-//   color?: string;
-//   fill?: string;
-// }>;
-
-// export type IconProps = {
-//   name: string;
-//   color?: string;
-//   size?: number;
-//   strokeWidth?: number;
-//   fill?: string;
-// };
 
 export type HeaderProps = {
   title?: string;
@@ -62,80 +48,18 @@ export type BackButtonProps = {
   iconSize?: number;
 };
 
-// export type TransactionType = {
-//   id?: string;
-//   type: string;
-//   amount: number;
-//   category?: string;
-//   date: Date | string;
-//   note?: string;
-//   image?: any;
-//   uid?: string;
-//   walletId: string;
-// };
-
-// export type CategoryType = {
-//   name: string;
-//   icon: string;
-//   tyepe: "income" | "expense";
-//   bgColor: string;
-// };
-
-// // Permanent icon metadata for vector-icons (no direct React components here)
-// export type CategoryIconMeta = {
-//   iconName: string;   // e.g. "cart"
-//   iconPack: "Ionicons" | "MaterialCommunityIcons"; // which icon set to use
-//   bgColor: string;
-//   label: string;
-//   value: string;
-// };
-
-// export type ExpenseCategoriesMeta = {
-//   [key: string]: CategoryIconMeta;
-// };
-
-// export type ExpenseCategoriesType = {
-//   [key: string]: CategoryType;
-// };
-
-export type TransactionListType = {
-  data: TransactionType[];
-  title?: string;
-  loading?: boolean;
-  emptyListMessage?: string;
-  onEditPress?: Function;
-  openSearch?: Function;
-  isLableSearch: boolean;
-};
-
-export type TransactionItemProps = {
-  item: TransactionType;
-  index: number;
-  onEditPress?: Function;
-};
-
-export type TransactionType = {
-  id?: string;
-  userId: string; // user_id
-  type: "income" | "expense"; // type
-  amount: number; // amount
-  categoryId?: string; // category_id
-  note?: string; // note
-  date: string | Date; // date
-  attachmentUrl?: string; // attachment_url
-  createdAt?: string; // created_at
-  updatedAt?: string; // updated_at
-  categories?: CategoryType; // joined category data
-  category?: { id: string; name: string } | null;
-  category_id?: string;
-  wallet_id?: string;
-};
-
 export interface InputProps extends TextInputProps {
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
   inputRef?: React.RefObject<TextInput>;
+}
+
+export interface CustomButtonProps extends TouchableOpacityProps {
+  style?: ViewStyle;
+  onPress?: () => void;
+  loading?: boolean;
+  children: ReactNode;
 }
 
 export type IconComponentProps = {
@@ -144,98 +68,24 @@ export type IconComponentProps = {
   color: string;
 };
 
-export interface CustomButtonProps extends TouchableOpacityProps {
-  style?: ViewStyle;
-  onPress?: () => void;
-  loading?: boolean;
-  children: React.ReactNode;
-}
-
-// export type ImageUploadProps = {
-//   file?: any;
-//   onSelect: (file: any) => void;
-//   onClear: () => void;
-//   containerStyle?: ViewStyle;
-//   imageStyle?: ViewStyle;
-//   placeholder?: string;
-// };
-
-// export type UserType = {
-//   uid?: string;
-//   email?: string | null;
-//   name: string | null;
-//   image?: any;
-// } | null;
-
-export type UserDataType = {
-  name: string;
-  image?: any;
+/* ===========================================
+ * ACCOUNT / PROFILE TYPES
+ * ===========================================
+ */
+export type AccountOptionType = {
+  title: string;
+  icon: ReactNode;
+  bgColor: string;
+  routeName?: string;
 };
 
-// export type AuthContextType = {
-//   user: UserType;
-//   setUser: Function;
-//   login: (
-//     email: string,
-//     password: string
-//   ) => Promise<{ success: boolean; msg?: string }>;
-//   register: (
-//     email: string,
-//     password: string,
-//     name: string
-//   ) => Promise<{ success: boolean; msg?: string }>;
-//   logout: () => Promise<void>;
-//   // Added to support refreshing user after profile update in dummy auth
-//   updateUserData?: (uid?: string) => Promise<void> | void;
-// };
-
-// export type ResponseType = {
-//   success: boolean;
-//   data?: any;
-//   msg?: string;
-// };
-
-// export type WalletType = {
-//   id?: string;
-//   name: string;
-//   amount?: number;
-//   totalIncome?: number;
-//   totalExpenses?: number;
-//   image: any;
-//   uid?: string;
-//   created?: Date;
-// };
-
-// -------------------
-// TRANSACTIONS TABLE
-// -------------------
-
-// -------------------
-// CATEGORIES TABLE
-// -------------------
-export type CategoryType = {
-  id?: string;
-  userId?: string; // user_id
-  name?: string; // name
-  icon?: string; // icon
-  type?: "income" | "expense"; // type
-  createdAt?: string; // created_at
-  bgColor?: string; // bg_color
-};
-
-// -------------------
-// PROFILES TABLE
-// -------------------
 export type ProfileType = {
-  id: string; // id
+  id: string;
   fullName: string; // full_name
   avatarUrl?: string; // avatar_url
   createdAt?: string; // created_at
 };
 
-// -------------------
-// AUTH/USER WRAPPER
-// -------------------
 export type UserType = {
   id: string;
   email?: string;
@@ -243,9 +93,65 @@ export type UserType = {
   avatarUrl?: string;
 };
 
-// -------------------
-// WALLET (custom, tidak ada di schema)
-// -------------------
+export type UserDataType = {
+  name: string;
+  image?: string;
+};
+
+/* ===========================================
+ * DOMAIN TYPES — CATEGORIES / TRANSACTIONS / WALLETS
+ * ===========================================
+ */
+
+// -------- CATEGORIES TABLE --------
+export type CategoryType = {
+  id?: string;
+  userId?: string; // user_id
+  name?: string;
+  icon?: string;
+  type?: "income" | "expense";
+  bgColor?: string; // bg_color
+  createdAt?: string; // created_at
+};
+
+// -------- TRANSACTIONS TABLE --------
+export type TransactionType = {
+  id?: string;
+  userId: string; // user_id
+  type: "income" | "expense";
+  amount: number;
+  note?: string;
+  date: string | Date;
+  categoryId?: string; // category_id
+  category_id?: string; // backward compat
+  wallet_id?: string;
+  attachmentUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // joined data
+  categories?: CategoryType;
+  category?: { id: string; name: string } | null;
+};
+
+// -------- TRANSACTION LIST --------
+export type TransactionListType = {
+  data: TransactionType[];
+  title?: string;
+  loading?: boolean;
+  emptyListMessage?: string;
+  onEditPress?: (item: TransactionType) => void;
+  openSearch?: () => void;
+  isLableSearch: boolean;
+};
+
+export type TransactionItemProps = {
+  item: TransactionType;
+  index: number;
+  onEditPress?: (item: TransactionType) => void;
+};
+
+// -------- WALLET TABLE --------
 export type WalletType = {
   id?: string;
   name: string;
