@@ -8,20 +8,16 @@ import TransactionSearchModal from "@/components/TransactionSearchModal";
 import Typo from "@/components/Typo";
 import { colors, spacingX, spacingY } from "@/constant/theme";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
 import { useTransactions } from "@/hooks/useTransactions";
 import { verticalScale } from "@/utils/styling";
-import React, { useState } from "react";
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useState } from "react";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function DashboardScreen() {
   const { session } = useAuth();
   const userId = session?.user?.id;
+  const { profile, userEmail } = useProfile();
 
   const [showModal, setShowModal] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -58,7 +54,7 @@ export default function DashboardScreen() {
               Hello,
             </Typo>
             <Typo size={20} fontWeight={"500"} color={colors.neutral300}>
-              Yudoyono
+              {profile?.full_name ? profile?.full_name : userEmail?.split("@")[0] || "User"}
             </Typo>
           </View>
         </View>
@@ -154,5 +150,5 @@ const styles = StyleSheet.create({
     paddingBottom: verticalScale(100),
     marginTop: spacingY._10,
     gap: spacingY._10,
-  }
+  },
 });

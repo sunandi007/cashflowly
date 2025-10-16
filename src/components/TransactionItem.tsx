@@ -5,9 +5,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import { verticalScale } from "@/utils/styling";
 import Typo from "@/components/Typo";
-// import { incomeCategories, expenseCategories } from "@/constant/data";
 import type { TransactionItemProps } from "@/types/model";
-import { useCategories } from "@/hooks/useCategories";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDateToIndo, toTitleCase } from "@/utils/text";
 import IconComponent from "./Icons";
@@ -24,9 +22,6 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
 }) => {
   const { session } = useAuth();
   const userId = session?.user?.id;
-
-  // normalize category
-  const { data: categories = [], isLoading, refetch } = useCategories(userId);
 
   return (
     <Animated.View

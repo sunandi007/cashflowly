@@ -1,4 +1,3 @@
-import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "@/constant/theme";
@@ -7,7 +6,7 @@ import AuthScreen from "@/screens/AuthScreen";
 import WelcomeScreen from "@/screens/WelcomeScreen";
 import DashboardScreen from "@/screens/Dashboard";
 import ProfileScreen from "@/screens/ProfileScreen";
-import WalletScreen from "@/screens/WalletScreen";
+import WalletScreen from "@/screens/WalletListScreen";
 import ReportScreen from "@/screens/ReportScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";

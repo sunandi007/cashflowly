@@ -13,11 +13,15 @@ import BackButton from "@/components/BackButton";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Typo from "@/components/Typo";
+import { useWallets } from "@/hooks/useWallets";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type AuthMode = "login" | "register";
 
 export default function AuthScreen() {
+  const queryClient = useQueryClient();
+
   const navigation = useNavigation<Navigation>();
   const route = useRoute();
   const mode: AuthMode = (route.params as any)?.mode || "login";
@@ -26,6 +30,8 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { wallets, addWallet, isLoading } = useWallets();
+
   const isLogin = mode === "login";
 
   const handleSubmit = async () => {
@@ -33,7 +39,10 @@ export default function AuthScreen() {
       setLoading(true);
 
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
         if (error) throw error;
       } else {
         const { error } = await supabase.auth.signUp({ email, password });
@@ -127,3 +136,26 @@ const styles = StyleSheet.create({
     gap: 5,
   },
 });
+
+async function createDefaultWalletIfNeeded(userId: string) {
+  // Cek apakah sudah ada wallet
+  const { data: existingWallets, error: fetchError } = await supabase
+    .from("wallets")
+    .select("id")
+    .eq("user_id", userId);
+
+  if (fetchError) throw fetchError;
+
+  // Kalau belum ada, buat wallet baru
+  if (!existingWallets || existingWallets.length === 0) {
+    const { error: insertError } = await supabase.from("wallets").insert([
+      {
+        user_id: userId,
+        name: "Main Wallet",
+        balance: 0,
+        icon: "wallet-outline",
+      },
+    ]);
+    if (insertError) throw insertError;
+  }
+}
