@@ -1,7 +1,6 @@
 import { colors, radius, spacingX } from "@/constant/theme";
 import { InputProps } from "@/types/model";
 import { verticalScale } from "@/utils/styling";
-import React from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 
 const Input = (props: InputProps) => {
@@ -14,6 +13,7 @@ const Input = (props: InputProps) => {
         style={[styles.input, props.inputStyle]}
         placeholderTextColor={colors.neutral400}
         ref={props.inputRef && props.inputRef}
+        keyboardType={props.keyboardType || "default"} 
         {...props}
       ></TextInput>
     </View>

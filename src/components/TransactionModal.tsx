@@ -1,22 +1,19 @@
 // src/components/TransactionModal.tsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Modal,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   Alert,
   Dimensions,
-  ScrollView,
   KeyboardAvoidingView,
   Platform,
   FlatList,
 } from "react-native";
 import { useTransactionMutations } from "@/hooks/useTransactionMutations";
 import { useAuth } from "@/hooks/useAuth";
-import { Dropdown } from "react-native-element-dropdown";
 import { useCategories } from "@/hooks/useCategories";
 import Typo from "./Typo";
 import { colors, radius, spacingX, spacingY } from "@/constant/theme";
@@ -25,54 +22,63 @@ import BaseDropdown from "./Dropdown";
 import { toTitleCase } from "@/utils/text";
 import Button from "./Button";
 import IconComponent from "./Icons";
-import BackButton from "./BackButton";
 import Header from "./Header";
 import Input from "./Input";
 import DateTimePicker from "@react-native-community/datetimepicker";
-// import { expenseCategories } from "@/constant/data";
-
-// import CategorySelector from "@/components/CategorySelector";
+import { useWallets } from "@/hooks/useWallets";
 
 const screenHeight = Dimensions.get("window").height;
-
 export default function TransactionModal({
   visible,
   onClose,
   initialData,
 }: any) {
   const isEditing = !!initialData;
+  console.log({ initialData });
   const { session } = useAuth();
   const userId = session?.user?.id;
   const { createTransaction, updateTransaction, deleteTransaction } =
     useTransactionMutations();
-  const { data: categories = [], isLoading, refetch } = useCategories(userId);
+  const { wallets } = useWallets();
+  const { data: categories = [] } = useCategories(userId);
+
+  const [type, setType] = useState<"expense" | "income">("expense");
+
+  const dropdownCategoriesData = useMemo(() => {
+    const filtered = categories.filter((c) => c.type === type);
+    return filtered.map((cat) => ({
+      label: toTitleCase(cat.name),
+      value: cat.id,
+    }));
+  }, [categories, type]);
+
+  const { refetch: refetchWallets } = useWallets();
 
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
-  const [type, setType] = useState<"expense" | "income">("expense");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [walletId, setWalletId] = useState<string | null>(null);
 
   useEffect(() => {
     if (isEditing && initialData) {
       setAmount(String(initialData.amount));
+      setAmount(String(initialData.amount));
       setNote(initialData.note || "");
       setType(initialData.type);
+      setWalletId(initialData.wallet_id);
       setCategoryId(initialData.category_id);
-      setDate(new Date(initialData.date)); // ambil dari DB
+      setDate(new Date(initialData.date)); 
     } else {
       setAmount("");
       setNote("");
+      setWalletId("");
       setType("expense");
       setCategoryId(null);
       setDate(new Date());
     }
   }, [initialData]);
-
-  const categoriesIncome = categories.filter(
-    (cat) => cat.type === "income"
-  ) as any;
 
   const handleDateChange = (_event: any, selectedDate?: Date) => {
     setShowDatePicker(false);
@@ -91,12 +97,13 @@ export default function TransactionModal({
     }
 
     const payload = {
-      amount: Number(amount),
+      amount: Number(amount.replace(/\./g, "")),
       note,
       type,
       category_id: categoryId,
       user_id: userId,
       date: date.toISOString(),
+      wallet_id: walletId,
     };
 
     try {
@@ -112,6 +119,8 @@ export default function TransactionModal({
       setNote("");
       setType("expense");
       setCategoryId(null);
+      setWalletId("");
+      await refetchWallets();
       onClose();
     } catch (err: any) {
       Alert.alert("Error", err.message);
@@ -217,7 +226,7 @@ export default function TransactionModal({
                       ]}
                       onPress={() => {
                         setType("income");
-                        setCategoryId(categoriesIncome[0]?.id);
+                        setCategoryId(null);
                       }}
                     >
                       <Text
@@ -257,32 +266,50 @@ export default function TransactionModal({
                       </TouchableOpacity>
                     </View>
 
+                    {/* Wallet */}
+                    <View style={styles.inputContainer}>
+                      <BaseDropdown
+                        data={wallets.map((wallet) => ({
+                          label: toTitleCase(wallet.name),
+                          value: wallet.id,
+                        }))}
+                        value={walletId}
+                        placeholder="Select Wallet"
+                        onChange={(item) => {
+                          setWalletId(item.value as any);
+                        }}
+                      />
+                    </View>
+
                     {/* Category */}
-                    {type === "expense" && (
-                      <View style={styles.inputContainer}>
-                        <BaseDropdown
-                          data={categories.map((cat) => ({
-                            label: toTitleCase(cat.name),
-                            value: cat.id,
-                          }))}
-                          value={categoryId}
-                          placeholder="Select Category"
-                          onChange={(item) => {
-                            setCategoryId(item.value as any);
-                          }}
-                        />
-                      </View>
-                    )}
+                    <View style={styles.inputContainer}>
+                      <BaseDropdown
+                        data={dropdownCategoriesData}
+                        value={categoryId}
+                        placeholder="Select Category"
+                        onChange={(item) => {
+                          setCategoryId(item.value as any);
+                        }}
+                      />
+                    </View>
+
                     <Input
                       placeholder="Jumlah"
-                      onChangeText={setAmount}
+                      onChangeText={(text) => {
+                        // hilangkan semua karakter non-digit
+                        const numericValue = text.replace(/\D/g, "");
+
+                        // tambahkan titik setiap 3 digit dari belakang
+                        const formatted = numericValue.replace(
+                          /\B(?=(\d{3})+(?!\d))/g,
+                          "."
+                        );
+                        console.log({ formatted });
+                        setAmount(formatted);
+                      }}
                       value={amount}
+                      keyboardType="numeric"
                     />
-                    {/* <Input
-                      placeholder="Catatan"
-                      onChangeText={setNote}
-                      value={note}
-                    /> */}
 
                     {/* description */}
                     <View style={styles.inputContainer}>
@@ -368,7 +395,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.3)",
   },
   modal: {
-    maxHeight: screenHeight * 0.85, // ✅ lebih tinggi & scrollable
+    maxHeight: screenHeight * 0.95, // ✅ lebih tinggi & scrollable
     backgroundColor: colors.neutral900,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
