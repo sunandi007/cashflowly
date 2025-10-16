@@ -54,7 +54,6 @@ export function useUploadImage() {
 
       return publicUrl;
     } catch (error: any) {
-      console.error("Upload error:", error);
       Alert.alert("Error", "Gagal mengunggah gambar: " + error.message);
       return null;
     } finally {

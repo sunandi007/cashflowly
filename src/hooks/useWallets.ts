@@ -84,9 +84,11 @@ export function useWallets() {
         .from("wallets")
         .update({
           ...updates,
+          user_id: userId,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", userId);
 
       if (error) throw new Error(error.message);
     },

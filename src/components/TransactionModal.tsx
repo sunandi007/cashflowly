@@ -34,7 +34,6 @@ export default function TransactionModal({
   initialData,
 }: any) {
   const isEditing = !!initialData;
-  console.log({ initialData });
   const { session } = useAuth();
   const userId = session?.user?.id;
   const { createTransaction, updateTransaction, deleteTransaction } =
@@ -304,7 +303,6 @@ export default function TransactionModal({
                           /\B(?=(\d{3})+(?!\d))/g,
                           "."
                         );
-                        console.log({ formatted });
                         setAmount(formatted);
                       }}
                       value={amount}

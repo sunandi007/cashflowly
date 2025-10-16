@@ -2,28 +2,24 @@ import { useState } from "react";
 import { View, TouchableOpacity, FlatList } from "react-native";
 import Typo from "@/components/Typo";
 import IconComponent from "@/components/Icons";
-import WalletAddModal from "@/components/AddWalletModal";
 import { useWallets } from "@/hooks/useWallets";
 import { colors } from "@/constant/theme";
 import ScreenWrapper from "@/components/ScreenWrapper";
+import WalletAddModal from "@/components/WalletModal";
 
 export default function WalletScreen() {
-  const { wallets, totalBalance, addWallet, isLoading } = useWallets();
+  const { wallets, totalBalance, addWallet, updateWallet, deleteWallet } =
+    useWallets();
   const [showAdd, setShowAdd] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<any>(null);
 
   return (
     <ScreenWrapper>
       <View style={{ padding: 20 }}>
-        <Typo
-          size={32}
-          color={colors.neutral100}
-          fontWeight="bold"
-        >
+        <Typo size={32} color={colors.neutral100} fontWeight="bold">
           Rp {totalBalance.toLocaleString("id-ID")}
         </Typo>
-        <Typo color={colors.neutral400}>
-          Total Balance
-        </Typo>
+        <Typo color={colors.neutral400}>Total Balance</Typo>
 
         <View
           style={{
@@ -37,7 +33,10 @@ export default function WalletScreen() {
             My Wallets
           </Typo>
           <TouchableOpacity
-            onPress={() => setShowAdd(true)}
+            onPress={() => {
+              setSelectedWallet(null);
+              setShowAdd(true);
+            }}
             style={{
               backgroundColor: colors.primary,
               borderRadius: 12,
@@ -56,40 +55,50 @@ export default function WalletScreen() {
           data={wallets}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View
-              style={{
-                backgroundColor: colors.neutral800,
-                borderRadius: 16,
-                padding: 15,
-                marginTop: 12,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 12,
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedWallet(item as any);
+                setShowAdd(true);
               }}
             >
-              <IconComponent
-                item={{ icon: item.icon || "wallet-outline" } as any}
-                size={28}
-                color={colors.primary}
-              />
-              <View>
-                <Typo color={colors.neutral100} fontWeight="600">
-                  {item.name}
-                </Typo>
-                <Typo color={colors.neutral400}>
-                  Rp {item.balance.toLocaleString("id-ID")}
-                </Typo>
+              <View
+                style={{
+                  backgroundColor: colors.neutral800,
+                  borderRadius: 16,
+                  padding: 15,
+                  marginTop: 12,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 12,
+                }}
+              >
+                <IconComponent
+                  item={{ icon: item.icon || "wallet-outline" } as any}
+                  size={28}
+                  color={colors.primary}
+                />
+                <View>
+                  <Typo color={colors.neutral100} fontWeight="600">
+                    {item.name}
+                  </Typo>
+                  <Typo color={colors.neutral400}>
+                    Rp {item.balance.toLocaleString("id-ID")}
+                  </Typo>
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
-
+        
         <WalletAddModal
           visible={showAdd}
           onClose={() => setShowAdd(false)}
-          onSave={(payload: any) => addWallet.mutate(payload)}
+          onSave={(payload) => addWallet.mutate(payload)} // Create
+          onUpdate={(payload) => updateWallet.mutate(payload)} // Edit
+          onDelete={(id) => deleteWallet.mutate(id)} // Optional
+          initialData={selectedWallet} // isi jika mode edit
         />
       </View>
-    </ScreenWrapper>  
+    </ScreenWrapper>
   );
 }
