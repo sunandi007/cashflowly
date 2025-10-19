@@ -11,6 +11,7 @@ export type WalletType = {
   icon?: string | null;
   created_at: string;
   updated_at?: string;
+  transactions?: any[]; // bisa ditambahkan tipe yang lebih spesifik jika perlu
 };
 
 export function useWallets() {

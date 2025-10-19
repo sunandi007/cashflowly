@@ -118,7 +118,7 @@ export type CategoryType = {
 export type TransactionType = {
   id?: string;
   userId: string; // user_id
-  type: "income" | "expense";
+  type: "income" | "expense" | "transfer";
   amount: number;
   note?: string;
   date: string | Date;
@@ -128,7 +128,11 @@ export type TransactionType = {
   attachmentUrl?: string;
   createdAt?: string;
   updatedAt?: string;
-
+  is_transfer?: boolean;
+  related_wallet_id?: string;
+  from_wallet?: string;
+  to_wallet?: string;
+  wallet?: {name: string};
   // joined data
   categories?: CategoryType;
   category?: { id: string; name: string } | null;
@@ -162,7 +166,6 @@ export type WalletType = {
   userId?: string;
   createdAt?: Date;
 };
-
 
 // -------- ANALITIC TABLE --------
 export type AnalyticsData = {

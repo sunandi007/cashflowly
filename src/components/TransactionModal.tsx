@@ -27,6 +27,7 @@ import Input from "./Input";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useWallets } from "@/hooks/useWallets";
 import AddCategoryModal from "@/components/AddCategoryModal";
+import { useTransfer } from "@/hooks/useTransfer";
 
 const screenHeight = Dimensions.get("window").height;
 export default function TransactionModal({
@@ -42,7 +43,14 @@ export default function TransactionModal({
   const { wallets } = useWallets();
   const { data: categories = [] } = useCategories(userId);
 
-  const [type, setType] = useState<"expense" | "income">("expense");
+  const [type, setType] = useState<"expense" | "income" | "transfer">(
+    "expense"
+  );
+
+  const { performTransfer, isTransferring } = useTransfer();
+
+  const [fromWalletId, setFromWalletId] = useState<string | null>(null);
+  const [toWalletId, setToWalletId] = useState<string | null>(null);
 
   const dropdownCategoriesData = useMemo(() => {
     // Filter kategori berdasarkan tipe transaksi (income / expense)
@@ -96,15 +104,32 @@ export default function TransactionModal({
   };
 
   const handleSave = async () => {
-    if (!amount) {
-      Alert.alert("Error", "Harap isi jumlah");
+    if (!amount) return Alert.alert("Error", "Harap isi jumlah");
+
+    if (type === "transfer") {
+      if (!fromWalletId || !toWalletId)
+        return Alert.alert("Error", "Pilih wallet asal dan tujuan");
+      if (fromWalletId === toWalletId)
+        return Alert.alert("Error", "Wallet asal dan tujuan tidak boleh sama");
+
+      try {
+        await performTransfer({
+          from_wallet_id: fromWalletId,
+          to_wallet_id: toWalletId,
+          amount: Number(amount.replace(/\./g, "")),
+          note,
+        });
+        await refetchWallets();
+        onClose();
+      } catch (err: any) {
+        Alert.alert("Error", err.message);
+      }
       return;
     }
 
-    if (type === "expense" && !categoryId) {
-      Alert.alert("Error", "Harap pilih kategori untuk pengeluaran");
-      return;
-    }
+    // 🔸 default (income/expense)
+    if (type === "expense" && !categoryId)
+      return Alert.alert("Error", "Harap pilih kategori untuk pengeluaran");
 
     const payload = {
       amount: Number(amount.replace(/\./g, "")),
@@ -200,54 +225,50 @@ export default function TransactionModal({
               }
             />
 
-            {/* ✅ ScrollView agar form bisa di-scroll */}
+            {/* Tab Form */}
             <FlatList
               data={[{ key: "form" }]} // dummy item
               renderItem={() => (
                 <>
                   {/* Tabs */}
                   <View style={styles.tabContainer}>
-                    <TouchableOpacity
-                      disabled={isEditing}
-                      style={[
-                        styles.tab,
-                        type === "expense" && styles.activeExpenseTab,
-                      ]}
-                      onPress={() => {
-                        setType("expense");
-                        setCategoryId(null);
-                      }}
-                    >
-                      <Text
+                    {["expense", "income", "transfer"].map((tab) => (
+                      <TouchableOpacity
+                        key={tab}
+                        disabled={isEditing}
                         style={[
-                          styles.tabText,
-                          type === "expense" && styles.activeExpenseText,
+                          styles.tab,
+                          type === tab &&
+                            (tab === "expense"
+                              ? styles.activeExpenseTab
+                              : tab === "income"
+                              ? styles.activeIncomeTab
+                              : styles.activeTransferTab),
                         ]}
+                        onPress={() => {
+                          setType(tab as any);
+                          setCategoryId(null);
+                        }}
                       >
-                        Pengeluaran
-                      </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      disabled={isEditing}
-                      style={[
-                        styles.tab,
-                        type === "income" && styles.activeIncomeTab,
-                      ]}
-                      onPress={() => {
-                        setType("income");
-                        setCategoryId(null);
-                      }}
-                    >
-                      <Text
-                        style={[
-                          styles.tabText,
-                          type === "income" && styles.activeIncomeText,
-                        ]}
-                      >
-                        Pemasukan
-                      </Text>
-                    </TouchableOpacity>
+                        <Text
+                          style={[
+                            styles.tabText,
+                            type === tab &&
+                              (tab === "expense"
+                                ? styles.activeExpenseText
+                                : tab === "income"
+                                ? styles.activeIncomeText
+                                : styles.activeTransferText),
+                          ]}
+                        >
+                          {tab === "expense"
+                            ? "Pengeluaran"
+                            : tab === "income"
+                            ? "Pemasukan"
+                            : "Transfer"}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
                   </View>
 
                   {/* Inputs */}
@@ -276,43 +297,80 @@ export default function TransactionModal({
                       </TouchableOpacity>
                     </View>
 
-                    {/* Wallet */}
-                    <View style={styles.inputContainer}>
-                      <BaseDropdown
-                        data={wallets.map((wallet) => ({
-                          label: toTitleCase(wallet.name),
-                          value: wallet.id,
-                        }))}
-                        value={walletId}
-                        placeholder="Select Wallet"
-                        onChange={(item) => {
-                          setWalletId(item.value as any);
-                        }}
-                      />
-                    </View>
+                    {type === "transfer" ? (
+                      <>
+                        {/* Dari Wallet */}
+                        <View style={styles.inputContainer}>
+                          <BaseDropdown
+                            data={wallets.map((w) => ({
+                              label: toTitleCase(w.name),
+                              value: w.id,
+                            }))}
+                            value={fromWalletId}
+                            placeholder="Dari Wallet"
+                            onChange={(item) =>
+                              setFromWalletId(item.value as any)
+                            }
+                          />
+                        </View>
 
-                    {/* Category */}
-                    <View style={styles.inputContainer}>
-                      <BaseDropdown
-                        data={dropdownCategoriesData}
-                        value={categoryId}
-                        placeholder="Select Category"
-                        onChange={(item) => {
-                          if (item.value === "__add_new__") {
-                            setShowAddCategoryModal(true);
-                          } else {
-                            setCategoryId(item.value as string);
-                          }
-                        }}
-                      />
-                      <AddCategoryModal
-                        visible={showAddCategoryModal}
-                        onClose={() => {
-                          setShowAddCategoryModal(false);
-                          setCategoryId(null);
-                        }}
-                      />
-                    </View>
+                        {/* Ke Wallet */}
+                        <View style={styles.inputContainer}>
+                          <BaseDropdown
+                            data={wallets
+                              .filter((w) => w.id !== fromWalletId)
+                              .map((w) => ({
+                                label: toTitleCase(w.name),
+                                value: w.id,
+                              }))}
+                            value={toWalletId}
+                            placeholder="Ke Wallet"
+                            onChange={(item) =>
+                              setToWalletId(item.value as any)
+                            }
+                          />
+                        </View>
+                      </>
+                    ) : (
+                      <>
+                        {/* Wallet tunggal untuk income/expense */}
+                        <View style={styles.inputContainer}>
+                          <BaseDropdown
+                            data={wallets.map((wallet) => ({
+                              label: toTitleCase(wallet.name),
+                              value: wallet.id,
+                            }))}
+                            value={walletId}
+                            placeholder="Select Wallet"
+                            onChange={(item) => {
+                              setWalletId(item.value as any);
+                            }}
+                          />
+                        </View>
+                        {/* Category hanya untuk income/expense */}
+                        <View style={styles.inputContainer}>
+                          <BaseDropdown
+                            data={dropdownCategoriesData}
+                            value={categoryId}
+                            placeholder="Select Category"
+                            onChange={(item) => {
+                              if (item.value === "__add_new__") {
+                                setShowAddCategoryModal(true);
+                              } else {
+                                setCategoryId(item.value as string);
+                              }
+                            }}
+                          />
+                          {/* <AddCategoryModal
+                            visible={showAddCategoryModal}
+                            onClose={() => {
+                              setShowAddCategoryModal(false);
+                              setCategoryId(null);
+                            }}
+                          /> */}
+                        </View>
+                      </>
+                    )}
 
                     <Input
                       placeholder="Jumlah"
@@ -330,16 +388,16 @@ export default function TransactionModal({
 
                     {/* description */}
                     <View style={styles.inputContainer}>
-                      <View style={styles.flexRow}>
+                      {/* <View style={styles.flexRow}>
                         <Typo color={colors.neutral200} size={16}>
                           Description
                         </Typo>
                         <Typo color={colors.neutral200} size={14}>
                           (optional)
                         </Typo>
-                      </View>
+                      </View> */}
                       <Input
-                        // placeholder="0"
+                        placeholder="Description (optional)"
                         value={note}
                         multiline
                         containerStyle={{
@@ -351,6 +409,13 @@ export default function TransactionModal({
                         onChangeText={setNote}
                       />
                     </View>
+                    <AddCategoryModal
+                      visible={showAddCategoryModal}
+                      onClose={() => {
+                        setShowAddCategoryModal(false);
+                        setCategoryId(null);
+                      }}
+                    />
                   </View>
 
                   <View style={styles.footer}>
@@ -481,7 +546,9 @@ const styles = StyleSheet.create({
   activeExpenseTab: { backgroundColor: "#ffebee" },
   activeExpenseText: { color: "#e53935", fontWeight: "bold" },
   activeIncomeTab: { backgroundColor: "#e8f5e9" },
+  activeTransferTab: { backgroundColor: "#bdf1faff" },
   activeIncomeText: { color: "#43a047", fontWeight: "bold" },
+  activeTransferText: { color: "#0f76fcff", fontWeight: "bold" },
   inputContainer: {
     gap: spacingY._10,
   },

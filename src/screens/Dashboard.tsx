@@ -23,7 +23,7 @@ export default function DashboardScreen() {
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [editItem, setEditItem] = useState<any | null>(null);
 
-  const { data: recentTransactions = [], isLoading } = useTransactions(userId);
+  const { data: allTransactions = [], isLoading } = useTransactions(userId);
 
   const handleCloseModal = () => {
     setEditItem(null);
@@ -66,7 +66,7 @@ export default function DashboardScreen() {
         </View>
 
         <FlatList
-          data={recentTransactions}
+          data={allTransactions}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
@@ -89,7 +89,7 @@ export default function DashboardScreen() {
           renderItem={({ item, index }) => (
             <TransactionList
               data={[item]}
-              loading={false}
+              loading={isLoading}
               emptyListMessage="Belum ada Transaksi"
               title="Transaksi Terkini"
               onEditPress={handleEditPress}

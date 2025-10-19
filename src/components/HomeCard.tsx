@@ -19,16 +19,22 @@ const HomeCard = () => {
 
 
     // ---- Summary aman (konversi angka) ----
-  const { income, expense, balance } = useMemo(
-    () =>
-      calculateSummary(
-        (transactions ?? []).map((t: any) => ({
-          ...t,
-          amount: Number(t.amount) || 0,
-        }))
-      ),
-    [transactions]
-  );
+  const { income, expense, balance } = useMemo(() => {
+    if (!transactions.length) return { income: 0, expense: 0, balance: 0 };
+
+    const normalTx = transactions.filter((t: any) => !t.is_transfer);
+    const income = normalTx
+      .filter((t) => t.type === "income")
+      .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+    const expense = normalTx
+      .filter((t) => t.type === "expense")
+      .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+    const balance = income - expense;
+
+    return { income, expense, balance };
+  }, [transactions]);
 
 
 
