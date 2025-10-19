@@ -43,3 +43,16 @@ export function groupByMonth(transactions: any[]) {
   }));
 }
 
+export const formatRupiahLabel = (value: number): string => {
+  if (value >= 1000000) {
+    // Tampilkan dalam Juta (Jt)
+    const million = (value / 1000000).toFixed(1).replace(/\.0$/, ''); // Hapus .0 jika angkanya bulat
+    return `Rp ${million} Jt`;
+  }
+  if (value >= 1000) {
+    // Tampilkan dalam Ribu (K)
+    const thousand = (value / 1000).toFixed(0);
+    return `Rp ${thousand}K`;
+  }
+  return `Rp ${value}`;
+};

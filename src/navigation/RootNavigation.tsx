@@ -7,10 +7,10 @@ import WelcomeScreen from "@/screens/WelcomeScreen";
 import DashboardScreen from "@/screens/Dashboard";
 import ProfileScreen from "@/screens/ProfileScreen";
 import WalletScreen from "@/screens/WalletListScreen";
-import ReportScreen from "@/screens/ReportScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActivityIndicator, View } from "react-native";
+import DashboardAnalyticsScreen from "@/screens/AnalyticsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,7 +63,7 @@ function MainTabs() {
             case "Dashboard":
               iconName = focused ? "home" : "home-outline";
               break;
-            case "Report":
+            case "Analitics":
               iconName = focused ? "bar-chart" : "bar-chart-outline";
               break;
             case "Wallet":
@@ -85,7 +85,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
-      <Tab.Screen name="Report" component={ReportScreen} />
+      <Tab.Screen name="Analitics" component={DashboardAnalyticsScreen} />
       <Tab.Screen name="Wallet" component={WalletScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

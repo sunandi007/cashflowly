@@ -162,3 +162,19 @@ export type WalletType = {
   userId?: string;
   createdAt?: Date;
 };
+
+
+// -------- ANALITIC TABLE --------
+export type AnalyticsData = {
+  income: number;
+  expense: number;
+  balance: number;
+  byCategory: { label: string; value: number }[];
+  byDate: any[];
+};
+
+export type SummaryCardProps = {
+  income: number;
+  expense: number;
+  balance: number;
+};

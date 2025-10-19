@@ -26,6 +26,7 @@ import Header from "./Header";
 import Input from "./Input";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useWallets } from "@/hooks/useWallets";
+import AddCategoryModal from "@/components/AddCategoryModal";
 
 const screenHeight = Dimensions.get("window").height;
 export default function TransactionModal({
@@ -44,11 +45,20 @@ export default function TransactionModal({
   const [type, setType] = useState<"expense" | "income">("expense");
 
   const dropdownCategoriesData = useMemo(() => {
+    // Filter kategori berdasarkan tipe transaksi (income / expense)
     const filtered = categories.filter((c) => c.type === type);
-    return filtered.map((cat) => ({
+
+    // Map hasilnya ke label/value
+    const mapped = filtered.map((cat) => ({
       label: toTitleCase(cat.name),
       value: cat.id,
     }));
+
+    // ✅ Tambahkan opsi "Tambah Kategori Baru" di akhir
+    return [
+      ...mapped,
+      { label: "+ Tambah Kategori Baru", value: "__add_new__" },
+    ];
   }, [categories, type]);
 
   const { refetch: refetchWallets } = useWallets();
@@ -59,6 +69,7 @@ export default function TransactionModal({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [walletId, setWalletId] = useState<string | null>(null);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
 
   useEffect(() => {
     if (isEditing && initialData) {
@@ -68,7 +79,7 @@ export default function TransactionModal({
       setType(initialData.type);
       setWalletId(initialData.wallet_id);
       setCategoryId(initialData.category_id);
-      setDate(new Date(initialData.date)); 
+      setDate(new Date(initialData.date));
     } else {
       setAmount("");
       setNote("");
@@ -287,7 +298,18 @@ export default function TransactionModal({
                         value={categoryId}
                         placeholder="Select Category"
                         onChange={(item) => {
-                          setCategoryId(item.value as any);
+                          if (item.value === "__add_new__") {
+                            setShowAddCategoryModal(true);
+                          } else {
+                            setCategoryId(item.value as string);
+                          }
+                        }}
+                      />
+                      <AddCategoryModal
+                        visible={showAddCategoryModal}
+                        onClose={() => {
+                          setShowAddCategoryModal(false);
+                          setCategoryId(null);
                         }}
                       />
                     </View>
@@ -295,10 +317,7 @@ export default function TransactionModal({
                     <Input
                       placeholder="Jumlah"
                       onChangeText={(text) => {
-                        // hilangkan semua karakter non-digit
                         const numericValue = text.replace(/\D/g, "");
-
-                        // tambahkan titik setiap 3 digit dari belakang
                         const formatted = numericValue.replace(
                           /\B(?=(\d{3})+(?!\d))/g,
                           "."
