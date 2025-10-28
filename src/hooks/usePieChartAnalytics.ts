@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
-
+import { getDateRange } from "@/utils/getDateRange";
 // --- TIPE DATA ---
 export type PieChartData = {
   name: string;
@@ -29,14 +29,16 @@ export function usePieChartAnalytics(userId?: string, period: "week" | "month" |
     queryFn: async () => {
       if (!userId) return [];
 
+      const { start: rangeStart, end: rangeEnd } = getDateRange(period);
+
       // Dapatkan range untuk periode (asumsi getDateRange ada di utilitas)
       // *Anda perlu menentukan utilitas yang bisa mendapatkan range berdasarkan "week"/"month"*
       // Simpanan: Kita ambil data 30 hari terakhir untuk distribusi.
       const now = new Date();
       const start = new Date();
       start.setDate(now.getDate() - (period === 'week' ? 7 : 30));
-      const rangeStart = start.toISOString().split('T')[0];
-      const rangeEnd = now.toISOString().split('T')[0];
+      // const rangeStart = start.toISOString().split('T')[0];
+      // const rangeEnd = now.toISOString().split('T')[0];
       
       // Query dengan JOIN categories dan filter EXPENSE
       const { data: rawData, error } = await supabase
@@ -44,6 +46,7 @@ export function usePieChartAnalytics(userId?: string, period: "week" | "month" |
         .select("amount, type, categories(name, bgColor)") // Hanya select field yang dibutuhkan
         .eq("user_id", userId)
         .eq("type", "expense") // Filter hanya pengeluaran
+        .is("transfer_id", null)
         .gte("date", rangeStart)
         .lte("date", rangeEnd);
 

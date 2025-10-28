@@ -98,10 +98,11 @@ export function useAnalytics(userId?: string, filter: FilterType = "weekly") {
 
       const { data, error } = await supabase
         .from("transactions")
-        .select("id, amount, type, date, category_id")
+        .select("id, amount, type, date, category_id, transfer_id")
         .eq("user_id", userId)
         .gte("date", start)
-        .lte("date", end);
+        .lte("date", end)
+        .is("transfer_id", null);
 
       if (error) throw error;
 
@@ -109,19 +110,32 @@ export function useAnalytics(userId?: string, filter: FilterType = "weekly") {
 
       (data as TransactionRow[]).forEach((t) => {
         const d = new Date(t.date);
+        const amount = Number(t.amount) || 0;
         let label = "";
 
         if (filter === "daily") {
-          label = d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+          label = d.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+          });
         } else if (filter === "weekly" || filter === "monthly") {
-          label = d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" });
+          label = d.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+          });
         } else {
-          label = d.toLocaleDateString("id-ID", { month: "short", year: "2-digit" });
+          label = d.toLocaleDateString("id-ID", {
+            month: "short",
+            year: "2-digit",
+          });
         }
 
         if (!grouped[label]) grouped[label] = { income: 0, expense: 0 };
-        if (t.type === "income" || t.type === "expense") {
-          grouped[label][t.type] += Number(t.amount);
+        // Gunakan amount yang sudah dikonversi
+        if (t.type === "income") {
+          grouped[label].income += amount;
+        } else if (t.type === "expense") {
+          grouped[label].expense += amount;
         }
       });
 
@@ -134,4 +148,3 @@ export function useAnalytics(userId?: string, filter: FilterType = "weekly") {
     enabled: !!userId,
   });
 }
-
