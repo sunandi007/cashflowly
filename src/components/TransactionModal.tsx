@@ -47,10 +47,13 @@ export default function TransactionModal({
     "expense"
   );
 
-  const { performTransfer, isTransferring } = useTransfer();
-
-  const [fromWalletId, setFromWalletId] = useState<string | null>(null);
-  const [toWalletId, setToWalletId] = useState<string | null>(null);
+  const {
+    performTransfer,
+    isTransferring,
+    updateTransfer,
+    isUpdatingTransfer,
+    deleteTransfer,
+  } = useTransfer();
 
   const dropdownCategoriesData = useMemo(() => {
     // Filter kategori berdasarkan tipe transaksi (income / expense)
@@ -78,25 +81,49 @@ export default function TransactionModal({
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [walletId, setWalletId] = useState<string | null>(null);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [fromWalletId, setFromWalletId] = useState<string | null>(null);
+  const [toWalletId, setToWalletId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!visible) return;
     if (isEditing && initialData) {
-      setAmount(String(initialData.amount));
+      console.log("initial data :", initialData);
+
       setAmount(String(initialData.amount));
       setNote(initialData.note || "");
       setType(initialData.type);
-      setWalletId(initialData.wallet_id);
       setCategoryId(initialData.category_id);
       setDate(new Date(initialData.date));
+
+      if (initialData.is_transfer) {
+        const fromWallet =
+          wallets.find((w) => w.id === initialData.source_wallet_id) ||
+          wallets.find((w) => w.name === initialData.from_wallet);
+
+        const toWallet =
+          wallets.find((w) => w.id === initialData.destination_wallet_id) ||
+          wallets.find((w) => w.name === initialData.to_wallet);
+
+        setFromWalletId(fromWallet?.id ?? null);
+        setToWalletId(toWallet?.id ?? null);
+      } else {
+        const wallet = wallets.find(
+          (w) => w.id === initialData.wallet_id || w.name === initialData.wallet
+        );
+        setWalletId(wallet?.id || null);
+        setCategoryId(initialData.category_id);
+      }
     } else {
       setAmount("");
       setNote("");
-      setWalletId("");
       setType("expense");
+      setWalletId(null);
       setCategoryId(null);
       setDate(new Date());
+      setFromWalletId(null);
+      setToWalletId(null);
     }
-  }, [initialData]);
+  }, [initialData, visible]);
 
   const handleDateChange = (_event: any, selectedDate?: Date) => {
     setShowDatePicker(false);
@@ -106,42 +133,74 @@ export default function TransactionModal({
   const handleSave = async () => {
     if (!amount) return Alert.alert("Error", "Harap isi jumlah");
 
-    if (type === "transfer") {
-      if (!fromWalletId || !toWalletId)
-        return Alert.alert("Error", "Pilih wallet asal dan tujuan");
-      if (fromWalletId === toWalletId)
-        return Alert.alert("Error", "Wallet asal dan tujuan tidak boleh sama");
-
-      try {
-        await performTransfer({
-          from_wallet_id: fromWalletId,
-          to_wallet_id: toWalletId,
-          amount: Number(amount.replace(/\./g, "")),
-          note,
-        });
-        await refetchWallets();
-        onClose();
-      } catch (err: any) {
-        Alert.alert("Error", err.message);
-      }
-      return;
-    }
-
-    // 🔸 default (income/expense)
-    if (type === "expense" && !categoryId)
-      return Alert.alert("Error", "Harap pilih kategori untuk pengeluaran");
-
-    const payload = {
-      amount: Number(amount.replace(/\./g, "")),
-      note,
-      type,
-      category_id: categoryId,
-      user_id: userId,
-      date: date.toISOString(),
-      wallet_id: walletId,
-    };
+    const numericAmount = Number(amount.replace(/\./g, ""));
+    const UUID_RX =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     try {
+      // 🟢 Handle TRANSFER
+      if (type === "transfer") {
+        if (!fromWalletId || !toWalletId)
+          return Alert.alert("Error", "Pilih wallet asal dan tujuan");
+        if (fromWalletId === toWalletId)
+          return Alert.alert(
+            "Error",
+            "Wallet asal dan tujuan tidak boleh sama"
+          );
+
+        // ambil UUID asli (bisa dari idToUpdate atau dari id tanpa prefix)
+        const rawId =
+          initialData?.idToUpdate ??
+          (initialData?.id?.startsWith("transfer-")
+            ? initialData.id.replace("transfer-", "")
+            : initialData?.id);
+
+        const isUUIDValid = UUID_RX.test(rawId || "");
+
+        if (isEditing && initialData?.is_transfer && isUUIDValid) {
+          console.log(
+            "Transfer ID to update:",
+            initialData.id?.replace(/^transfer-/, "")
+          );
+
+          // ✅ UPDATE TRANSFER
+          await updateTransfer({
+            transfer_id: initialData.id?.replace(/^transfer-/, ""),
+            from_wallet_id: fromWalletId,
+            to_wallet_id: toWalletId,
+            amount: numericAmount,
+            note,
+            date: date.toISOString(),
+          });
+        } else {
+          // ✅ CREATE TRANSFER
+          await performTransfer({
+            from_wallet_id: fromWalletId,
+            to_wallet_id: toWalletId,
+            amount: numericAmount,
+            note,
+          });
+        }
+
+        await refetchWallets();
+        onClose();
+        return;
+      }
+
+      // 🟡 Handle INCOME / EXPENSE
+      if (type === "expense" && !categoryId)
+        return Alert.alert("Error", "Harap pilih kategori untuk pengeluaran");
+
+      const payload = {
+        amount: numericAmount,
+        note,
+        type,
+        category_id: categoryId,
+        user_id: userId,
+        date: date.toISOString(),
+        wallet_id: walletId,
+      };
+
       if (isEditing) {
         await updateTransaction.mutateAsync({
           id: initialData.id,
@@ -150,18 +209,13 @@ export default function TransactionModal({
       } else {
         await createTransaction.mutateAsync(payload);
       }
-      setAmount("");
-      setNote("");
-      setType("expense");
-      setCategoryId(null);
-      setWalletId("");
+
       await refetchWallets();
       onClose();
     } catch (err: any) {
       Alert.alert("Error", err.message);
     }
   };
-
   const showDeleteAlert = () => {
     Alert.alert(
       "Confirm",
@@ -183,7 +237,24 @@ export default function TransactionModal({
 
   const onDelete = async () => {
     try {
-      const res = await deleteTransaction.mutateAsync(initialData.id);
+      const isTransfer = initialData?.is_transfer; // Mendapatkan UUID asli (baik transfer ID atau transaction ID)
+      const idToDelete = isTransfer
+        ? initialData?.id?.replace(/^transfer-/, "")
+        : initialData?.id;
+
+      if (!idToDelete) {
+        throw new Error("ID transaksi tidak valid.");
+      }
+
+      // ✅ JALUR KRITIS: Panggil mutasi yang benar berdasarkan jenis transaksi
+      if (isTransfer) {
+        // Hapus dari tabel 'transfers', memicu Trigger pembalikan saldo
+        await deleteTransfer(idToDelete);
+      } else {
+        // Hapus dari tabel 'transactions', memicu Trigger rollback_wallet_balance
+        await deleteTransaction.mutateAsync(idToDelete);
+      }
+
       onClose();
     } catch (err: any) {
       Alert.alert("Error", err.message);

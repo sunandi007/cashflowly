@@ -106,10 +106,10 @@ export default function DashboardAnalytics() {
         />
 
         {/* 3. Placeholder untuk Chart Kategori (Tanpa Perubahan) */}
-        {/* <CategoryPieChart
+        <CategoryPieChart
           data={pieChartData || []} // Menggunakan data dari Pie Chart Hook
           loading={isPieLoading} // Gunakan loading dari Pie Chart
-        /> */}
+        />
 
         {/* 4. METRIK KUNCI (Dinamis) */}
         <View style={styles.keyMetrics}>

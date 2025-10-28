@@ -41,7 +41,12 @@ export default function DashboardScreen() {
   };
 
   const handleEditPress = (item: any) => {
-    setEditItem(item); // mode edit
+    // Jika item transfer hasil merge, pastikan ada primaryTxId
+    const payloadForModal = item.is_transfer
+      ? { ...item, idToUpdate: item.id.replace(/^transfer-/, "") }
+      : { ...item, idToUpdate: item.id };
+
+    setEditItem(payloadForModal); // mode edit
     setShowModal(true);
   };
 

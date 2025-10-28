@@ -2,109 +2,104 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
 import { getDateRange } from "@/utils/getDateRange";
 
+/**
+ * ✅ Hook untuk mengambil daftar transaksi (termasuk hasil sinkronisasi transfer)
+ * - Kini menggunakan relasi ke tabel `transfers`
+ */
 export function useTransactions(
   userId?: string,
   period: "week" | "month" | "all" = "all"
 ) {
   return useQuery({
     queryKey: ["transactions", userId, period],
+    enabled: !!userId,
     queryFn: async () => {
       if (!userId) return [];
       const { start, end } = getDateRange(period);
 
+      // 🔹 Ambil semua transaksi user
       let query = supabase
         .from("transactions")
         .select(
           `
-            *,
-            categories(name, icon, type, bgColor),
-            source_wallet:wallets!fk_source_wallet(name),
-            destination_wallet:wallets!fk_destination_wallet(name),
-            wallet:wallets!transactions_wallet_id_fkey(name)
-            `
+          id,
+          user_id,
+          amount,
+          type,
+          note,
+          date,
+          category_id,
+          description,
+          wallet_id,
+          transfer_id,
+          created_at,
+          updated_at,
+          categories(name, icon, type, bgColor),
+          wallet:wallets(name),
+          transfers:transfer_id (
+            id,
+            amount,
+            note,
+            date,
+            source_wallet:source_wallet_id(name),
+            destination_wallet:destination_wallet_id(name)
+          )
+        `
         )
         .eq("user_id", userId)
-        .order("date", { ascending: false })
         .order("created_at", { ascending: false });
+
       if (start && end) {
-        query = query.gte("date", start).lte("date", end);
+        query = query.gte("created_at", start).lte("created_at", end);
       }
 
       const { data, error } = await query;
       if (error) throw error;
 
-      // memastikan data terurut juga di sisi client
-      const transactions = (data || []).sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-
-      // 🧠 Gabungkan transaksi transfer
-      const merged = mergeTransfers(transactions);
-
-      return merged;
+      // 🔁 Gabungkan hasil mirror transaksi transfer menjadi satu
+      return mergeTransfers(data || []);
     },
-    enabled: !!userId,
   });
 }
 
-/** 🔁 Gabungkan transaksi transfer agar hanya muncul satu item */
+/** 🔁 Gabungkan transaksi transfer agar hanya muncul satu item di UI */
 function mergeTransfers(transactions: any[]) {
-  const result: any[] = [];
-  const usedIds = new Set();
+  const transferMap: Record<string, any> = {};
+  const normalTx: any[] = [];
 
   for (const tx of transactions) {
-    if (!tx.is_transfer) {
-      result.push(tx);
+    if (!tx.transfer_id) {
+      // Transaksi Normal: Income atau Expense
+      normalTx.push({ 
+        ...tx, 
+        is_transfer: false,
+        // Konversi amount menjadi Number di sini untuk memastikan konsistensi tipe data
+        amount: Number(tx.amount) || 0,
+      });
       continue;
     }
 
-    if (usedIds.has(tx.id)) continue;
-
-    // Cari pasangan transfer lawannya
-    const pair = transactions.find(
-      (t) =>
-        t.is_transfer &&
-        t.user_id === tx.user_id &&
-        t.amount === tx.amount &&
-        t.id !== tx.id &&
-        t.type !== tx.type &&
-        Math.abs(new Date(t.date).getTime() - new Date(tx.date).getTime()) <
-          3000
-    );
-
-    // Ambil nama wallet asal dan tujuan
-    const from_wallet =
-      tx.type === "expense"
-        ? tx.wallet?.name ||
-          tx.source_wallet?.name ||
-          pair?.wallet?.name ||
-          "Unknown"
-        : pair?.wallet?.name || pair?.source_wallet?.name || "Unknown";
-
-    const to_wallet =
-      tx.type === "income"
-        ? tx.wallet?.name ||
-          tx.destination_wallet?.name ||
-          pair?.wallet?.name ||
-          "Unknown"
-        : pair?.wallet?.name || pair?.destination_wallet?.name || "Unknown";
-
-    // Gabungkan menjadi satu transaksi transfer
-    result.push({
-      id: `transfer-${tx.id}`,
-      type: "transfer",
-      amount: tx.amount,
-      note: tx.note,
-      date: tx.date,
-      from_wallet,
-      to_wallet,
-      is_transfer: true,
-    });
-
-    usedIds.add(tx.id);
-    if (pair) usedIds.add(pair.id);
+    const t = tx.transfers;
+    if (!transferMap[t.id]) {
+      // Transaksi Transfer (Gabungan): Amoutnya sudah dari relasi transfers
+      transferMap[t.id] = {
+        id: `transfer-${t.id}`,
+        transfer_id: t.id,
+        type: "transfer",
+        amount: Number(t.amount) || 0, // Konversi di sini juga
+        note: t.note,
+        date: t.date,
+        from_wallet: t.source_wallet?.name,
+        to_wallet: t.destination_wallet?.name,
+        is_transfer: true,
+      };
+    }
   }
 
-  return result;
+  const mergedTransfers = Object.values(transferMap);
+  return [...mergedTransfers, ...normalTx].sort(
+    (a, b) =>
+      new Date(b.created_at || b.date).getTime() -
+      new Date(a.created_at || a.date).getTime()
+  );
 }
