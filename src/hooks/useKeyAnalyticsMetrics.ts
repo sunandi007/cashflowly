@@ -6,7 +6,7 @@ import { calculatePercentageChange } from "@/utils/finance"; // Akan kita buat d
 import React from "react";
 import { getDateRangeAnalitic } from "@/utils/getDateRangeAnalitic";
 
-type Period = "daily" | "weekly" | "monthly" | "yearly";
+type Period = "weekly" | "monthly" | "yearly";
 
 interface MetricData {
     totalIncome: number;

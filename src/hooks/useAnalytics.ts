@@ -56,7 +56,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
 
-type FilterType = "daily" | "weekly" | "monthly" | "yearly";
+type FilterType = "weekly" | "monthly" | "yearly";
 
 type TransactionRow = {
   id: string;
@@ -71,9 +71,6 @@ function getDateRange(filter: FilterType) {
   const start = new Date();
 
   switch (filter) {
-    case "daily":
-      start.setHours(0, 0, 0, 0);
-      break;
     case "weekly":
       start.setDate(now.getDate() - 7);
       break;
@@ -113,12 +110,7 @@ export function useAnalytics(userId?: string, filter: FilterType = "weekly") {
         const amount = Number(t.amount) || 0;
         let label = "";
 
-        if (filter === "daily") {
-          label = d.toLocaleDateString("id-ID", {
-            day: "2-digit",
-            month: "short",
-          });
-        } else if (filter === "weekly" || filter === "monthly") {
+        if (filter === "weekly" || filter === "monthly") {
           label = d.toLocaleDateString("id-ID", {
             day: "2-digit",
             month: "short",

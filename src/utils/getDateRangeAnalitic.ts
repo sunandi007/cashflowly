@@ -1,6 +1,6 @@
 // src/utils/getDateRange.ts (Versi yang Diperbaiki)
 
-type Period = "daily" | "weekly" | "monthly" | "yearly" | "all";
+type Period = "weekly" | "monthly" | "yearly" | "all";
 type RangeType = "current" | "previous";
 
 export function getDateRangeAnalitic(

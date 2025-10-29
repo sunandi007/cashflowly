@@ -1,5 +1,5 @@
 // Definisikan tipe dasar data dan filter
-export type FilterType = "daily" | "weekly" | "monthly" | "yearly";
+export type FilterType ="weekly" | "monthly" | "yearly";
 type ChartDataItem = {
   label: string;
   income: number;
@@ -8,15 +8,6 @@ type ChartDataItem = {
 type ChartData = ChartDataItem[];
 
 // --- Data Dummy Sesuai Filter ---
-
-// Harian (Per Jam - 5 titik)
-const dailyData: ChartData = [
-  { label: "06", income: 150000, expense: 50000 },
-  { label: "10", income: 300000, expense: 120000 },
-  { label: "14", income: 500000, expense: 250000 },
-  { label: "18", income: 450000, expense: 380000 },
-  { label: "22", income: 200000, expense: 150000 },
-];
 
 // Mingguan (Per Hari - 7 titik)
 const weeklyData: ChartData = [
@@ -50,8 +41,6 @@ const yearlyData: ChartData = [
 
 export const getDummyData = (filter: FilterType): ChartData => {
   switch (filter) {
-    case "daily":
-      return dailyData;
     case "monthly":
       return monthlyData;
     case "yearly":
@@ -64,8 +53,6 @@ export const getDummyData = (filter: FilterType): ChartData => {
 
 export const getTitle = (filter: FilterType): string => {
   switch (filter) {
-    case "daily":
-      return "Daily Overview (Per Jam)";
     case "weekly":
       return "Weekly Overview (Per Hari)";
     case "monthly":
@@ -77,4 +64,4 @@ export const getTitle = (filter: FilterType): string => {
   }
 };
 
-export const filters: FilterType[] = ["daily", "weekly", "monthly", "yearly"];
+export const filters: FilterType[] = ["weekly", "monthly", "yearly"];

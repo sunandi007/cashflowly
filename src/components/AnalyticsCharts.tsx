@@ -6,7 +6,7 @@ import { colors } from "@/constant/theme";
 import { getTitle } from "@/constant/ChartsDummy";
 import { formatRupiahLabel } from "@/utils/finance";
 
-type FilterType = "daily" | "weekly" | "monthly" | "yearly";
+type FilterType = "weekly" | "monthly" | "yearly";
 
 type AnalyticsChartsProps = {
   data: {

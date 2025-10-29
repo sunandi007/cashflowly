@@ -24,7 +24,7 @@ type TransactionRowWithCategory = {
 
 // --- HOOK PIE CHART ---
 // Menerima periode (misalnya, "month") untuk menentukan rentang data mentah
-export function usePieChartAnalytics(userId?: string, period: "daily" | "weekly" | "monthly" | "yearly" | "all" = "monthly") {
+export function usePieChartAnalytics(userId?: string, period: "weekly" | "monthly" | "yearly" | "all" = "monthly") {
   return useQuery({
     queryKey: ["analytics-pie", userId, period],
     queryFn: async () => {

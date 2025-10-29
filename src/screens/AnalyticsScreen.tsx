@@ -79,7 +79,7 @@ export default function DashboardAnalytics() {
         {filters.map((filter) => (
           <FilterButton
             key={filter}
-            label={filter.charAt(0).toUpperCase() + filter.slice(1)} // Daily, Weekly, Monthy...
+            label={filter.charAt(0).toUpperCase() + filter.slice(1)}
             isActive={currentFilter === filter}
             onPress={() => setCurrentFilter(filter)}
           />
@@ -95,29 +95,23 @@ export default function DashboardAnalytics() {
           filter={currentFilter}
         />
 
-        {/* 3. Placeholder untuk Chart Kategori (Tanpa Perubahan) */}
-        <CategoryPieChart
-          data={pieChartData || []} // Menggunakan data dari Pie Chart Hook
-          loading={isPieLoading} // Gunakan loading dari Pie Chart
-        />
-
         {/* 4. METRIK KUNCI (Dinamis) */}
 
         <View style={styles.keyMetrics}>
-                   {" "}
+          {" "}
           <Typo size={16} fontWeight="600" color={colors.neutral400}>
-                        Net Income Periode Ini ({currentFilter.toUpperCase()}):
-                     {" "}
+            Net Income Periode Ini ({currentFilter.toUpperCase()}):{" "}
           </Typo>
-                    {/* Nilai Net Income */}         {" "}
+          {/* Nilai Net Income */}{" "}
           <Typo size={24} fontWeight="800" color={comparisonColor}>
-                       {" "}
-            {isLoadingCombined ? "..." : formatRupiah(netIncome, netIncome < 0)}
-                     {" "}
+            {" "}
+            {isLoadingCombined
+              ? "..."
+              : formatRupiah(netIncome, netIncome < 0)}{" "}
           </Typo>
-                    {/* Teks Perbandingan */}         {" "}
+          {/* Teks Perbandingan */}{" "}
           <Typo size={12} color={comparisonColor}>
-                        {isLoadingCombined ? "..." : comparisonText}         {" "}
+            {isLoadingCombined ? "..." : comparisonText}{" "}
           </Typo>
           {/* Tambahan: Tampilkan Total Income dan Total Expense Absolut */}
           <View style={{ marginTop: 15, flexDirection: "row", gap: 20 }}>
@@ -127,24 +121,14 @@ export default function DashboardAnalytics() {
             <Typo size={14} color={colors.rose}>
               Expense: {formatRupiah(keyMetrics?.totalExpense || 0)}
             </Typo>
-          </View>
-                 {" "}
+          </View>{" "}
         </View>
-        {/* <View style={styles.keyMetrics}>
-          <Typo size={16} fontWeight="600" color={colors.neutral400}>
-            Net Income Periode Ini ({currentFilter.toUpperCase()}):
-          </Typo> */}
 
-        {/* Nilai Net Income */}
-        {/* <Typo size={24} fontWeight="800" color={netIncomeColor}>
-            {isLoading ? "..." : formatRupiah(netIncome, netIncome < 0)}
-          </Typo> */}
-
-        {/* Teks Perbandingan */}
-        {/* <Typo size={12} color={comparisonColor}>
-            {isLoading ? "..." : comparisonText}
-          </Typo>
-        </View> */}
+        {/* 3. Placeholder untuk Chart Kategori (Tanpa Perubahan) */}
+        <CategoryPieChart
+          data={pieChartData || []} // Menggunakan data dari Pie Chart Hook
+          loading={isPieLoading} // Gunakan loading dari Pie Chart
+        />
       </ScrollView>
     </View>
   );
