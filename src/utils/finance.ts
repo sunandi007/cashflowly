@@ -56,3 +56,30 @@ export const formatRupiahLabel = (value: number): string => {
   }
   return `Rp ${value}`;
 };
+
+/**
+ * Menghitung persentase perubahan (baru - lama) / lama.
+ * Mengembalikan Number, kecuali jika kasus perbandingan dengan nol terjadi.
+ */
+export const calculatePercentageChange = (currentValue: number, previousValue: number): number | string => {
+    // KASUS 1: Periode lalu NOL (atau Net Income negatif) dan Periode ini POSITIF
+    if (previousValue <= 0 && currentValue > 0) {
+        // Kita anggap ini sebagai "Pertumbuhan Kuat" atau "Tidak Terbandingkan"
+        return "Growth"; 
+    }
+    
+    // KASUS 2: Periode lalu positif, dan Periode ini NOL (atau negatif)
+    if (previousValue > 0 && currentValue <= 0) {
+        // Kita anggap ini sebagai penurunan -100% atau lebih
+        return -100; // Atau biarkan logika normal menangani angka besar negatif
+    }
+    
+    // KASUS NORMAL (Kedua nilai bukan nol)
+    if (previousValue === 0) {
+        return 0; // Jika keduanya nol, tidak ada perubahan
+    }
+
+    const change = (currentValue - previousValue) / Math.abs(previousValue);
+    // Mengalikan 100 dan membulatkan ke 2 desimal
+    return Math.round(change * 10000) / 100; 
+};

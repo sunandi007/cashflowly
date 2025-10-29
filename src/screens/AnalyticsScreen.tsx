@@ -9,9 +9,8 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import CategoryPieChart from "@/components/CategoryPieChart";
-import {
-  usePieChartAnalytics,
-} from "@/hooks/usePieChartAnalytics";
+import { usePieChartAnalytics } from "@/hooks/usePieChartAnalytics";
+import { useKeyAnalyticsMetrics } from "@/hooks/useKeyAnalyticsMetrics";
 
 export default function DashboardAnalytics() {
   const [currentFilter, setCurrentFilter] = useState<FilterType>("weekly");
@@ -24,13 +23,40 @@ export default function DashboardAnalytics() {
     currentFilter
   );
 
+  const { data: keyMetrics, isLoading: isLoadingMetrics } =
+    useKeyAnalyticsMetrics(userId, currentFilter);
+
+  // Ambil data untuk netIncome
+  const netIncome = keyMetrics?.netIncome || 0;
+  const percentChange = keyMetrics?.percentChange || 0;
+
+  const isLoadingCombined = isLoading || isLoadingMetrics; // Gabungkan loading state
+
+  // --- METRIK PERBANDINGAN DINAMIS ---
+  const comparisonValue = keyMetrics?.percentChange || 0;
+  let comparisonText = "";
+  let comparisonColor = colors.neutral400; // Warna default // KASUS 1: Nilai adalah String ('Growth')
+
+  if (typeof comparisonValue === "string") {
+    comparisonText = `↑ Pertumbuhan Kuat dari periode lalu`;
+    comparisonColor = colors.primary;
+  }
+  // KASUS 2: Nilai adalah Number (Persentase Normal)
+  else {
+    // Di sini kita sudah yakin comparisonValue adalah number
+    const absValue = Math.abs(comparisonValue);
+    const direction = comparisonValue >= 0 ? "↑" : "↓";
+    comparisonText = `${direction} ${absValue}% dari periode lalu`;
+    comparisonColor = comparisonValue >= 0 ? colors.primary : colors.rose;
+  }
+  // Siapkan data untuk komponen chart
   const formattedData = {
     byDate: analyticsData,
   };
 
   const { data: pieChartData, isLoading: isPieLoading } = usePieChartAnalytics(
     userId,
-    "month"
+    "monthly"
   );
 
   // Asumsi: Anda memiliki fungsi utilitas formatRupiah untuk tampilan yang rapi
@@ -40,42 +66,6 @@ export default function DashboardAnalytics() {
     const sign = isNegative ? "– Rp " : "Rp "; // Menggunakan simbol minus yang benar
     return sign + formatted;
   };
-
-  // --- LOGIKA PERHITUNGAN NET INCOME ---
-  const { totalIncome, totalExpense, netIncome, netIncomeColor } =
-    React.useMemo(() => {
-      if (!formattedData.byDate.length) {
-        return {
-          totalIncome: 0,
-          totalExpense: 0,
-          netIncome: 0,
-          netIncomeColor: colors.neutral400,
-        };
-      }
-
-      const income = formattedData.byDate.reduce(
-        (sum, item) => sum + item.income,
-        0
-      );
-      const expense = formattedData.byDate.reduce(
-        (sum, item) => sum + item.expense,
-        0
-      );
-      const net = income - expense;
-
-      return {
-        totalIncome: income,
-        totalExpense: expense,
-        netIncome: net,
-        netIncomeColor: net >= 0 ? colors.primary : colors.rose, // Hijau jika surplus, Merah jika defisit
-      };
-    }, [formattedData.byDate]);
-
-  // --- METRIK PERBANDINGAN Sederhana (Diasumsikan perbandingan 12% dari periode lalu) ---
-  // Di aplikasi nyata, ini memerlukan fetch data periode lalu.
-  const comparisonText =
-    netIncome >= 0 ? `(↑ 12% dari periode lalu)` : `(↓ 8% dari periode lalu)`;
-  const comparisonColor = netIncome >= 0 ? colors.primary : colors.rose;
 
   return (
     <View style={styles.container}>
@@ -112,21 +102,49 @@ export default function DashboardAnalytics() {
         />
 
         {/* 4. METRIK KUNCI (Dinamis) */}
+
         <View style={styles.keyMetrics}>
+                   {" "}
+          <Typo size={16} fontWeight="600" color={colors.neutral400}>
+                        Net Income Periode Ini ({currentFilter.toUpperCase()}):
+                     {" "}
+          </Typo>
+                    {/* Nilai Net Income */}         {" "}
+          <Typo size={24} fontWeight="800" color={comparisonColor}>
+                       {" "}
+            {isLoadingCombined ? "..." : formatRupiah(netIncome, netIncome < 0)}
+                     {" "}
+          </Typo>
+                    {/* Teks Perbandingan */}         {" "}
+          <Typo size={12} color={comparisonColor}>
+                        {isLoadingCombined ? "..." : comparisonText}         {" "}
+          </Typo>
+          {/* Tambahan: Tampilkan Total Income dan Total Expense Absolut */}
+          <View style={{ marginTop: 15, flexDirection: "row", gap: 20 }}>
+            <Typo size={14} color={colors.primary}>
+              Income: {formatRupiah(keyMetrics?.totalIncome || 0)}
+            </Typo>
+            <Typo size={14} color={colors.rose}>
+              Expense: {formatRupiah(keyMetrics?.totalExpense || 0)}
+            </Typo>
+          </View>
+                 {" "}
+        </View>
+        {/* <View style={styles.keyMetrics}>
           <Typo size={16} fontWeight="600" color={colors.neutral400}>
             Net Income Periode Ini ({currentFilter.toUpperCase()}):
-          </Typo>
+          </Typo> */}
 
-          {/* Nilai Net Income */}
-          <Typo size={24} fontWeight="800" color={netIncomeColor}>
+        {/* Nilai Net Income */}
+        {/* <Typo size={24} fontWeight="800" color={netIncomeColor}>
             {isLoading ? "..." : formatRupiah(netIncome, netIncome < 0)}
-          </Typo>
+          </Typo> */}
 
-          {/* Teks Perbandingan */}
-          <Typo size={12} color={comparisonColor}>
+        {/* Teks Perbandingan */}
+        {/* <Typo size={12} color={comparisonColor}>
             {isLoading ? "..." : comparisonText}
           </Typo>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );

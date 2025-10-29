@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
 import { getDateRange } from "@/utils/getDateRange";
+import { getDateRangeAnalitic } from "@/utils/getDateRangeAnalitic";
 // --- TIPE DATA ---
 export type PieChartData = {
   name: string;
@@ -23,20 +24,20 @@ type TransactionRowWithCategory = {
 
 // --- HOOK PIE CHART ---
 // Menerima periode (misalnya, "month") untuk menentukan rentang data mentah
-export function usePieChartAnalytics(userId?: string, period: "week" | "month" | "all" = "month") {
+export function usePieChartAnalytics(userId?: string, period: "daily" | "weekly" | "monthly" | "yearly" | "all" = "monthly") {
   return useQuery({
     queryKey: ["analytics-pie", userId, period],
     queryFn: async () => {
       if (!userId) return [];
 
-      const { start: rangeStart, end: rangeEnd } = getDateRange(period);
+      const { start: rangeStart, end: rangeEnd } = getDateRangeAnalitic(period, "current");
 
       // Dapatkan range untuk periode (asumsi getDateRange ada di utilitas)
       // *Anda perlu menentukan utilitas yang bisa mendapatkan range berdasarkan "week"/"month"*
       // Simpanan: Kita ambil data 30 hari terakhir untuk distribusi.
       const now = new Date();
       const start = new Date();
-      start.setDate(now.getDate() - (period === 'week' ? 7 : 30));
+      start.setDate(now.getDate() - (period === 'weekly' ? 7 : 30));
       // const rangeStart = start.toISOString().split('T')[0];
       // const rangeEnd = now.toISOString().split('T')[0];
       
