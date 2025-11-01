@@ -421,7 +421,7 @@ export default function TransactionModal({
                         {/* Category hanya untuk income/expense */}
                         <View style={styles.inputContainer}>
                           <BaseDropdown
-                            data={dropdownCategoriesData}
+                            data={dropdownCategoriesData as any}
                             value={categoryId}
                             placeholder="Select Category"
                             onChange={(item) => {

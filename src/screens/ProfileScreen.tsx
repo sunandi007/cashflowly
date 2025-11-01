@@ -4,20 +4,31 @@ import Typo from "@/components/Typo";
 import { colors, radius, spacingX, spacingY } from "@/constant/theme";
 import { supabase } from "@/services/supabaseClient";
 import { AccountOptionType } from "@/types/model";
-import { verticalScale } from "@/utils/styling";
+import { scale, verticalScale } from "@/utils/styling";
 import React, { useState } from "react";
 import { Image } from "expo-image";
-import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Header from "@/components/Header";
 import { accountOptions } from "@/constant/data";
 import ProfileUpdateModal from "@/components/ProfileUpdateModal";
 import { useProfile } from "@/hooks/useProfile";
+import SettingsModal from "@/components/SettingsModal";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const ProfileScreen = () => {
+  const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false);
 
   const { profile, loading, refetch, updateProfile, userEmail } = useProfile();
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
   const handleLogOut = async () => {
     await supabase.auth.signOut();
@@ -41,6 +52,11 @@ const ProfileScreen = () => {
   const handlePress = async (item: AccountOptionType) => {
     if (item.title === "Logout") {
       showLogoutAlert();
+    } else if (item.title === "Settings") {
+      setIsSettingsModalVisible(true);
+    } else if (item.title === "Edit Profile") {
+    } else if (item.title === "Kustomisasi Kategori") {
+      navigation.navigate('Category' as never);
     } else if (item.title === "Edit Profile") {
       setShowModal(true);
     }
@@ -49,79 +65,79 @@ const ProfileScreen = () => {
   return (
     <ScreenWrapper>
       {loading ? (
-      <ActivityIndicator color={colors.primary} />
-    ) : (
-      <View style={styles.container}>
-        <Header
-          title="Profile"
-          style={{ marginVertical: spacingY._10 }}
-        ></Header>
+        <ActivityIndicator color={colors.primary} />
+      ) : (
+        <View style={styles.container}>
+          <Header
+            title="Profile"
+            style={{ marginVertical: spacingY._10 }}
+          ></Header>
 
-        {/* user info */}
-        <View style={styles.userInfo}>
-          {/* avatar */}
-          <View>
-            <Image
-              source={
-                profile?.avatar_url
-                  ? { uri: profile.avatar_url }
-                  : require("../../assets/images/defaultAvatar.png")
-              }
-              style={styles.avatar}
-              contentFit="cover"
-              transition={100}
-            />
+          {/* user info */}
+          <View style={styles.userInfo}>
+            {/* avatar */}
+            <View>
+              <Image
+                source={
+                  profile?.avatar_url
+                    ? { uri: profile.avatar_url }
+                    : require("../../assets/images/defaultAvatar.png")
+                }
+                style={styles.avatar}
+                contentFit="cover"
+                transition={100}
+              />
+            </View>
+            {/* name & email */}
+            <View style={styles.nameContainer}>
+              <Typo size={24} fontWeight="600" color={colors.neutral100}>
+                {profile?.full_name}
+              </Typo>
+              <Typo size={15} color={colors.neutral400}>
+                {userEmail}
+              </Typo>
+            </View>
           </View>
-          {/* name & email */}
-          <View style={styles.nameContainer}>
-            <Typo size={24} fontWeight="600" color={colors.neutral100}>
-              {profile?.full_name}
-            </Typo>
-            <Typo size={15} color={colors.neutral400}>
-              {userEmail}
-            </Typo>
-          </View>
-        </View>
 
-        {/* account options */}
-        <View style={styles.accountOptions}>
-          {accountOptions.map((item, index) => (
-            <Animated.View
-              key={index.toString()}
-              entering={FadeInDown.delay(index * 90)
-                .springify()
-                .damping(40)}
-              style={styles.listItem}
-            >
-              <TouchableOpacity
-                style={styles.flexRow}
-                onPress={() => handlePress(item)}
+          {/* account options */}
+          <View style={styles.accountOptions}>
+            {accountOptions.map((item, index) => (
+              <Animated.View
+                key={index.toString()}
+                entering={FadeInDown.delay(index * 90)
+                  .springify()
+                  .damping(40)}
+                style={styles.listItem}
               >
-                <View
-                  style={[styles.listIcon, { backgroundColor: item.bgColor }]}
+                <TouchableOpacity
+                  style={styles.flexRow}
+                  onPress={() => handlePress(item)}
                 >
-                  <IconComponent
-                    item={{ icon: item.icon } as any}
-                    size={verticalScale(28)}
+                  <View
+                    style={[styles.listIcon, { backgroundColor: item.bgColor }]}
+                  >
+                    <IconComponent
+                      item={{ icon: item.icon } as any}
+                      size={verticalScale(28)}
+                      color={colors.neutral100}
+                    />
+                  </View>
+                  <Typo
+                    size={16}
+                    fontWeight="500"
+                    style={{ flex: 1 }}
                     color={colors.neutral100}
-                  />
-                </View>
-                <Typo
-                  size={16}
-                  fontWeight="500"
-                  style={{ flex: 1 }}
-                  color={colors.neutral100}
-                >
-                  {item.title}
-                </Typo>
-                {/* <Icons.CaretRight size={verticalScale(20)} color={colors.white} weight="bold" /> */}
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
+                  >
+                    {item.title}
+                  </Typo>
+                  {/* <Icons.CaretRight size={verticalScale(20)} color={colors.white} weight="bold" /> */}
+                </TouchableOpacity>
+              </Animated.View>
+            ))}
+          </View>
         </View>
-      </View>
-    )}
-      
+      )}
+
       <ProfileUpdateModal
         visible={showModal}
         profile={profile}
@@ -132,6 +148,12 @@ const ProfileScreen = () => {
           setShowModal(false);
           setTimeout(() => refetch(), 400);
         }}
+      />
+
+      {/* Modal Settings */}
+      <SettingsModal
+        visible={isSettingsModalVisible}
+        onClose={() => setIsSettingsModalVisible(false)}
       />
     </ScreenWrapper>
   );
@@ -192,6 +214,21 @@ const styles = StyleSheet.create({
   flexRow: {
     flexDirection: "row",
     gap: spacingX._10,
+    alignItems: "center",
+  },
+  actionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.neutral800,
+    gap: 15,
+  },
+  iconWrapper: {
+    width: scale(38),
+    height: scale(38),
+    borderRadius: 8,
+    justifyContent: "center",
     alignItems: "center",
   },
 });

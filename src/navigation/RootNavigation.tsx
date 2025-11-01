@@ -6,6 +6,7 @@ import AuthScreen from "@/screens/AuthScreen";
 import WelcomeScreen from "@/screens/WelcomeScreen";
 import DashboardScreen from "@/screens/Dashboard";
 import ProfileScreen from "@/screens/ProfileScreen";
+import CategoryListScreen from "@/screens/CategoryListScreen";
 import WalletScreen from "@/screens/WalletListScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -30,7 +31,10 @@ export default function RootNavigation() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {session ? (
-        <Stack.Screen name="Main" component={MainTabs} />
+        <>
+          <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen name="Category" component={CategoryListScreen} />
+        </>
       ) : (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />

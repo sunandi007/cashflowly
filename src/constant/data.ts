@@ -13,6 +13,11 @@ export const accountOptions: AccountOptionType[] = [
       bgColor: "#069669",
     },
     {
+      title: "Kustomisasi Kategori",
+      icon: "folder-open-outline",
+      bgColor: "#d8521dff",
+    },
+    {
       title: "Privacy Policey",
       icon: "shield-checkmark-outline",
       bgColor: colors.neutral600,
