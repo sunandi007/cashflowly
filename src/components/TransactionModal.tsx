@@ -28,6 +28,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useWallets } from "@/hooks/useWallets";
 import AddCategoryModal from "@/components/AddCategoryModal";
 import { useTransfer } from "@/hooks/useTransfer";
+import {
+  END_CONDITION_OPTIONS,
+  RECURRENCE_OPTIONS,
+} from "@/constant/recurrenceOptions";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const screenHeight = Dimensions.get("window").height;
 export default function TransactionModal({
@@ -83,6 +88,12 @@ export default function TransactionModal({
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [fromWalletId, setFromWalletId] = useState<string | null>(null);
   const [toWalletId, setToWalletId] = useState<string | null>(null);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrenceRule, setRecurrenceRule] = useState("none"); // Frekuensi ('monthly', '2_weeks', etc.)
+  const [endCondition, setEndCondition] = useState("never"); // Kondisi berhenti
+  const [endValue, setEndValue] = useState(""); // Nilai untuk 'until_date' (date) atau 'after_count' (number)
+  const [showRecurrenceDatePicker, setShowRecurrenceDatePicker] =
+    useState(false);
 
   useEffect(() => {
     if (!visible) return;
@@ -94,7 +105,10 @@ export default function TransactionModal({
       setType(initialData.type);
       setCategoryId(initialData.category_id);
       setDate(new Date(initialData.date));
-
+      setIsRecurring(initialData.is_recurring || false);
+      setRecurrenceRule(initialData.recurrence_rule || "none");
+      setEndCondition(initialData.end_condition || "never");
+      setEndValue(initialData.end_value || "");
       if (initialData.is_transfer) {
         const fromWallet =
           wallets.find((w) => w.id === initialData.source_wallet_id) ||
@@ -122,6 +136,10 @@ export default function TransactionModal({
       setDate(new Date());
       setFromWalletId(null);
       setToWalletId(null);
+      setIsRecurring(false);
+      setRecurrenceRule("none");
+      setEndCondition("never");
+      setEndValue("");
     }
   }, [initialData, visible]);
 
@@ -133,9 +151,46 @@ export default function TransactionModal({
   const handleSave = async () => {
     if (!amount) return Alert.alert("Error", "Harap isi jumlah");
 
+    // Validasi Tagihan Berulang
+    if (isRecurring && recurrenceRule === "none") {
+      return Alert.alert("Error", "Harap pilih frekuensi pengulangan.");
+    }
+
+    // 🟢 VALIDASI KRITIS
+    if (isRecurring && endCondition === "after_count") {
+      if (!endValue || Number(endValue) <= 0 || !/^\d+$/.test(endValue)) {
+        return Alert.alert(
+          "Error",
+          "Jumlah hitungan harus berupa angka positif."
+        );
+      }
+    }
+
     const numericAmount = Number(amount.replace(/\./g, ""));
     const UUID_RX =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+    const recurrencePayload = isRecurring
+      ? {
+          is_recurring: true,
+          recurrence_rule: recurrenceRule,
+          date: date.toISOString(),
+          end_condition: endCondition,
+          end_value:
+            endCondition === "until_date"
+              ? new Date(endValue).toISOString()
+              : endCondition === "after_count"
+              ? String(endValue)
+              : null,
+          transaction_count: 0,
+        }
+      : {
+          is_recurring: false,
+          recurrence_rule: null,
+          end_condition: "never",
+          end_value: null,
+          transaction_count: null,
+        };
 
     try {
       // 🟢 Handle TRANSFER
@@ -158,11 +213,6 @@ export default function TransactionModal({
         const isUUIDValid = UUID_RX.test(rawId || "");
 
         if (isEditing && initialData?.is_transfer && isUUIDValid) {
-          console.log(
-            "Transfer ID to update:",
-            initialData.id?.replace(/^transfer-/, "")
-          );
-
           // ✅ UPDATE TRANSFER
           await updateTransfer({
             transfer_id: initialData.id?.replace(/^transfer-/, ""),
@@ -191,7 +241,7 @@ export default function TransactionModal({
       if (type === "expense" && !categoryId)
         return Alert.alert("Error", "Harap pilih kategori untuk pengeluaran");
 
-      const payload = {
+      const basePayload = {
         amount: numericAmount,
         note,
         type,
@@ -201,13 +251,15 @@ export default function TransactionModal({
         wallet_id: walletId,
       };
 
+      const finalPayload = { ...basePayload, ...recurrencePayload };
+
       if (isEditing) {
         await updateTransaction.mutateAsync({
           id: initialData.id,
-          updates: payload,
+          updates: finalPayload,
         });
       } else {
-        await createTransaction.mutateAsync(payload);
+        await createTransaction.mutateAsync(finalPayload);
       }
 
       await refetchWallets();
@@ -487,6 +539,101 @@ export default function TransactionModal({
                         setCategoryId(null);
                       }}
                     />
+
+                    {/* 🟢 TOMBOL TOGGLE RECURRING */}
+                    <View style={styles.recurringToggleRow}>
+                      <Typo color={colors.white} size={16}>
+                        Atur sebagai Tagihan Berulang
+                      </Typo>
+                      <TouchableOpacity
+                        onPress={() => setIsRecurring(!isRecurring)}
+                      >
+                        <MaterialCommunityIcons
+                          name={
+                            isRecurring
+                              ? "toggle-switch"
+                              : "toggle-switch-off-outline"
+                          }
+                          size={48}
+                          color={
+                            isRecurring ? colors.primary : colors.neutral700
+                          }
+                        />
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* 🟢 2. INPUT KONTROL BERULANG (Jika recurring aktif) */}
+                    {isRecurring && (
+                      <View style={styles.recurringGroup}>
+                        {/* FIELD A: FREKUENSI ULANGI */}
+                        <Typo
+                          color={colors.neutral400}
+                          size={14}
+                          style={styles.sectionTitle}
+                        >
+                          Ulangi Setiap:
+                        </Typo>
+                        <BaseDropdown
+                          data={RECURRENCE_OPTIONS.filter(
+                            (o) => o.value !== "none"
+                          )}
+                          value={recurrenceRule}
+                          placeholder="Pilih Frekuensi"
+                          onChange={(item) => setRecurrenceRule(item.value)}
+                        />
+
+                        {/* FIELD B: KONDISI AKHIR (Dropdown) */}
+                        <Typo
+                          color={colors.neutral400}
+                          size={14}
+                          style={styles.sectionTitle}
+                        >
+                          Akhiri Pengulangan:
+                        </Typo>
+                        <BaseDropdown
+                          data={END_CONDITION_OPTIONS}
+                          value={endCondition}
+                          placeholder="Kondisi Akhir"
+                          onChange={(item) => setEndCondition(item.value)}
+                        />
+
+                        {/* ======================================================== */}
+                        {/* 🟢 FIELD C: NILAI AKHIR (Kondisional) */}
+                        {/* Tampilkan input HANYA JIKA endCondition BUKAN 'never' */}
+                        {endCondition !== "never" && (
+                          <View style={{ gap: 15, marginTop: 5 }}>
+                            {/* OPSI 1: SAMPAI TANGGAL (until_date) */}
+                            {endCondition === "until_date" && (
+                              <TouchableOpacity
+                                style={styles.dateInput}
+                                onPress={() => {
+                                  setShowRecurrenceDatePicker(true);
+                                  if (!endValue)
+                                    setEndValue(new Date().toISOString());
+                                }}
+                              >
+                                <Typo size={16} color={colors.white}>
+                                  Sampai Tanggal:{" "}
+                                  {new Date(
+                                    endValue || new Date()
+                                  ).toLocaleDateString("id-ID")}
+                                </Typo>
+                              </TouchableOpacity>
+                            )}
+
+                            {/* OPSI 2: SETELAH JUMLAH (after_count) */}
+                            {endCondition === "after_count" && (
+                              <Input
+                                placeholder="Setelah Berapa Kali Transaksi?"
+                                keyboardType="numeric"
+                                value={endValue}
+                                onChangeText={setEndValue}
+                              />
+                            )}
+                          </View>
+                        )}
+                      </View>
+                    )}
                   </View>
 
                   <View style={styles.footer}>
@@ -526,12 +673,20 @@ export default function TransactionModal({
         </KeyboardAvoidingView>
       </View>
 
-      {showDatePicker && (
+      {showRecurrenceDatePicker && (
         <DateTimePicker
-          value={date}
+          // Jika until_date, pakai endValue. Jika start_date, pakai startDate.
+          value={new Date(endValue)}
           mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={handleDateChange}
+          display="default"
+          onChange={(_e, date) => {
+            setShowRecurrenceDatePicker(false);
+            if (date) {
+              if (endCondition === "until_date") {
+                setEndValue(date.toISOString());
+              }
+            }
+          }}
         />
       )}
     </Modal>
@@ -651,16 +806,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacingX._5,
   },
-  dateInput: {
-    flexDirection: "row",
-    height: verticalScale(54),
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: colors.neutral300,
-    borderRadius: radius._17,
-    borderCurve: "continuous",
-    paddingHorizontal: spacingX._15,
-  },
+  // dateInput: {
+  //   flexDirection: "row",
+  //   height: verticalScale(54),
+  //   alignItems: "center",
+  //   borderWidth: 1,
+  //   borderColor: colors.neutral300,
+  //   borderRadius: radius._17,
+  //   borderCurve: "continuous",
+  //   paddingHorizontal: spacingX._15,
+  // },
   iosDatePicker: {},
   datePickerButton: {
     backgroundColor: colors.neutral700,
@@ -712,5 +867,38 @@ const styles = StyleSheet.create({
   dropdownIcon: {
     height: verticalScale(30),
     tintColor: colors.neutral300,
+  },
+  recurringToggleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+    marginBottom: 10,
+    backgroundColor: colors.neutral800,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+  },
+  recurringGroup: {
+    paddingTop: 10,
+    paddingBottom: 20,
+    gap: 15,
+    borderTopWidth: 1,
+    borderTopColor: colors.neutral700,
+    marginTop: 10,
+  },
+  sectionTitle: {
+    marginBottom: 5,
+    marginTop: 10,
+    fontWeight: "600",
+  },
+  dateInput: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: colors.neutral800,
+    borderRadius: 10,
+    gap: 10,
+    borderWidth: 1,
+    borderColor: colors.neutral700,
   },
 });

@@ -6,6 +6,7 @@ import TransactionList from "@/components/TransactionList";
 import TransactionModal from "@/components/TransactionModal";
 import TransactionSearchModal from "@/components/TransactionSearchModal";
 import Typo from "@/components/Typo";
+import UpcomingBillsList from "@/components/UpcomingBillsList";
 import { colors, spacingX, spacingY } from "@/constant/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -69,6 +70,9 @@ export default function DashboardScreen() {
         <View style={{ marginBottom: spacingY._20 }}>
           <HomeCard />
         </View>
+        
+        <UpcomingBillsList />
+
 
         <FlatList
           data={allTransactions}
