@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "945b83f5-f442-4d5c-8260-689243aa1c3e"
+      }
+    },
+    "owner": "sunandi"
   }
 }
