@@ -54,11 +54,12 @@ const ProfileScreen = () => {
       showLogoutAlert();
     } else if (item.title === "Settings") {
       setIsSettingsModalVisible(true);
-    } else if (item.title === "Edit Profile") {
     } else if (item.title === "Kustomisasi Kategori") {
-      navigation.navigate('Category' as never);
+      navigation.navigate("Category" as never);
     } else if (item.title === "Edit Profile") {
       setShowModal(true);
+    } else if (item.title === "Tagihan Berulang") {
+      navigation.navigate("BillsScreen" as never);
     }
   };
 

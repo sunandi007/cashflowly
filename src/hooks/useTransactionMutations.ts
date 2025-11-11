@@ -1,8 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
+import { useAuth } from "./useAuth";
 
 export function useTransactionMutations() {
   const queryClient = useQueryClient();
+  const { session } = useAuth();
+  const userId = session?.user?.id;
 
   // CREATE
   const createTransaction = useMutation({
@@ -47,7 +50,12 @@ export function useTransactionMutations() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+        queryClient.invalidateQueries({ queryKey: ["upcomingBills", userId] }),
+        queryClient.invalidateQueries({ queryKey: ["billsSummary", userId] }),
         queryClient.invalidateQueries({ queryKey: ["wallets"] });
+    },
+    onError: (err: any) => {
+      throw new Error(err.message);
     },
   });
 

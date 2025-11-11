@@ -17,7 +17,7 @@ interface RecurringBill {
     name: string;
     icon: string;
     bgColor: string;
-  }[];
+  };
 }
 
 /**
@@ -36,7 +36,7 @@ export function useUpcomingBills() {
       const { data, error } = await supabase
         .from("transactions")
         .select(
-          `id, amount, type, date, note, is_recurring, recurrence_rule, end_condition, end_value, category_id, categories(name, icon, bgColor)`
+          `id, amount, type, date, note, is_recurring, recurrence_rule, end_condition, end_value, category_id, wallet_id, categories(name, icon, bgColor)`
         )
         .eq("user_id", userId)
         .eq("is_recurring", true)
@@ -44,7 +44,7 @@ export function useUpcomingBills() {
 
       if (error) throw error;
 
-      return data as RecurringBill[];
+      return data as any;
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,

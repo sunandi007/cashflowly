@@ -12,6 +12,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActivityIndicator, View } from "react-native";
 import DashboardAnalyticsScreen from "@/screens/AnalyticsScreen";
+import BillsScreen from "@/screens/BillsScreen";
+import TransactionScreen   from "@/screens/TransactionScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -34,6 +36,8 @@ export default function RootNavigation() {
         <>
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen name="Category" component={CategoryListScreen} />
+          <Stack.Screen name="BillsScreen" component={BillsScreen} />
+          <Stack.Screen name="TransactionScreen" component={TransactionScreen} />
         </>
       ) : (
         <>

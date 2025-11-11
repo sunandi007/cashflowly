@@ -3,15 +3,15 @@ import HomeCard from "@/components/HomeCard";
 import IconComponent from "@/components/Icons";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import TransactionList from "@/components/TransactionList";
-import TransactionModal from "@/components/TransactionModal";
 import TransactionSearchModal from "@/components/TransactionSearchModal";
 import Typo from "@/components/Typo";
-import UpcomingBillsList from "@/components/UpcomingBillsList";
+import UpcomingBillsSummaryCard from "@/components/UpcomingBillsSummaryCard";
 import { colors, spacingX, spacingY } from "@/constant/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useTransactions } from "@/hooks/useTransactions";
 import { verticalScale } from "@/utils/styling";
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 
@@ -20,7 +20,7 @@ export default function DashboardScreen() {
   const userId = session?.user?.id;
   const { profile, userEmail } = useProfile();
 
-  const [showModal, setShowModal] = useState(false);
+  const navigation = useNavigation<any>();
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [editItem, setEditItem] = useState<any | null>(null);
 
@@ -28,7 +28,6 @@ export default function DashboardScreen() {
 
   const handleCloseModal = () => {
     setEditItem(null);
-    setShowModal(false);
   };
 
   const handleCloseSearchModal = () => {
@@ -38,7 +37,7 @@ export default function DashboardScreen() {
 
   const handleAddPress = () => {
     setEditItem(null); // mode tambah
-    setShowModal(true);
+    navigation.navigate("TransactionScreen", { initialData: null });
   };
 
   const handleEditPress = (item: any) => {
@@ -48,7 +47,11 @@ export default function DashboardScreen() {
       : { ...item, idToUpdate: item.id };
 
     setEditItem(payloadForModal); // mode edit
-    setShowModal(true);
+    const itemData = payloadForModal;
+    setEditItem(payloadForModal);
+    navigation.navigate("TransactionScreen", {
+      initialData: itemData,
+    } as never);
   };
 
   return (
@@ -70,9 +73,8 @@ export default function DashboardScreen() {
         <View style={{ marginBottom: spacingY._20 }}>
           <HomeCard />
         </View>
-        
-        <UpcomingBillsList />
 
+        <UpcomingBillsSummaryCard />
 
         <FlatList
           data={allTransactions}
@@ -117,12 +119,6 @@ export default function DashboardScreen() {
           />
         </Button>
       </View>
-
-      <TransactionModal
-        visible={showModal}
-        onClose={handleCloseModal}
-        initialData={editItem}
-      />
 
       <TransactionSearchModal
         visible={showSearchModal}

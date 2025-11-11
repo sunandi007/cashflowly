@@ -13,5 +13,5 @@ export const RECURRENCE_OPTIONS = [
 export const END_CONDITION_OPTIONS = [
     { label: 'Tidak Pernah', value: 'never' },
     { label: 'Sampai Tanggal', value: 'until_date' },
-    { label: 'Setelah Tanggal', value: 'after_date' },
+    { label: 'Setelah Transaksi Ke', value: 'after_count' },
 ];
