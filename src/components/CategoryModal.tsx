@@ -98,7 +98,7 @@ export default function CategoryModal({ visible, onClose, initialData }: Categor
     };
 
     return (
-        <Modal visible={visible} animationType="slide" transparent>
+        <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
             <View style={styles.overlay}>
                 <View style={styles.modal}>
                     <Header

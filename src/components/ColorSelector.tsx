@@ -36,7 +36,7 @@ export default function ColorSelector({ visible, onClose, onSelect, currentColor
     );
 
     return (
-        <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+        <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
             <SafeAreaView style={styles.container}>
                 <Header
                     title="Pilih Warna"

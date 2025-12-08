@@ -102,7 +102,7 @@ export default function ProfileUpdateModal({ visible = false, onClose, profile, 
   }
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.container}>
         <Header
           style={{

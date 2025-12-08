@@ -47,7 +47,7 @@ export default function BillConfirmationModal({ bill, visible, onClose, onConfir
     const isExpense = bill.type === 'expense';
 
     return (
-        <Modal visible={visible} animationType="slide" transparent>
+        <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
             <View style={styles.overlay}>
                 <View style={styles.modal}>
                     <Header title={`Bayar ${toTitleCase(bill.categories?.name || 'Tagihan')}`} rightIcon={

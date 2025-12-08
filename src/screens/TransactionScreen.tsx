@@ -129,10 +129,6 @@ export default function TransactionScreen() {
         setToWalletId(toWallet?.id ?? null);
       } else {
         const wallet = wallets.find((w) => w.id === initialData.wallet_id);
-        console.log("wallet:", wallet);
-        console.log("Selected wallet:", wallets);
-        console.log("Selected initialData:", initialData);
-
         setWalletId(wallet?.id || null);
         setCategoryId(initialData.category_id);
       }
@@ -252,7 +248,6 @@ export default function TransactionScreen() {
         });
       } else {
         if (matchingBill) {
-          console.log("Matching bill found:", matchingBill.categories);
           Alert.alert(
             "Deteksi Tagihan Berulang",
             `Anda memiliki tagihan "${
