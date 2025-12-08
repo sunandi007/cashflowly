@@ -13,19 +13,19 @@ interface BillPaymentPayload {
     type: 'income' | 'expense';
     categoryId: string;
     recurrenceRule: string;
-    currentDueDate: string; // Tanggal jatuh tempo saat ini
+    currentDueDate: string;
 }
 
 export function useBillPayment() {
-      const { session } = useAuth();
-      const userId = session?.user?.id;
-    
+    const { session } = useAuth();
+    const userId = session?.user?.id;
+
     const queryClient = useQueryClient();
 
     const processManualBillPayment = useMutation({
         mutationFn: async (payload: BillPaymentPayload) => {
-            
-            // 1. CREATE Transaksi Anak (Realisasi Pembayaran)
+
+            // 1. CREATE Transaksi Anak (Realisasi Pembayaran - Masuk History)
             const transactionPayload = {
                 user_id: userId,
                 amount: payload.amount,
@@ -33,34 +33,49 @@ export function useBillPayment() {
                 wallet_id: payload.walletId,
                 category_id: payload.categoryId,
                 date: new Date().toISOString(), // Dicatat hari ini
-                // Pastikan kolom recurring TIDAK ADA atau NULL (is_recurring: false)
             };
-            
+
             const { error: txError } = await supabase
                 .from('transactions')
                 .insert(transactionPayload);
 
             if (txError) throw txError;
-            
-            // 2. UPDATE Tagihan Induk (Template) ke Tanggal Jatuh Tempo Berikutnya
-            
-            // Hitung tanggal berikutnya menggunakan utilitas
+
+            // 2. UPDATE Tagihan Induk (Geser Tanggal & Tambah Hitungan)
+
+            // A. Ambil data count saat ini dulu dari DB
+            const { data: currentBill, error: fetchError } = await supabase
+                .from('transactions')
+                .select('transaction_count')
+                .eq('id', payload.billId)
+                .single();
+
+            if (fetchError) throw fetchError;
+
+            // B. Hitung logika baru
+            const currentCount = currentBill?.transaction_count || 0;
+            const newCount = currentCount + 1; // 🟢 Tambah 1
             const nextDueDate = addRecurrenceToDate(payload.currentDueDate, payload.recurrenceRule);
 
+            // C. Update ke Database (Tanggal DAN Count)
             const { error: updateError } = await supabase
                 .from('transactions')
-                .update({ date: nextDueDate.toISOString() }) // Geser tanggal jatuh tempo
+                .update({
+                    date: nextDueDate.toISOString(),
+                    transaction_count: newCount // 🟢 Simpan count baru
+                })
                 .eq('id', payload.billId);
 
             if (updateError) throw updateError;
-            
+
             return true;
         },
         onSuccess: () => {
-            // Invalidate untuk refresh Daftar Tagihan Mendatang dan Dashboard
+            // Invalidate semua query terkait
             queryClient.invalidateQueries({ queryKey: ["upcomingBills"] });
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["wallets"] });
+            queryClient.invalidateQueries({ queryKey: ["billsSummary"] });
         },
     });
 

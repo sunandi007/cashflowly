@@ -13,7 +13,8 @@ interface BillItemProps {
     item: any; 
     onPayPress: (item: any) => void;
     onDeletePress: (item: any) => void; 
-    onEditPress: (item: any) => void; 
+    onEditPress: (item: any) => void;
+    onDetailPress: (item: any) => void;
     isProcessing: boolean;
     formatCurrency: (amount: number) => string;
 }
@@ -24,7 +25,8 @@ export default function UpcomingBillItem({
     onDeletePress, 
     onEditPress, 
     isProcessing, 
-    formatCurrency 
+    formatCurrency,
+    onDetailPress
 }: BillItemProps) {
     
     const categoryName = item.categories?.name || "N/A";
@@ -45,7 +47,9 @@ export default function UpcomingBillItem({
     const isExpense = item.type === "expense";
 
     return (
-        <View style={styles.billItem}>
+        <TouchableOpacity style={styles.billItem}
+                          activeOpacity={0.7}
+                          onPress={() => onDetailPress(item)}>
             
             {/* Baris Atas: Info Kategori dan Tombol Edit/Delete */}
             <View style={styles.topRow}>
@@ -58,14 +62,14 @@ export default function UpcomingBillItem({
                     </Typo>
                 </View>
 
-                <View style={styles.editActions}>
-                    <TouchableOpacity onPress={() => onEditPress(item)} style={styles.actionButton}>
-                        <Ionicons name="create-outline" size={scale(24)} color={colors.neutral400} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => onDeletePress(item)} style={styles.actionButton}>
-                        <Ionicons name="trash-outline" size={scale(24)} color={colors.rose} />
-                    </TouchableOpacity>
-                </View>
+                {/*<View style={styles.editActions}>*/}
+                {/*    <TouchableOpacity onPress={() => onEditPress(item)} style={styles.actionButton}>*/}
+                {/*        <Ionicons name="create-outline" size={scale(24)} color={colors.neutral400} />*/}
+                {/*    </TouchableOpacity>*/}
+                {/*    <TouchableOpacity onPress={() => onDeletePress(item)} style={styles.actionButton}>*/}
+                {/*        <Ionicons name="trash-outline" size={scale(24)} color={colors.rose} />*/}
+                {/*    </TouchableOpacity>*/}
+                {/*</View>*/}
             </View>
 
             {/* Garis Pemisah */}
@@ -92,7 +96,7 @@ export default function UpcomingBillItem({
                     </Typo>
                 </TouchableOpacity>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
 

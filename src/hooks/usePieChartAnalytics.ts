@@ -2,12 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
-import { getDateRange } from "@/utils/getDateRange";
 import { getDateRangeAnalitic } from "@/utils/getDateRangeAnalitic";
-// --- TIPE DATA ---
+
 export type PieChartData = {
   name: string;
-  value: number; // Total expense amount
+  value: number;
   color: string;
 };
 
@@ -22,39 +21,26 @@ type TransactionRowWithCategory = {
   categories: CategoryDetails | null;
 };
 
-// --- HOOK PIE CHART ---
-// Menerima periode (misalnya, "month") untuk menentukan rentang data mentah
 export function usePieChartAnalytics(userId?: string, period: "weekly" | "monthly" | "yearly" | "all" = "monthly") {
   return useQuery({
     queryKey: ["analytics-pie", userId, period],
     queryFn: async () => {
       if (!userId) return [];
 
-      const { start: rangeStart, end: rangeEnd } = getDateRangeAnalitic(period, "current");
+      const { start, end } = getDateRangeAnalitic(period, "current");
 
-      // Dapatkan range untuk periode (asumsi getDateRange ada di utilitas)
-      // *Anda perlu menentukan utilitas yang bisa mendapatkan range berdasarkan "week"/"month"*
-      // Simpanan: Kita ambil data 30 hari terakhir untuk distribusi.
-      const now = new Date();
-      const start = new Date();
-      start.setDate(now.getDate() - (period === 'weekly' ? 7 : 30));
-      // const rangeStart = start.toISOString().split('T')[0];
-      // const rangeEnd = now.toISOString().split('T')[0];
-      
-      // Query dengan JOIN categories dan filter EXPENSE
       const { data: rawData, error } = await supabase
         .from("transactions")
-        .select("amount, type, categories(name, bgColor)") // Hanya select field yang dibutuhkan
+        .select("amount, type, categories(name, bgColor)")
         .eq("user_id", userId)
-        .eq("type", "expense") // Filter hanya pengeluaran
+        .eq("type", "expense")
         .is("transfer_id", null)
-        .gte("date", rangeStart)
-        .lte("date", rangeEnd);
+        .gte("date", start)
+        .lte("date", end);
 
       if (error) throw error;
       const transactions = rawData as any[];
 
-      // --- AGREGASI UNTUK PIE CHART ---
       const categoryMap = new Map<string, { value: number; color: string }>();
 
       transactions.forEach(t => {

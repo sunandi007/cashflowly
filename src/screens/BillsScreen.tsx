@@ -19,6 +19,7 @@ import { useBillPayment } from "@/hooks/useBillPayment";
 import { useWallets } from "@/hooks/useWallets";
 import BillConfirmationModal from "@/components/BillConfirmationModal";
 import { useTransactionMutations } from "@/hooks/useTransactionMutations";
+import BillDetailModal from "@/components/BillDetailModal";
 
 export default function BillsScreen() {
   const navigation = useNavigation<any>();
@@ -28,7 +29,8 @@ export default function BillsScreen() {
   const { processManualBillPayment, isProcessing } = useBillPayment();
   const { wallets } = useWallets();
 
-  const [billToPay, setBillToPay] = useState<any>(null); // Untuk mengontrol modal konfirmasi
+  const [billToPay, setBillToPay] = useState<any>(null);
+  const [selectedBill, setSelectedBill] = useState<any>(null);
 
   // --- Logic Utility ---
   const mainWallet =
@@ -42,6 +44,9 @@ export default function BillsScreen() {
     }).format(amount);
 
   // --- Handlers ---
+  const handleDetailPress = (item: any) => {
+    setSelectedBill(item);
+  };
   const handleConfirmPayment = async (updatedAmount: number) => {
     if (!billToPay || !mainWalletId) {
       Alert.alert("Error", "Data pembayaran atau Wallet Utama tidak tersedia.");
@@ -123,6 +128,7 @@ export default function BillsScreen() {
       onEditPress={handleEditPress}
       isProcessing={isProcessing}
       formatCurrency={formatCurrency}
+      onDetailPress={handleDetailPress}
     />
   );
 
@@ -160,6 +166,14 @@ export default function BillsScreen() {
         onClose={() => setBillToPay(null)}
         onConfirm={handleConfirmPayment}
         isProcessing={isProcessing}
+      />
+      {/* Modal Detail Tagihan */}
+      <BillDetailModal
+          bill={selectedBill}
+          visible={!!selectedBill}
+          onClose={() => setSelectedBill(null)}
+          onEdit={() => handleEditPress(selectedBill)}
+          onDelete={() => handleDeletePress(selectedBill)}
       />
     </View>
   );

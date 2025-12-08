@@ -1,60 +1,6 @@
-// import { useState, useEffect } from "react";
-// import { AnalyticsData } from "@/types/model";
-
-// export const useAnalytics = ({ userId, walletId, categoryId, range }: any) => {
-//   const [data, setData] = useState<AnalyticsData>({
-//     income: 0,
-//     expense: 0,
-//     balance: 0,
-//     byCategory: [],
-//     byDate: [],
-//   });
-//   const [loading, setLoading] = useState(false);
-
-//   useEffect(() => {
-//     // simulasi loading 1 detik
-//     setLoading(true);
-//     const timeout = setTimeout(() => {
-//       // 💰 data dummy income & expense total
-//       const income = 12000000;
-//       const expense = 8400000;
-
-//       // 📊 data dummy kategori (pie chart)
-//       const byCategory = [
-//         { label: "Food", value: 2500000 },
-//         { label: "Transport", value: 1000000 },
-//         { label: "Entertainment", value: 1500000 },
-//         { label: "Shopping", value: 2000000 },
-//         { label: "Health", value: 1400000 },
-//       ];
-
-//       // 📈 data dummy tanggal (line / bar chart)
-//       const byDate = [
-//         { label: "2025-10-01", income: 2000000, expense: 1200000 },
-//         { label: "2025-10-02", income: 2500000, expense: 1800000 },
-//         { label: "2025-10-03", income: 1500000, expense: 2000000 },
-//         { label: "2025-10-04", income: 3000000, expense: 1400000 },
-//         { label: "2025-10-05", income: 3000000, expense: 2000000 },
-//       ];
-
-//       setData({
-//         income,
-//         expense,
-//         balance: income - expense,
-//         byCategory,
-//         byDate,
-//       });
-//       setLoading(false);
-//     }, 800);
-
-//     return () => clearTimeout(timeout);
-//   }, [userId, walletId, categoryId, range]);
-
-//   return { data, loading };
-// };
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
+import { getDateRangeAnalitic } from "@/utils/getDateRangeAnalitic";
 
 type FilterType = "weekly" | "monthly" | "yearly";
 
@@ -66,32 +12,13 @@ type TransactionRow = {
   category_id?: string;
 };
 
-function getDateRange(filter: FilterType) {
-  const now = new Date();
-  const start = new Date();
-
-  switch (filter) {
-    case "weekly":
-      start.setDate(now.getDate() - 7);
-      break;
-    case "monthly":
-      start.setMonth(now.getMonth() - 1);
-      break;
-    case "yearly":
-      start.setFullYear(now.getFullYear() - 1);
-      break;
-  }
-
-  return { start: start.toISOString(), end: now.toISOString() };
-}
-
 export function useAnalytics(userId?: string, filter: FilterType = "weekly") {
   return useQuery({
     queryKey: ["analytics", userId, filter],
     queryFn: async () => {
       if (!userId) return [];
 
-      const { start, end } = getDateRange(filter);
+      const { start, end } = getDateRangeAnalitic(filter, 'current');
 
       const { data, error } = await supabase
         .from("transactions")
