@@ -14,6 +14,7 @@ import { ActivityIndicator, View } from "react-native";
 import DashboardAnalyticsScreen from "@/screens/AnalyticsScreen";
 import BillsScreen from "@/screens/BillsScreen";
 import TransactionScreen   from "@/screens/TransactionScreen";
+import SearchScreen from "@/screens/SearchScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -38,6 +39,11 @@ export default function RootNavigation() {
           <Stack.Screen name="Category" component={CategoryListScreen} />
           <Stack.Screen name="BillsScreen" component={BillsScreen} />
           <Stack.Screen name="TransactionScreen" component={TransactionScreen} />
+          <Stack.Screen
+              name="SearchScreen"
+              component={SearchScreen}
+              options={{ animation: 'fade_from_bottom' }} // Opsional: animasi muncul
+          />
         </>
       ) : (
         <>

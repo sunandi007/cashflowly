@@ -28,7 +28,7 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
           <Animated.Image
             entering={FadeIn.duration(1000)}
-            source={require("../../assets/images/welcome.png")}
+            source={require("../../assets/images/welcome_screen.png")}
             style={styles.welcomeImage}
             resizeMode="contain"
           />

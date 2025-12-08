@@ -3,7 +3,6 @@ import HomeCard from "@/components/HomeCard";
 import IconComponent from "@/components/Icons";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import TransactionList from "@/components/TransactionList";
-import TransactionSearchModal from "@/components/TransactionSearchModal";
 import Typo from "@/components/Typo";
 import UpcomingBillsSummaryCard from "@/components/UpcomingBillsSummaryCard";
 import { colors, spacingX, spacingY } from "@/constant/theme";
@@ -77,7 +76,7 @@ export default function DashboardScreen() {
         <UpcomingBillsSummaryCard />
 
         <FlatList
-          data={allTransactions}
+          data={allTransactions.slice(0, 5)}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
@@ -85,15 +84,11 @@ export default function DashboardScreen() {
               <Typo size={20} fontWeight={"500"} color={colors.neutral300}>
                 Recent Transaction
               </Typo>
-              <TouchableOpacity onPress={() => setShowSearchModal?.(true)}>
-                <Typo size={20} fontWeight={"400"} color={colors.neutral400}>
-                  <IconComponent
-                    item={{ icon: "search" } as any}
-                    size={verticalScale(20)}
-                    color={colors.neutral400}
-                  />{" "}
-                  Cari
-                </Typo>
+              <TouchableOpacity onPress={() => navigation.navigate("SearchScreen" as never)}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+                  <IconComponent item={{ icon: "search" } as any} size={20} color={colors.primary} />
+                  <Typo size={14} color={colors.primary}>Cari</Typo>
+                </View>
               </TouchableOpacity>
             </View>
           }
@@ -108,6 +103,11 @@ export default function DashboardScreen() {
               isLableSearch={index === 0}
             />
           )}
+          ListEmptyComponent={
+            <View style={styles.emptyList}>
+              <Typo size={16} color={colors.neutral400}>Belum ada transaksi.</Typo>
+            </View>
+          }
           contentContainerStyle={styles.scrollViewStyle}
         />
 
@@ -119,11 +119,6 @@ export default function DashboardScreen() {
           />
         </Button>
       </View>
-
-      <TransactionSearchModal
-        visible={showSearchModal}
-        onClose={handleCloseSearchModal}
-      />
     </ScreenWrapper>
   );
 }
@@ -158,4 +153,9 @@ const styles = StyleSheet.create({
     marginTop: spacingY._10,
     gap: spacingY._10,
   },
+  emptyList: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  }
 });
