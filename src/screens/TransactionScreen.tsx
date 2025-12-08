@@ -36,6 +36,7 @@ import ScreenWrapper from "@/components/ScreenWrapper"; // Untuk wrapper layar p
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpcomingBills } from "@/hooks/useUpcomingBills";
 import { useBillPayment } from "@/hooks/useBillPayment";
+import TagSelector from "@/components/TagSelector";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -73,6 +74,7 @@ export default function TransactionScreen() {
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [fromWalletId, setFromWalletId] = useState<string | null>(null);
   const [toWalletId, setToWalletId] = useState<string | null>(null);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
 
   // 🟢 States Tagihan Berulang
   const [isRecurring, setIsRecurring] = useState(false);
@@ -81,6 +83,15 @@ export default function TransactionScreen() {
   const [endValue, setEndValue] = useState("");
   const [showRecurrenceDatePicker, setShowRecurrenceDatePicker] =
     useState(false);
+
+  // Handler untuk toggle tag
+  const handleToggleTag = (id: string) => {
+    if (selectedTagIds.includes(id)) {
+      setSelectedTagIds(prev => prev.filter(tagId => tagId !== id));
+    } else {
+      setSelectedTagIds(prev => [...prev, id]);
+    }
+  };
 
   // --- Logic Utilities ---
   const dropdownCategoriesData = useMemo(() => {
@@ -234,6 +245,7 @@ export default function TransactionScreen() {
         category_id: categoryId,
         user_id: userId,
         wallet_id: walletId,
+        tag_ids: selectedTagIds,
       };
       const finalPayload = {
         ...basePayload,
@@ -611,6 +623,11 @@ export default function TransactionScreen() {
                       containerStyle={styles.descriptionInput}
                     />
                   </View>
+
+                  <TagSelector
+                      selectedTagIds={selectedTagIds}
+                      onToggleTag={handleToggleTag}
+                  />
 
                   {/* 🟢 TOMBOL TOGGLE RECURRING */}
                   {type !== "transfer" && (
