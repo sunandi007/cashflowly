@@ -13,6 +13,7 @@ import { verticalScale } from "@/utils/styling";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image } from "expo-image";
 
 export default function DashboardScreen() {
   const { session } = useAuth();
@@ -57,15 +58,27 @@ export default function DashboardScreen() {
     <ScreenWrapper>
       <View style={styles.container}>
         <View style={styles.header}>
-          <View style={{ gap: 4 }}>
-            <Typo size={16} color={colors.neutral400}>
-              Hello,
-            </Typo>
-            <Typo size={20} fontWeight={"500"} color={colors.neutral300}>
-              {profile?.full_name
-                ? profile?.full_name
-                : userEmail?.split("@")[0] || "User"}
-            </Typo>
+          <View style={styles.headerLeft}>
+            <Image
+              source={
+                profile?.avatar_url
+                  ? { uri: profile.avatar_url }
+                  : require("../../assets/images/defaultAvatar.png")
+              }
+              style={styles.avatar}
+              contentFit="cover"
+              transition={100}
+            />
+            <View style={{ gap: 4 }}>
+              <Typo size={16} color={colors.neutral400}>
+                Hello,
+              </Typo>
+              <Typo size={20} fontWeight={"500"} color={colors.neutral300}>
+                {profile?.full_name
+                  ? profile?.full_name
+                  : userEmail?.split("@")[0] || "User"}
+              </Typo>
+            </View>
           </View>
         </View>
 
@@ -134,6 +147,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: spacingY._10,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacingX._12,
+  },
+  avatar: {
+    width: verticalScale(48),
+    height: verticalScale(48),
+    borderRadius: 100,
+    backgroundColor: colors.neutral700,
   },
   searchIcon: {
     backgroundColor: colors.neutral700,

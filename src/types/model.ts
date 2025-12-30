@@ -77,6 +77,7 @@ export type AccountOptionType = {
   icon: ReactNode;
   bgColor: string;
   routeName?: string;
+  badge?: number;
 };
 
 export type ProfileType = {
@@ -132,7 +133,7 @@ export type TransactionType = {
   related_wallet_id?: string;
   from_wallet?: string;
   to_wallet?: string;
-  wallet?: {name: string};
+  wallet?: { name: string };
   // joined data
   categories?: CategoryType;
   category?: { id: string; name: string } | null;

@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     gap: spacingX._12,
     backgroundColor: colors.neutral800,
     paddingVertical: spacingY._10,
-    borderRadius: radius._17,
+    borderRadius: 16, // Per design spec (12-16px)
     paddingHorizontal: spacingY._10,
   },
   transferRow: {

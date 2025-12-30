@@ -1,30 +1,40 @@
 // src/constant/categoryOptions.ts
 
-import { colors } from "./theme"; // Asumsi colors diimpor
+import { colors } from "./theme";
 
-// Daftar Ikon Umum dari Ionicons (sesuai tema Money Tracker)
-export const ICON_OPTIONS = [
-    { label: 'Belanja', value: 'bag-handle-outline' },
-    { label: 'Makanan', value: 'fast-food-outline' },
-    { label: 'Transportasi', value: 'car-outline' },
-    { label: 'Rumah/Sewa', value: 'home-outline' },
-    { label: 'Gaji/Kas', value: 'cash-outline' },
-    { label: 'Hiburan', value: 'game-controller-outline' },
-    { label: 'Kesehatan', value: 'medkit-outline' },
-    { label: 'Edukasi', value: 'book-outline' },
-    { label: 'Investasi', value: 'analytics-outline' },
-    { label: 'Utang', value: 'wallet-outline' },
-    { label: 'Lainnya', value: 'ellipsis-horizontal-circle-outline' },
+// Icon options matching the reference design (Ionicons names)
+export const CATEGORY_ICONS = [
+    // Row 1 - Shopping, Food, Transport, Home
+    { label: "Belanja", value: "bag-handle" },
+    { label: "Makanan", value: "restaurant" },
+    { label: "Transportasi", value: "car" },
+    { label: "Rumah", value: "home" },
+
+    // Row 2 - Travel, Pets, Camera, Savings
+    { label: "Perjalanan", value: "airplane" },
+    { label: "Hewan", value: "paw" },
+    { label: "Kamera", value: "camera" },
+    { label: "Tabungan", value: "wallet" },
+
+    // Row 3 - Medical, Clothes, Work, Fitness
+    { label: "Kesehatan", value: "shield-checkmark" },
+    { label: "Pakaian", value: "shirt" },
+    { label: "Kerja", value: "briefcase" },
+    { label: "Fitness", value: "barbell" },
 ];
 
-// Palet Warna yang Konsisten
-export const COLOR_OPTIONS = [
-    { label: 'Merah Muda (Rose)', value: colors.rose },
-    { label: 'Hijau Utama (Primary)', value: colors.primary },
-    { label: 'Jingga', value: '#FFA500' },
-    { label: 'Kuning', value: '#FBBF24' },
-    { label: 'Biru Cerah', value: '#60A5FA' },
-    { label: 'Ungu', value: '#9370DB' },
-    { label: 'Biru Tua', value: '#4682B4' },
-    { label: 'Abu-abu', value: '#696969' },
+// Color palette matching the reference design - vibrant colors
+export const CATEGORY_COLORS = [
+    colors.primary,  // Green (Primary)
+    "#3B82F6",       // Blue
+    "#EF4444",       // Red
+    "#F59E0B",       // Yellow/Amber
+    "#A855F7",       // Purple
 ];
+
+// Legacy exports for backward compatibility
+export const ICON_OPTIONS = CATEGORY_ICONS;
+export const COLOR_OPTIONS = CATEGORY_COLORS.map((color) => ({
+    label: color,
+    value: color,
+}));

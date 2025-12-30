@@ -1,27 +1,39 @@
 import { scale, verticalScale } from "@/utils/styling";
 
 export const colors = {
+  // Background - Deep Navy
+  background: "#0F172A",
+  backgroundAlt: "#11224E",
+
+  // Primary/Accent - Teal Green
   primary: "#67C090",
-  primaryLight: "#0ea5e9",
-  primaryDark: "#124170",
+  primaryLight: "#8BD4AC",
+  primaryDark: "#4A9A70",
+
+  // Text colors
   text: "#fff",
-  textLight: "#e5e5e5",
-  textLighter: "#d4d4d4",
+  textLight: "#e2e8f0",
+  textLighter: "#cbd5e1",
   white: "#fff",
   black: "#000",
-  rose: "#ef4444",
-  green: "#16a34a",
+
+  // Semantic colors
+  rose: "#F43F5E",       // Expense indicator (Soft Red/Rose)
+  roseLight: "#FB7185",
+  green: "#67C090",      // Income indicator (same as primary)
+
+  // Neutral scale - Slate tones for dark mode
   neutral50: "#fafafa",
   neutral100: "#f5f5f5",
   neutral200: "#e5e5e5",
   neutral300: "#d4d4d4",
   neutral350: "#CCCCCC",
-  neutral400: "#a3a3a3",
-  neutral500: "#737373",
-  neutral600: "#525252",
-  neutral700: "#404040",
-  neutral800: "#262626",
-  neutral900: "#171717",
+  neutral400: "#94a3b8",
+  neutral500: "#64748b",
+  neutral600: "#475569",
+  neutral700: "#334155",  // Card backgrounds
+  neutral800: "#1e293b",  // Elevated surfaces
+  neutral900: "#0F172A",  // Base background (Deep Navy)
 };
 
 export const spacingX = {

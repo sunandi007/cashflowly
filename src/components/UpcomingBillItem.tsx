@@ -10,47 +10,47 @@ import { scale } from '@/utils/styling'; // Asumsi scale diimpor
 
 // Interface props (seperti yang didefinisikan di BillsScreen)
 interface BillItemProps {
-    item: any; 
+    item: any;
     onPayPress: (item: any) => void;
-    onDeletePress: (item: any) => void; 
+    onDeletePress: (item: any) => void;
     onEditPress: (item: any) => void;
     onDetailPress: (item: any) => void;
     isProcessing: boolean;
     formatCurrency: (amount: number) => string;
 }
 
-export default function UpcomingBillItem({ 
-    item, 
-    onPayPress, 
-    onDeletePress, 
-    onEditPress, 
-    isProcessing, 
+export default function UpcomingBillItem({
+    item,
+    onPayPress,
+    onDeletePress,
+    onEditPress,
+    isProcessing,
     formatCurrency,
     onDetailPress
 }: BillItemProps) {
-    
+
     const categoryName = item.categories?.name || "N/A";
     const iconName = item.categories?.icon || "alert-circle-outline";
     const dueDate = new Date(item.date);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
-    
+    today.setHours(0, 0, 0, 0);
+
     const isOverdue = dueDate < today;
-    
+
     const dateDisplay = dueDate.toLocaleDateString("id-ID", {
         day: "numeric",
         month: "short",
         year: "numeric" // Tambahkan tahun agar jelas
     });
-    
+
     const dateColor = isOverdue ? colors.rose : colors.neutral400;
     const isExpense = item.type === "expense";
 
     return (
         <TouchableOpacity style={styles.billItem}
-                          activeOpacity={0.7}
-                          onPress={() => onDetailPress(item)}>
-            
+            activeOpacity={0.7}
+            onPress={() => onDetailPress(item)}>
+
             {/* Baris Atas: Info Kategori dan Tombol Edit/Delete */}
             <View style={styles.topRow}>
                 <View style={styles.info}>
@@ -85,10 +85,10 @@ export default function UpcomingBillItem({
                         {formatCurrency(item.amount)}
                     </Typo>
                 </View>
-                
-                <TouchableOpacity 
-                    style={styles.payButton} 
-                    onPress={() => onPayPress(item)} 
+
+                <TouchableOpacity
+                    style={styles.payButton}
+                    onPress={() => onPayPress(item)}
                     disabled={isProcessing}
                 >
                     <Typo color={colors.black} size={14} fontWeight="bold">
@@ -104,7 +104,7 @@ export default function UpcomingBillItem({
 const styles = StyleSheet.create({
     billItem: {
         backgroundColor: colors.neutral800,
-        borderRadius: 12, // Sedikit lebih besar
+        borderRadius: 16, // Per design spec (12-16px)
         padding: 15,
         width: "100%",
         marginBottom: 12,
@@ -150,9 +150,9 @@ const styles = StyleSheet.create({
     },
     payButton: {
         backgroundColor: colors.primary,
-        paddingHorizontal: 20, // Tombol lebih besar
+        paddingHorizontal: 20,
         paddingVertical: 10,
-        borderRadius: 8,
+        borderRadius: 12, // Per design spec
         marginLeft: 10,
     },
 });

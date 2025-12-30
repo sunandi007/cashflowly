@@ -7,21 +7,27 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Dimensions, // Import untuk mendapatkan tinggi layar
+  Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useCategoryMutations } from "@/hooks/useCategories";
 import { useAuth } from "@/hooks/useAuth";
-import { colors, spacingX } from "@/constant/theme";
-import Header from "./Header";
+import { colors, spacingX, radius } from "@/constant/theme";
 import Typo from "./Typo";
-import BaseDropdown from "./Dropdown";
-import { COLOR_OPTIONS, ICON_OPTIONS } from "@/constant/categoryOptions";
-import IconSelector from "./IconSelector";
-import ColorSelector from "./ColorSelector";
+import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/constant/categoryOptions";
 import { Ionicons } from "@expo/vector-icons";
+import { scale, verticalScale } from "@/utils/styling";
 
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const screenHeight = Dimensions.get("window").height;
+// Number of columns for icon grid
+const ICON_COLUMNS = 4;
+const ICON_ITEM_SIZE = (screenWidth - spacingX._20 * 2 - 12 * (ICON_COLUMNS - 1)) / ICON_COLUMNS;
+
+// Color circle size
+const COLOR_CIRCLE_SIZE = scale(52);
 
 export default function AddCategoryModal({
   visible,
@@ -29,31 +35,27 @@ export default function AddCategoryModal({
   initialData,
 }: any) {
   const isEditing = !!initialData;
-  const title = isEditing ? "Edit Kategori" : "Tambah Kategori";
+  const title = isEditing ? "Edit Category" : "New Category";
 
   const [name, setName] = useState(initialData?.name || "");
   const [type, setType] = useState<"expense" | "income">(
     initialData?.type || "expense"
   );
-  const [icon, setIcon] = useState(initialData?.icon || "💡");
-  const [bgColor, setBgColor] = useState(initialData?.bgColor || "#FBBF24");
-  const [isIconSelectorVisible, setIsIconSelectorVisible] = useState(false);
-  const [isColorSelectorVisible, setIsColorSelectorVisible] = useState(false);
+  const [icon, setIcon] = useState(initialData?.icon || CATEGORY_ICONS[0].value);
+  const [bgColor, setBgColor] = useState(initialData?.bgColor || CATEGORY_COLORS[0]);
 
   const { session } = useAuth();
-  const userId = session?.user?.id; // Asumsi: Nama hook di-rename dari useCategoryMutations ke useCategories
+  const userId = session?.user?.id;
   const { updateCategory, isUpdating, addCategory, isCreating } =
     useCategoryMutations(userId);
 
   const handleSave = async () => {
     const isEditing = !!initialData;
 
-    // 1. Validasi
     if (!name.trim()) {
       Alert.alert("Error", "Nama kategori tidak boleh kosong");
       return;
     }
-    // Tambahkan validasi untuk ikon dan warna (penting untuk skema Anda)
     if (!icon || !bgColor) {
       Alert.alert("Error", "Ikon dan Warna harus dipilih.");
       return;
@@ -63,258 +65,375 @@ export default function AddCategoryModal({
 
     try {
       if (isEditing && initialData) {
-        // 🟢 MODE EDIT: Panggil updateCategory
         await updateCategory({
           id: initialData.id,
           updates: payload,
         });
         Alert.alert("Sukses", "Kategori berhasil diperbarui.");
       } else {
-        // 🟡 MODE ADD: Panggil addCategory (atau createCategory)
         await addCategory(payload);
         Alert.alert("Sukses", "Kategori baru berhasil ditambahkan.");
       }
 
-      // 2. Reset State dan Tutup Modal
       setName("");
-      setIcon("💡");
-      setBgColor("#FBBF24");
+      setIcon(CATEGORY_ICONS[0].value);
+      setBgColor(CATEGORY_COLORS[0]);
       onClose();
     } catch (err: any) {
-      // Asumsi: Error handler sudah mendeteksi jika Anda menggunakan addCategory atau createCategory
       Alert.alert("Gagal Menyimpan", err.message);
     }
   };
 
+  const handleClose = () => {
+    setName("");
+    setIcon(CATEGORY_ICONS[0].value);
+    setBgColor(CATEGORY_COLORS[0]);
+    onClose();
+  };
+
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <View style={styles.modal}>
-          <View style={styles.handleBar} />
-          <Header
-            title={title}
-            rightIcon={
-              <TouchableOpacity onPress={onClose}>
-                <Text style={{ color: colors.neutral400, fontSize: 24}}>
-                  ✕
-                </Text>
-              </TouchableOpacity>
-            }
-          />
+    <Modal
+      visible={visible}
+      transparent={false}
+      animationType="slide"
+      onRequestClose={handleClose}
+      statusBarTranslucent
+    >
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+            <Ionicons name="close" size={scale(24)} color={colors.white} />
+          </TouchableOpacity>
+          <Typo size={18} fontWeight="700" color={colors.white}>
+            {title}
+          </Typo>
+          <View style={styles.closeButton} />
+        </View>
+
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Preview Section */}
+          <View style={styles.previewSection}>
+            <View style={[styles.previewCircle, { backgroundColor: bgColor }]}>
+              <Ionicons
+                name={icon as any}
+                size={scale(48)}
+                color={colors.neutral900}
+              />
+              {/* Edit badge */}
+              <View style={styles.editBadge}>
+                <Ionicons name="pencil" size={scale(12)} color={colors.white} />
+              </View>
+            </View>
+            <Typo
+              size={14}
+              color={colors.neutral400}
+              style={styles.previewLabel}
+            >
+              Preview
+            </Typo>
+          </View>
+
+          {/* Category Name Input */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Category Name"
+              placeholderTextColor={colors.neutral500}
+              value={name}
+              onChangeText={setName}
+              style={styles.input}
+            />
+          </View>
+
+          {/* Type Selector (only when adding new) */}
           {!isEditing && (
-            <View style={styles.typeRow}>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  type === "expense" && styles.typeActiveExpense,
-                ]}
-                onPress={() => setType("expense")}
-              >
-                <Text
+            <View style={styles.typeSection}>
+              <Typo size={15} fontWeight="600" color={colors.white} style={styles.sectionLabel}>
+                Category Type
+              </Typo>
+              <View style={styles.typeRow}>
+                <TouchableOpacity
                   style={[
-                    styles.typeText,
-                    type === "expense" && styles.activeExpenseText,
+                    styles.typeButton,
+                    type === "expense" && styles.typeActiveExpense,
                   ]}
+                  onPress={() => setType("expense")}
+                  activeOpacity={0.7}
                 >
-                  Pengeluaran
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  type === "income" && styles.typeActiveIncome,
-                ]}
-                onPress={() => setType("income")}
-              >
-                <Text
+                  <Ionicons
+                    name="arrow-down-circle"
+                    size={scale(18)}
+                    color={type === "expense" ? colors.rose : colors.neutral400}
+                  />
+                  <Typo
+                    size={14}
+                    fontWeight={type === "expense" ? "700" : "500"}
+                    color={type === "expense" ? colors.rose : colors.neutral400}
+                  >
+                    Expense
+                  </Typo>
+                </TouchableOpacity>
+                <TouchableOpacity
                   style={[
-                    styles.typeText,
-                    type === "income" && styles.activeIncomeText,
+                    styles.typeButton,
+                    type === "income" && styles.typeActiveIncome,
                   ]}
+                  onPress={() => setType("income")}
+                  activeOpacity={0.7}
                 >
-                  Pemasukan
-                </Text>
-              </TouchableOpacity>
+                  <Ionicons
+                    name="arrow-up-circle"
+                    size={scale(18)}
+                    color={type === "income" ? colors.primary : colors.neutral400}
+                  />
+                  <Typo
+                    size={14}
+                    fontWeight={type === "income" ? "700" : "500"}
+                    color={type === "income" ? colors.primary : colors.neutral400}
+                  >
+                    Income
+                  </Typo>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
 
-          <TextInput
-            placeholder="Nama kategori"
-            placeholderTextColor={colors.neutral400}
-            value={name}
-            onChangeText={setName}
-            style={styles.input}
-          />
-          {/* 🟢 TOMBOL PEMILIH IKON (Mengganti Dropdown) */}
+          {/* Icon Selection */}
+          <View style={styles.sectionContainer}>
+            <Typo size={15} fontWeight="600" color={colors.white} style={styles.sectionLabel}>
+              Select Icon
+            </Typo>
+            <View style={styles.iconGrid}>
+              {CATEGORY_ICONS.map((item) => (
+                <TouchableOpacity
+                  key={item.value}
+                  style={[
+                    styles.iconItem,
+                    icon === item.value && styles.iconItemActive,
+                  ]}
+                  onPress={() => setIcon(item.value)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name={item.value as any}
+                    size={scale(24)}
+                    color={icon === item.value ? bgColor : colors.neutral300}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Color Selection */}
+          <View style={styles.sectionContainer}>
+            <Typo size={15} fontWeight="600" color={colors.white} style={styles.sectionLabel}>
+              Select Color
+            </Typo>
+            <View style={styles.colorRow}>
+              {CATEGORY_COLORS.map((colorValue) => (
+                <TouchableOpacity
+                  key={colorValue}
+                  style={[
+                    styles.colorItem,
+                    { backgroundColor: colorValue },
+                    bgColor === colorValue && styles.colorItemActive,
+                  ]}
+                  onPress={() => setBgColor(colorValue)}
+                  activeOpacity={0.7}
+                >
+                  {bgColor === colorValue && (
+                    <Ionicons
+                      name="checkmark"
+                      size={scale(22)}
+                      color={colors.neutral900}
+                    />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Save Button */}
           <TouchableOpacity
-            style={styles.selectorButton}
-            onPress={() => setIsIconSelectorVisible(true)}
+            style={styles.saveButton}
+            onPress={handleSave}
+            activeOpacity={0.8}
+            disabled={isCreating || isUpdating}
           >
-            <Ionicons
-              name={icon || "help-circle-outline"}
-              size={24}
-              color={colors.white}
-            />
-            <Typo color={colors.white} size={16}>
-              Pilih Ikon
+            <Typo size={16} fontWeight="700" color={colors.neutral900}>
+              {isCreating || isUpdating ? "Saving..." : "Save Category"}
             </Typo>
           </TouchableOpacity>
-
-          {/* 🟢 TOMBOL PEMILIH WARNA (Mengganti Dropdown) */}
-          <TouchableOpacity
-            style={styles.selectorButton}
-            onPress={() => setIsColorSelectorVisible(true)}
-          >
-            <View style={[styles.colorSwatch, { backgroundColor: bgColor }]} />
-            <Typo color={colors.white} size={16}>
-              Pilih Warna
-            </Typo>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveText}>Simpan</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={onClose} style={styles.cancel}>
-            <Text style={styles.cancelText}>Batal</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <IconSelector
-        visible={isIconSelectorVisible}
-        onSelect={(selectedIcon) => {
-          setIcon(selectedIcon);
-          setIsIconSelectorVisible(false);
-        }}
-        onClose={() => setIsIconSelectorVisible(false)}
-        currentIcon={icon}
-      />
-      <ColorSelector
-        visible={isColorSelectorVisible}
-        onSelect={(selectedColor) => {
-          setBgColor(selectedColor);
-          setIsColorSelectorVisible(false);
-        }}
-        onClose={() => setIsColorSelectorVisible(false)}
-        currentColor={bgColor}
-      />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  container: {
     flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modal: {
     backgroundColor: colors.neutral900,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 20,
-    width: "100%",
-    // maxHeight: screenHeight * 0.8, // Dihapus karena tidak ada Dimensi di import
   },
-  handleBar: {
-    width: 40,
-    height: 5,
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacingX._15,
+    paddingTop: verticalScale(50),
+    paddingBottom: verticalScale(15),
+  },
+  closeButton: {
+    width: scale(40),
+    height: scale(40),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: spacingX._20,
+    paddingBottom: verticalScale(40),
+  },
+
+  // Preview Section
+  previewSection: {
+    alignItems: "center",
+    marginTop: verticalScale(10),
+    marginBottom: verticalScale(30),
+  },
+  previewCircle: {
+    width: scale(120),
+    height: scale(120),
+    borderRadius: scale(60),
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  editBadge: {
+    position: "absolute",
+    bottom: scale(5),
+    right: scale(5),
+    width: scale(28),
+    height: scale(28),
+    borderRadius: scale(14),
     backgroundColor: colors.neutral700,
-    borderRadius: 2.5,
-    alignSelf: "center",
-    marginBottom: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: colors.neutral900,
+  },
+  previewLabel: {
+    marginTop: verticalScale(10),
   },
 
-  // --- Perbaikan Input ---
+  // Input
+  inputContainer: {
+    marginBottom: verticalScale(24),
+  },
   input: {
-    borderWidth: 1,
-    borderColor: colors.neutral700, // Warna border lebih gelap
-    backgroundColor: colors.neutral800, // Background input
+    backgroundColor: colors.neutral800,
     color: colors.white,
-    borderRadius: 10,
-    padding: 15, // Padding lebih besar
-    marginBottom: 16,
-    fontSize: 16,
+    borderRadius: radius._15,
+    paddingHorizontal: spacingX._20,
+    paddingVertical: verticalScale(16),
+    fontSize: scale(16),
+    borderWidth: 1,
+    borderColor: colors.neutral700,
   },
 
-  // --- Perbaikan Tab/Type Button ---
+  // Type Section
+  typeSection: {
+    marginBottom: verticalScale(24),
+  },
   typeRow: {
     flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 16,
-    gap: 10, // Menambahkan gap antar tombol
+    gap: scale(12),
   },
   typeButton: {
     flex: 1,
+    flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 5, // Padding vertikal lebih besar
-    borderRadius: 10,
-    maxWidth: 150,
-    backgroundColor: colors.neutral800, // Warna pasif: netral
-    borderWidth: 2, // Tambahkan border
-    borderColor: colors.neutral800, // Default border sama dengan background
+    justifyContent: "center",
+    gap: scale(8),
+    paddingVertical: verticalScale(14),
+    borderRadius: radius._12,
+    backgroundColor: colors.neutral800,
+    borderWidth: 1.5,
+    borderColor: colors.neutral700,
   },
-
-  // Warna AKTIF (Expense: Rose, Income: Primary/Green)
   typeActiveExpense: {
-    backgroundColor: colors.rose + "30", // Background transparan
+    backgroundColor: `${colors.rose}15`,
     borderColor: colors.rose,
   },
   typeActiveIncome: {
-    backgroundColor: colors.primary + "30",
+    backgroundColor: `${colors.primary}15`,
     borderColor: colors.primary,
   },
 
-  // Warna Teks
-  typeText: {
-    color: colors.neutral400, // Warna teks pasif
-    fontWeight: "500",
+  // Section Container
+  sectionContainer: {
+    marginBottom: verticalScale(24),
   },
-  activeExpenseText: {
-    color: colors.rose,
-    fontWeight: "bold",
-  },
-  activeIncomeText: {
-    color: colors.primary,
-    fontWeight: "bold",
+  sectionLabel: {
+    marginBottom: verticalScale(14),
   },
 
-  // --- Perbaikan Save/Cancel Button ---
-  saveButton: {
-    backgroundColor: colors.primary, // Warna Primary Anda (Hijau)
-    padding: 14,
-    borderRadius: 15,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  saveText: {
-    color: colors.black,
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  cancel: {
-    alignItems: "center",
-    marginTop: 15,
-  },
-  cancelText: {
-    color: colors.neutral400,
-    fontWeight: "600",
-  },
-
-  selectorButton: {
+  // Icon Grid
+  iconGrid: {
     flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: colors.neutral700,
-    borderRadius: 10,
-    marginBottom: 16,
-    gap: 10,
+    flexWrap: "wrap",
+    gap: scale(12),
   },
-  colorSwatch: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.neutral600,
+  iconItem: {
+    width: ICON_ITEM_SIZE,
+    height: ICON_ITEM_SIZE,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius._15,
+    backgroundColor: colors.neutral800,
+    borderWidth: 1.5,
+    borderColor: colors.neutral700,
+  },
+  iconItemActive: {
+    borderColor: colors.primary,
+    backgroundColor: `${colors.primary}15`,
+  },
+
+  // Color Row
+  colorRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: scale(12),
+  },
+  colorItem: {
+    width: COLOR_CIRCLE_SIZE,
+    height: COLOR_CIRCLE_SIZE,
+    borderRadius: COLOR_CIRCLE_SIZE / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 3,
+    borderColor: "transparent",
+  },
+  colorItemActive: {
+    borderColor: colors.white,
+  },
+
+  // Save Button
+  saveButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: verticalScale(18),
+    borderRadius: radius._15,
+    alignItems: "center",
+    marginTop: verticalScale(12),
   },
 });

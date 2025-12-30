@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import {View, Alert, Pressable, StyleSheet, TouchableOpacity} from "react-native";
+import { View, Alert, Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types/navigation";
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "@/services/supabaseClient";
-import {colors, radius, spacingX, spacingY} from "@/constant/theme";
+import { colors, radius, spacingX, spacingY } from "@/constant/theme";
 import { verticalScale } from "@/utils/styling";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -15,8 +15,8 @@ import Input from "@/components/Input";
 import Typo from "@/components/Typo";
 import { useWallets } from "@/hooks/useWallets";
 import { useQueryClient } from "@tanstack/react-query";
-import {Ionicons} from "@expo/vector-icons";
-import {useAuth} from "@/hooks/useAuth";
+import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "@/hooks/useAuth";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type AuthMode = "login" | "register";
@@ -94,19 +94,19 @@ export default function AuthScreen() {
           <Input placeholder="Enter your Email" onChangeText={setEmail} />
           <View style={styles.passwordContainer}>
             <Input
-                placeholder="Enter your Password"
-                // Jika visible true, secureTextEntry false (teks terlihat), dan sebaliknya
-                secureTextEntry={!isPasswordVisible}
-                onChangeText={setPassword}
+              placeholder="Enter your Password"
+              // Jika visible true, secureTextEntry false (teks terlihat), dan sebaliknya
+              secureTextEntry={!isPasswordVisible}
+              onChangeText={setPassword}
             />
             <TouchableOpacity
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                style={styles.eyeIcon}
+              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+              style={styles.eyeIcon}
             >
               <Ionicons
-                  name={isPasswordVisible ? "eye" : "eye-off"}
-                  size={24}
-                  color={colors.textLight}
+                name={isPasswordVisible ? "eye" : "eye-off"}
+                size={24}
+                color={colors.textLight}
               />
             </TouchableOpacity>
           </View>
@@ -128,11 +128,11 @@ export default function AuthScreen() {
           </View>
 
           <TouchableOpacity
-              style={styles.googleButton}
-              onPress={handleGoogleLogin}
-              disabled={loading} // Nonaktifkan jika sedang loading
+            style={styles.googleButton}
+            onPress={handleGoogleLogin}
+            disabled={loading} // Nonaktifkan jika sedang loading
           >
-            <Ionicons name="logo-google" size={24} color={colors.neutral900} />
+            <Ionicons name="logo-google" size={24} color={colors.white} />
             <Typo style={styles.googleButtonText} fontWeight="600">
               Lanjutkan dengan Google
             </Typo>
@@ -196,20 +196,22 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: colors.neutral700,
+    backgroundColor: colors.neutral600,
   },
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.white, // Latar belakang putih
+    backgroundColor: 'transparent',  // Outline style
+    borderWidth: 1,
+    borderColor: colors.neutral400,
     paddingVertical: spacingY._15,
-    borderRadius: radius._15,
+    borderRadius: 16,  // Per design spec
     marginTop: spacingY._20,
     gap: spacingX._10,
   },
   googleButtonText: {
-    color: colors.neutral900, // Teks gelap
+    color: colors.white,  // White text for dark mode
     fontSize: 16,
   }
 });
