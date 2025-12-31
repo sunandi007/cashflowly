@@ -9,6 +9,7 @@ export const colors = {
   primary: "#67C090",
   primaryLight: "#8BD4AC",
   primaryDark: "#4A9A70",
+  accentGreen: "#05C77E", // Vibrant green for Pay button
 
   // Text colors
   text: "#fff",

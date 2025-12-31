@@ -1,14 +1,14 @@
-// src/components/UpcomingBillItem.tsx (Layout Diperbaiki)
+// src/components/UpcomingBillItem.tsx
 
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Typo from './Typo';
-import { colors, spacingX, spacingY } from '@/constant/theme'; // Tambahkan spacingY
+import { colors, spacingX, spacingY, radius } from '@/constant/theme';
 import { toTitleCase } from '@/utils/text';
-import { scale } from '@/utils/styling'; // Asumsi scale diimpor
+import { scale, verticalScale } from '@/utils/styling';
+import { format } from 'date-fns';
 
-// Interface props (seperti yang didefinisikan di BillsScreen)
 interface BillItemProps {
     item: any;
     onPayPress: (item: any) => void;
@@ -29,130 +29,116 @@ export default function UpcomingBillItem({
     onDetailPress
 }: BillItemProps) {
 
-    const categoryName = item.categories?.name || "N/A";
-    const iconName = item.categories?.icon || "alert-circle-outline";
+    const categoryName = item.categories?.name || item.note || "Bill";
+    const iconName = item.categories?.icon || "receipt-outline";
     const dueDate = new Date(item.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const isOverdue = dueDate < today;
 
-    const dateDisplay = dueDate.toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-        year: "numeric" // Tambahkan tahun agar jelas
-    });
+    // Format date like "Due Oct 1st"
+    const formatDueDate = (date: Date): string => {
+        try {
+            const day = date.getDate();
+            const suffix = getDaySuffix(day);
+            const month = format(date, 'MMM');
+            return `Due ${month} ${day}${suffix}`;
+        } catch {
+            return "Due soon";
+        }
+    };
 
-    const dateColor = isOverdue ? colors.rose : colors.neutral400;
-    const isExpense = item.type === "expense";
+    const getDaySuffix = (day: number): string => {
+        if (day >= 11 && day <= 13) return 'th';
+        switch (day % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+        }
+    };
+
+    // Format amount in USD
+    const formatUSD = (amount: number): string => {
+        return `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
+    const dateDisplay = formatDueDate(dueDate);
 
     return (
-        <TouchableOpacity style={styles.billItem}
+        <TouchableOpacity
+            style={styles.billItem}
             activeOpacity={0.7}
-            onPress={() => onDetailPress(item)}>
-
-            {/* Baris Atas: Info Kategori dan Tombol Edit/Delete */}
-            <View style={styles.topRow}>
-                <View style={styles.info}>
-                    <View style={[styles.iconWrapper, { backgroundColor: item.categories?.bgColor || colors.neutral700 }]}>
-                        <Ionicons name={iconName} size={scale(20)} color={colors.white} />
-                    </View>
-                    <Typo color={colors.white} fontWeight="600" size={16}>
-                        {toTitleCase(categoryName)}
-                    </Typo>
-                </View>
-
-                {/*<View style={styles.editActions}>*/}
-                {/*    <TouchableOpacity onPress={() => onEditPress(item)} style={styles.actionButton}>*/}
-                {/*        <Ionicons name="create-outline" size={scale(24)} color={colors.neutral400} />*/}
-                {/*    </TouchableOpacity>*/}
-                {/*    <TouchableOpacity onPress={() => onDeletePress(item)} style={styles.actionButton}>*/}
-                {/*        <Ionicons name="trash-outline" size={scale(24)} color={colors.rose} />*/}
-                {/*    </TouchableOpacity>*/}
-                {/*</View>*/}
+            onPress={() => onDetailPress(item)}
+        >
+            {/* Left: Icon */}
+            <View style={[styles.iconWrapper, { backgroundColor: item.categories?.bgColor || colors.neutral700 }]}>
+                <Ionicons name={iconName as any} size={scale(22)} color={colors.white} />
             </View>
 
-            {/* Garis Pemisah */}
-            <View style={styles.divider} />
-
-            {/* Baris Bawah: Info Tanggal dan Tombol Bayar */}
-            <View style={styles.bottomRow}>
-                <View style={styles.textWrapper}>
-                    <Typo color={dateColor} size={13} fontWeight="500">
-                        {isOverdue ? "JATUH TEMPO" : "Jatuh Tempo:"} {dateDisplay}
-                    </Typo>
-                    <Typo color={isExpense ? colors.rose : colors.primary} fontWeight="700" size={18}>
-                        {formatCurrency(item.amount)}
-                    </Typo>
-                </View>
-
-                <TouchableOpacity
-                    style={styles.payButton}
-                    onPress={() => onPayPress(item)}
-                    disabled={isProcessing}
-                >
-                    <Typo color={colors.black} size={14} fontWeight="bold">
-                        Bayar
-                    </Typo>
-                </TouchableOpacity>
+            {/* Middle: Info */}
+            <View style={styles.infoSection}>
+                <Text style={styles.billName}>{toTitleCase(categoryName)}</Text>
+                <Text style={styles.billSubtitle}>
+                    {dateDisplay} • {formatUSD(item.amount)}
+                </Text>
             </View>
+
+            {/* Right: Pay Button */}
+            <TouchableOpacity
+                style={styles.payButton}
+                onPress={() => onPayPress(item)}
+                disabled={isProcessing}
+                activeOpacity={0.7}
+            >
+                <Text style={styles.payButtonText}>Pay</Text>
+            </TouchableOpacity>
         </TouchableOpacity>
     );
 }
 
-// STYLES BARU UNTUK LAYOUT DUA BARIS
 const styles = StyleSheet.create({
     billItem: {
-        backgroundColor: colors.neutral800,
-        borderRadius: 16, // Per design spec (12-16px)
-        padding: 15,
-        width: "100%",
-        marginBottom: 12,
-    },
-    topRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-    },
-    info: {
-        flexDirection: "row",
-        alignItems: "center",
-        flex: 1, // Ambil sisa ruang
+        backgroundColor: colors.neutral800,
+        borderRadius: scale(16),
+        padding: scale(16),
+        marginBottom: verticalScale(12),
     },
     iconWrapper: {
-        width: scale(40),
-        height: scale(40),
-        borderRadius: 20,
+        width: scale(50),
+        height: scale(50),
+        borderRadius: scale(25),
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 12,
+        marginRight: scale(14),
     },
-    editActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    infoSection: {
+        flex: 1,
+        gap: verticalScale(4),
     },
-    actionButton: {
-        padding: 5,
-        marginLeft: 10,
+    billName: {
+        fontSize: scale(16),
+        fontWeight: '600',
+        color: colors.white,
     },
-    divider: {
-        height: 1,
-        backgroundColor: colors.neutral700,
-        marginVertical: 12,
-    },
-    bottomRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    textWrapper: {
-        flexDirection: 'column',
+    billSubtitle: {
+        fontSize: scale(13),
+        color: colors.neutral400,
     },
     payButton: {
-        backgroundColor: colors.primary,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 12, // Per design spec
-        marginLeft: 10,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderColor: colors.primary,
+        paddingHorizontal: scale(24),
+        paddingVertical: verticalScale(10),
+        borderRadius: scale(20),
+    },
+    payButtonText: {
+        fontSize: scale(14),
+        fontWeight: '600',
+        color: colors.primary,
     },
 });

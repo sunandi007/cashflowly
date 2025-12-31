@@ -1,30 +1,27 @@
-import { colors, spacingX, spacingY } from "@/constant/theme";
+import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import { scale, verticalScale } from "@/utils/styling";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
-import { ImageBackground, StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import Typo from "./Typo";
 import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
-// Import hook untuk mengambil data dompet
-import { useWallets } from "@/hooks/useWallets"; 
+import { useWallets } from "@/hooks/useWallets";
 
 const HomeCard = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;
 
   // 1. Ambil data WALLET untuk Total Balance
-  // Catatan: Asumsikan useWallets mengambil semua dompet pengguna.
-  const {  wallets } = useWallets();
+  const { wallets } = useWallets();
 
   // 2. Ambil data TRANSAKSI untuk Summary Income/Expense (periode saat ini)
   const { data: transactions = [], isLoading: isLoadingTransactions } =
-    useTransactions(userId /*, period*/);
+    useTransactions(userId);
 
   // HITUNG TOTAL BALANCE dari SEMUA DOMPET
   const totalBalance = useMemo(() => {
     if (wallets.length === 0) return 0;
-    // Menjumlahkan kolom 'balance' dari semua dompet
     return wallets.reduce((sum, wallet) => sum + (Number(wallet.balance) || 0), 0);
   }, [wallets]);
 
@@ -32,7 +29,6 @@ const HomeCard = () => {
   const { income, expense } = useMemo(() => {
     if (!transactions.length) return { income: 0, expense: 0 };
 
-    // Gunakan transfer_id untuk MENGABAIKAN transaksi hasil transfer
     const normalTx = transactions.filter(
       (t: any) => !t.transfer_id && t.type !== 'transfer'
     );
@@ -49,135 +45,162 @@ const HomeCard = () => {
   }, [transactions]);
 
   const isLoading = isLoadingTransactions;
-    
+
   if (isLoading) {
-      // Anda bisa mengganti ini dengan placeholder atau Skeleton UI
-      return (
-          <View style={[styles.bgImage, styles.loadingPlaceholder]}>
-              <Typo color={colors.neutral800}>Loading data...</Typo>
-          </View>
-      );
+    return (
+      <View style={[styles.card, styles.loadingPlaceholder]}>
+        <Typo color={colors.neutral500}>Loading data...</Typo>
+      </View>
+    );
   }
 
   // Fungsi utilitas untuk memformat mata uang
-  const formatCurrency = (amount: number) => {
-    return Number(amount).toLocaleString("id-ID", {
+  const formatCurrency = (amount: number, showSign = false) => {
+    const formatted = Number(Math.abs(amount)).toLocaleString("en-US", {
       style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0,
-    }).replace("Rp", "Rp "); // Menambahkan spasi setelah Rp
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    if (showSign && amount > 0) {
+      return `+${formatted}`;
+    }
+    if (showSign && amount < 0) {
+      return `-${formatted.replace("-", "")}`;
+    }
+    return formatted;
+  };
+
+  const formatCompact = (amount: number) => {
+    if (amount >= 1000000) {
+      return `$${(amount / 1000000).toFixed(1)}M`;
+    }
+    if (amount >= 1000) {
+      return `$${(amount / 1000).toFixed(1)}K`;
+    }
+    return `$${amount.toFixed(0)}`;
   };
 
   return (
-    <ImageBackground
-      source={require("../../assets/images/card.png")}
-      resizeMode="stretch"
-      style={styles.bgImage}
-    >
-      <View style={styles.container}>
+    <View style={styles.card}>
+      {/* Top Section */}
+      <View style={styles.topSection}>
         <View>
-          <View style={styles.totalBalanceRow}>
-            <Typo size={17} color={colors.neutral800} fontWeight={"500"}>
-              Total Balance
-            </Typo>
-            <Ionicons
-              name="ellipsis-horizontal"
-              size={scale(20)}
-              color={colors.neutral400}
-            />
-          </View>
-          <Typo size={30} fontWeight={"bold"} color={colors.black}>
-            {formatCurrency(totalBalance)} {/* Menggunakan totalBalance */}
+          <Typo size={14} color={colors.neutral400} style={styles.balanceLabel}>
+            Total Balance
+          </Typo>
+          <Typo size={32} fontWeight="bold" color={colors.white}>
+            ${totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
           </Typo>
         </View>
 
-        {/* total income and expense */}
-        <View style={styles.stats}>
-          {/* income */}
-          <View style={{ gap: verticalScale(5) }}>
-            <View style={styles.incomeExpense}>
-              <View style={styles.statsIcon}>
-                <Ionicons
-                  name="arrow-down"
-                  size={scale(20)}
-                  color={colors.black}
-                />
-              </View>
-              <Typo size={16} fontWeight={"500"} color={colors.neutral700}>
-                Income
-              </Typo>
-            </View>
-            <View style={{ alignSelf: "center" }}>
-              <Typo size={17} fontWeight={"600"} color={colors.green}>
-                {formatCurrency(income)} {/* Menggunakan income yang dihitung */}
-              </Typo>
-            </View>
-          </View>
+        {/* Menu dots */}
+        <TouchableOpacity style={styles.menuButton}>
+          <Ionicons
+            name="ellipsis-horizontal"
+            size={scale(20)}
+            color={colors.neutral400}
+          />
+        </TouchableOpacity>
+      </View>
 
-          {/* expense */}
-          <View style={{ gap: verticalScale(5) }}>
-            <View style={styles.incomeExpense}>
-              <View style={styles.statsIcon}>
-                <Ionicons
-                  name="arrow-up"
-                  size={scale(20)}
-                  color={colors.black}
-                />
-              </View>
-              <Typo size={16} fontWeight={"500"} color={colors.neutral700}>
-                Expense
-              </Typo>
-            </View>
-            <View style={{ alignSelf: "center" }}>
-              <Typo size={17} fontWeight={"600"} color={colors.rose}>
-                {formatCurrency(expense)} {/* Menggunakan expense yang dihitung */}
-              </Typo>
-            </View>
+      {/* Income & Expense Pills */}
+      <View style={styles.pillsContainer}>
+        {/* Income Pill */}
+        <View style={styles.pill}>
+          <View style={styles.pillIcon}>
+            <Ionicons
+              name="arrow-down"
+              size={scale(16)}
+              color={colors.primary}
+            />
+          </View>
+          <View>
+            <Typo size={12} color={colors.neutral400}>Income</Typo>
+            <Typo size={14} fontWeight="600" color={colors.primary}>
+              +{formatCompact(income)}
+            </Typo>
+          </View>
+        </View>
+
+        {/* Expense Pill */}
+        <View style={styles.pill}>
+          <View style={[styles.pillIcon, styles.expenseIcon]}>
+            <Ionicons
+              name="arrow-up"
+              size={scale(16)}
+              color={colors.rose}
+            />
+          </View>
+          <View>
+            <Typo size={12} color={colors.neutral400}>Expense</Typo>
+            <Typo size={14} fontWeight="600" color={colors.white}>
+              -{formatCompact(expense)}
+            </Typo>
           </View>
         </View>
       </View>
-    </ImageBackground>
+    </View>
   );
 };
 
 export default HomeCard;
 
 const styles = StyleSheet.create({
-  bgImage: {
-    height: scale(210),
-    width: "100%",
+  card: {
+    backgroundColor: colors.neutral800,
+    borderRadius: radius._20,
+    padding: spacingX._20,
+    paddingVertical: verticalScale(24),
+    borderWidth: 1,
+    borderColor: `${colors.primary}30`,
   },
   loadingPlaceholder: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: colors.neutral100, // Tambahkan latar belakang agar terlihat
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: scale(160),
   },
-  container: {
-    padding: spacingX._20,
-    paddingHorizontal: scale(23),
-    height: "87%",
-    width: "100%",
-    justifyContent: "space-between",
-  },
-  totalBalanceRow: {
+  topSection: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: spacingY._5,
+    alignItems: "flex-start",
+    marginBottom: verticalScale(24),
   },
-  stats: {
+  balanceLabel: {
+    marginBottom: verticalScale(4),
+  },
+  menuButton: {
+    width: scale(36),
+    height: scale(36),
+    borderRadius: scale(18),
+    backgroundColor: colors.neutral700,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pillsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    gap: scale(12),
   },
-  statsIcon: {
-    backgroundColor: colors.neutral350,
-    padding: spacingY._5,
-    borderRadius: 50,
-  },
-  incomeExpense: {
+  pill: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: spacingY._7,
+    gap: scale(10),
+    backgroundColor: colors.neutral700,
+    paddingVertical: verticalScale(12),
+    paddingHorizontal: spacingX._12,
+    borderRadius: radius._30,
+  },
+  pillIcon: {
+    width: scale(32),
+    height: scale(32),
+    borderRadius: scale(16),
+    backgroundColor: `${colors.primary}20`,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  expenseIcon: {
+    backgroundColor: `${colors.rose}20`,
   },
 });

@@ -1,6 +1,6 @@
 // src/screens/SearchScreen.tsx
 
-import React, {useMemo, useState} from "react";
+import React, { useMemo, useState } from "react";
 import {
     View,
     Text,
@@ -8,47 +8,42 @@ import {
     StyleSheet,
     ScrollView,
     FlatList,
-    Platform,
+    TextInput,
 } from "react-native";
-import {useNavigation} from "@react-navigation/native";
-import {useCategories} from "@/hooks/useCategories";
+import { useNavigation } from "@react-navigation/native";
+import { useCategories } from "@/hooks/useCategories";
 import Typo from "@/components/Typo";
-import {colors, spacingY, spacingX} from "@/constant/theme";
-import Input from "@/components/Input";
+import { colors, spacingY, spacingX, radius } from "@/constant/theme";
 import TransactionList from "@/components/TransactionList";
-import {useTransactions} from "@/hooks/useTransactions";
-import Header from "@/components/Header";
-import {useFilteredTransactions} from "@/hooks/useFilteredTransactions";
-import {useAuth} from "@/hooks/useAuth";
-import {Ionicons} from "@expo/vector-icons";
+import { useTransactions } from "@/hooks/useTransactions";
+import { useFilteredTransactions } from "@/hooks/useFilteredTransactions";
+import { useAuth } from "@/hooks/useAuth";
+import { Ionicons } from "@expo/vector-icons";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import {
     startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear,
-    isWithinInterval, startOfDay, endOfDay
+    isWithinInterval, startOfDay, endOfDay, format
 } from 'date-fns';
 import DateTimePicker from "@react-native-community/datetimepicker";
-import IconComponent from "@/components/Icons";
-import {verticalScale} from "@/utils/styling";
+import { scale, verticalScale } from "@/utils/styling";
 
 const PERIOD_OPTIONS = [
-    {label: 'Bulan Ini', value: 'this_month'},
-    {label: 'Bulan Lalu', value: 'last_month'},
-    {label: '3 Bulan Terakhir', value: 'last_3_months'},
-    {label: 'Tahun Ini', value: 'this_year'},
-    {label: 'Custom', value: 'custom'}
+    { label: 'This Month', value: 'this_month', icon: 'calendar' },
+    { label: 'Last Month', value: 'last_month', icon: 'time-outline' },
+    { label: 'Custom', value: 'custom', icon: 'calendar-outline' }
 ];
 
 export default function SearchScreen() {
     const navigation = useNavigation<any>();
-    const {session} = useAuth();
+    const { session } = useAuth();
     const userId = session?.user?.id;
 
-    const {data: categories = []} = useCategories(userId);
-    const {data: allTransactions = [], isLoading} = useTransactions(userId, 'all');
+    const { data: categories = [] } = useCategories(userId);
+    const { data: allTransactions = [], isLoading } = useTransactions(userId, 'all');
 
     const [activePeriod, setActivePeriod] = useState('this_month');
-    const [customStartDate, setCustomStartDate] = useState(new Date());
-    const [customEndDate, setCustomEndDate] = useState(new Date());
+    const [customStartDate, setCustomStartDate] = useState(startOfMonth(new Date()));
+    const [customEndDate, setCustomEndDate] = useState(endOfMonth(new Date()));
 
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
@@ -86,8 +81,7 @@ export default function SearchScreen() {
 
         return allTransactions.filter(tx => {
             const txDate = new Date(tx.date);
-
-            return isWithinInterval(txDate, {start: intervalStart, end: intervalEnd});
+            return isWithinInterval(txDate, { start: intervalStart, end: intervalEnd });
         });
 
     }, [allTransactions, activePeriod, customStartDate, customEndDate]);
@@ -102,133 +96,208 @@ export default function SearchScreen() {
 
     const handleTransactionPress = (item: any) => {
         const payloadForModal = item.is_transfer
-            ? {...item, idToUpdate: item.id.replace(/^transfer-/, "")}
-            : {...item, idToUpdate: item.id};
-        navigation.navigate("TransactionScreen", {initialData: payloadForModal});
+            ? { ...item, idToUpdate: item.id.replace(/^transfer-/, "") }
+            : { ...item, idToUpdate: item.id };
+        navigation.navigate("TransactionScreen", { initialData: payloadForModal });
+    };
+
+    const formatDateDisplay = (date: Date): string => {
+        return format(date, 'MMM dd, yyyy');
+    };
+
+    // Get category icon
+    const getCategoryIcon = (name: string): string => {
+        const iconMap: Record<string, string> = {
+            'groceries': 'basket',
+            'food': 'restaurant',
+            'transport': 'car',
+            'transportation': 'car',
+            'shopping': 'bag-handle',
+            'entertainment': 'game-controller',
+            'bills': 'receipt',
+            'salary': 'cash',
+            'health': 'medkit',
+            'education': 'school',
+        };
+        return iconMap[name?.toLowerCase()] || 'pricetag';
     };
 
     return (
         <ScreenWrapper style={styles.container}>
-            {/* 1. HEADER */}
-            <Header
-                title={"Pencarian"}
-                leftIcon={
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color={colors.white}/>
-                    </TouchableOpacity>
-                }
-            />
+            {/* Header */}
+            <View style={styles.header}>
+                <Typo size={22} fontWeight="700" color={colors.white}>
+                    Search
+                </Typo>
+                <TouchableOpacity style={styles.settingsButton}>
+                    <Ionicons name="settings-outline" size={scale(24)} color={colors.white} />
+                </TouchableOpacity>
+            </View>
 
-            <View style={styles.stickyHeaderContainer}>
-                <Input
-                    placeholder="Cari transaksi (kopi, gaji, dll)..."
+            {/* Search Input */}
+            <View style={styles.searchInputContainer}>
+                <Ionicons name="search" size={scale(22)} color={colors.neutral500} />
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search transactions, merchants"
+                    placeholderTextColor={colors.neutral500}
                     value={search}
-                    placeholderTextColor={colors.neutral400}
-                    onChangeText={(value) => setSearch(value)}
-                    autoFocus={true}
+                    onChangeText={setSearch}
                 />
+                {search.length > 0 && (
+                    <TouchableOpacity onPress={() => setSearch("")} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                        <Ionicons name="close-circle" size={scale(18)} color={colors.neutral500} />
+                    </TouchableOpacity>
+                )}
+            </View>
 
-                {/* FILTER PERIODE */}
-                <View style={styles.filterRow}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        {PERIOD_OPTIONS.map((opt) => (
+            {/* Period Filter Chips */}
+            <View style={styles.chipsSection}>
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.chipsRow}
+                >
+                    {PERIOD_OPTIONS.map((opt) => {
+                        const isActive = activePeriod === opt.value;
+                        return (
                             <TouchableOpacity
                                 key={opt.value}
-                                style={[
-                                    styles.chip,
-                                    activePeriod === opt.value && styles.activeChip
-                                ]}
+                                style={[styles.chip, isActive && styles.chipActive]}
                                 onPress={() => setActivePeriod(opt.value)}
+                                activeOpacity={0.7}
                             >
-                                {opt.label !== 'Custom' &&
-
-                                    <Text style={[
-                                        styles.chipText,
-                                        activePeriod === opt.value && styles.activeChipText
-                                    ]}>
-                                        {opt.label}
-                                    </Text>
-                                }
-                                {opt.label === 'Custom' &&
-                                    <IconComponent
-                                        item={{icon: "calendar-outline"} as any}
-                                        size={verticalScale(20)}
-                                        color={colors.neutral300}
-                                    />
-                                }
-
+                                <Ionicons
+                                    name={opt.icon as any}
+                                    size={scale(16)}
+                                    color={isActive ? colors.neutral900 : colors.neutral300}
+                                />
+                                <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
+                                    {opt.label}
+                                </Text>
                             </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                </View>
+                        );
+                    })}
+                </ScrollView>
+            </View>
 
-                {activePeriod === 'custom' && (
-                    <View style={styles.customDateContainer}>
-                        <TouchableOpacity
-                            style={styles.dateButton}
-                            onPress={() => setShowStartDatePicker(true)}
-                        >
-                            <Typo size={12} color={colors.neutral400}>Dari:</Typo>
-                            <Typo size={14} color={colors.white} fontWeight="600">
-                                {customStartDate.toLocaleDateString('id-ID')}
-                            </Typo>
-                        </TouchableOpacity>
+            {/* Category Filter Chips */}
+            <View style={styles.chipsSection}>
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.chipsRow}
+                >
+                    {/* All Categories */}
+                    <TouchableOpacity
+                        style={[styles.chip, !category && styles.chipActive]}
+                        onPress={() => toggleCategory(null)}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons
+                            name="apps"
+                            size={scale(16)}
+                            color={!category ? colors.neutral900 : colors.neutral300}
+                        />
+                        <Text style={[styles.chipText, !category && styles.chipTextActive]}>
+                            All Categories
+                        </Text>
+                    </TouchableOpacity>
 
-                        <Ionicons name="arrow-forward" size={16} color={colors.neutral500}/>
-
-                        <TouchableOpacity
-                            style={styles.dateButton}
-                            onPress={() => setShowEndDatePicker(true)}
-                        >
-                            <Typo size={12} color={colors.neutral400}>Sampai:</Typo>
-                            <Typo size={14} color={colors.white} fontWeight="600">
-                                {customEndDate.toLocaleDateString('id-ID')}
-                            </Typo>
-                        </TouchableOpacity>
-                    </View>
-                )}
-
-                {/* CATEGORY FILTER */}
-                <View style={styles.filterRow}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        <TouchableOpacity
-                            style={[styles.chip, !category && styles.activeChip]}
-                            onPress={() => toggleCategory(null)}
-                        >
-                            <Text style={[styles.chipText, !category && styles.activeChipText]}>
-                                Semua Kategori
-                            </Text>
-                        </TouchableOpacity>
-
-                        {categories.map((cat) => (
+                    {/* Category Options */}
+                    {categories.slice(0, 6).map((cat) => {
+                        const isActive = category === cat.id;
+                        return (
                             <TouchableOpacity
                                 key={cat.id}
-                                style={[styles.chip, category === cat.id && styles.activeChip]}
+                                style={[styles.chip, isActive && styles.chipActive]}
                                 onPress={() => toggleCategory(cat.id as any)}
+                                activeOpacity={0.7}
                             >
-                                <Text style={[styles.chipText, category === cat.id && styles.activeChipText]}>
+                                <Ionicons
+                                    name={getCategoryIcon(cat.name || '') as any}
+                                    size={scale(16)}
+                                    color={isActive ? colors.neutral900 : colors.neutral300}
+                                />
+                                <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
                                     {cat.name}
                                 </Text>
                             </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                </View>
+                        );
+                    })}
+                </ScrollView>
             </View>
 
-            {/* 3. LIST HASIL */}
+            {/* Custom Date Range Section */}
+            {activePeriod === 'custom' && (
+                <View style={styles.customRangeCard}>
+                    {/* Header */}
+                    <View style={styles.customRangeHeader}>
+                        <Text style={styles.customRangeLabel}>CUSTOM RANGE</Text>
+                        <Ionicons name="calendar" size={scale(20)} color={colors.primary} />
+                    </View>
+
+                    {/* Date Pickers Row */}
+                    <View style={styles.datePickersRow}>
+                        {/* From Date */}
+                        <View style={styles.datePickerCol}>
+                            <Text style={styles.datePickerLabel}>From</Text>
+                            <TouchableOpacity
+                                style={styles.datePickerButton}
+                                onPress={() => setShowStartDatePicker(true)}
+                                activeOpacity={0.7}
+                            >
+                                <Ionicons name="calendar-outline" size={scale(16)} color={colors.neutral400} />
+                                <Text style={styles.datePickerText}>{formatDateDisplay(customStartDate)}</Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* Separator */}
+                        <Text style={styles.dateSeparator}>—</Text>
+
+                        {/* To Date */}
+                        <View style={styles.datePickerCol}>
+                            <Text style={styles.datePickerLabel}>To</Text>
+                            <TouchableOpacity
+                                style={styles.datePickerButton}
+                                onPress={() => setShowEndDatePicker(true)}
+                                activeOpacity={0.7}
+                            >
+                                <Ionicons name="calendar-outline" size={scale(16)} color={colors.neutral400} />
+                                <Text style={styles.datePickerText}>{formatDateDisplay(customEndDate)}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            )}
+
+            {/* Results Header */}
+            <View style={styles.resultsHeader}>
+                <Text style={styles.resultsTitle}>Recent Matches</Text>
+                <Text style={styles.resultsCount}>{filteredTransactions.length} results</Text>
+            </View>
+
+            {/* Transaction List */}
             <FlatList
                 data={filteredTransactions}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item, index) => `tx-${index}`}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.listContent}
                 ListEmptyComponent={
                     <View style={styles.emptyState}>
-                        <Typo color={colors.neutral400}>
-                            {"Tidak ada transaksi ditemukan."}
-                        </Typo>
+                        <View style={styles.emptyIcon}>
+                            <Ionicons name="search-outline" size={scale(48)} color={colors.neutral600} />
+                        </View>
+                        <Text style={styles.emptyTitle}>No transactions found</Text>
+                        <Text style={styles.emptySubtitle}>Try adjusting your filters</Text>
                     </View>
                 }
-                renderItem={({item}) => (
+                ListFooterComponent={
+                    filteredTransactions.length > 0 ? (
+                        <Text style={styles.footerText}>No more results</Text>
+                    ) : null
+                }
+                renderItem={({ item }) => (
                     <TransactionList
                         data={[item]}
                         loading={false}
@@ -240,6 +309,7 @@ export default function SearchScreen() {
                 )}
             />
 
+            {/* Date Pickers */}
             {showStartDatePicker && (
                 <DateTimePicker
                     value={customStartDate}
@@ -274,84 +344,172 @@ const styles = StyleSheet.create({
         backgroundColor: colors.neutral900,
         paddingHorizontal: spacingX._20,
     },
-    stickyHeaderContainer: {
-        marginBottom: spacingY._10,
-        marginTop: spacingY._10,
-    },
-    quickFilterContainer: {
+
+    // Header
+    header: {
         flexDirection: "row",
-        marginTop: spacingY._15,
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingTop: verticalScale(10),
+        paddingBottom: verticalScale(20),
     },
-    categoryChip: {
-        borderWidth: 1,
-        borderColor: colors.neutral700,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20,
-        marginRight: 10,
+    settingsButton: {
+        padding: scale(8),
+    },
+
+    // Search Input
+    searchInputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
         backgroundColor: colors.neutral800,
+        borderRadius: scale(16),
+        paddingHorizontal: scale(16),
+        height: verticalScale(52),
+        gap: scale(12),
     },
-    activeCategoryChip: {
-        backgroundColor: colors.primary,
-        borderColor: colors.primary,
+    searchInput: {
+        flex: 1,
+        fontSize: scale(16),
+        color: colors.white,
+        paddingVertical: 0,
     },
-    categoryChipText: {
-        color: colors.neutral300,
-        fontSize: 14,
+
+    // Chips Section
+    chipsSection: {
+        marginTop: verticalScale(16),
     },
-    activeCategoryChipText: {
-        color: colors.black,
-        fontWeight: "bold",
-    },
-    listContent: {
-        paddingBottom: 50,
-        gap: spacingY._10,
-    },
-    emptyState: {
-        alignItems: 'center',
-        marginTop: 50,
-    },
-    filterRow: {
+    chipsRow: {
         flexDirection: "row",
-        marginTop: spacingY._10,
+        gap: scale(10),
+        paddingRight: scale(20),
     },
     chip: {
-        borderWidth: 1,
-        borderColor: colors.neutral700,
-        paddingVertical: 6,
-        paddingHorizontal: 14,
-        borderRadius: 20,
-        marginRight: 8,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: scale(8),
         backgroundColor: colors.neutral800,
+        paddingVertical: verticalScale(12),
+        paddingHorizontal: scale(16),
+        borderRadius: scale(24),
     },
-    activeChip: {
+    chipActive: {
         backgroundColor: colors.primary,
-        borderColor: colors.primary,
     },
     chipText: {
+        fontSize: scale(14),
+        fontWeight: "500",
         color: colors.neutral300,
-        fontSize: 13,
     },
-    activeChipText: {
-        color: colors.black,
+    chipTextActive: {
+        color: colors.neutral900,
         fontWeight: "600",
     },
-    customDateContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+
+    // Custom Range Card
+    customRangeCard: {
+        marginTop: verticalScale(20),
         backgroundColor: colors.neutral800,
-        borderRadius: 12,
-        padding: 10,
-        marginTop: spacingY._10,
-        borderWidth: 1,
-        borderColor: colors.neutral700,
+        borderRadius: scale(16),
+        padding: scale(16),
     },
-    dateButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-    }
+    customRangeHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: verticalScale(16),
+    },
+    customRangeLabel: {
+        fontSize: scale(12),
+        fontWeight: "600",
+        color: colors.neutral400,
+        letterSpacing: 0.5,
+    },
+    datePickersRow: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        gap: scale(12),
+    },
+    datePickerCol: {
+        flex: 1,
+    },
+    datePickerLabel: {
+        fontSize: scale(12),
+        color: colors.neutral500,
+        marginBottom: verticalScale(8),
+    },
+    datePickerButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: scale(10),
+        backgroundColor: colors.neutral700,
+        paddingVertical: verticalScale(14),
+        paddingHorizontal: scale(14),
+        borderRadius: scale(12),
+    },
+    datePickerText: {
+        fontSize: scale(14),
+        fontWeight: "600",
+        color: colors.white,
+    },
+    dateSeparator: {
+        fontSize: scale(16),
+        color: colors.neutral600,
+        paddingBottom: verticalScale(14),
+    },
+
+    // Results Header
+    resultsHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: verticalScale(28),
+        marginBottom: verticalScale(16),
+    },
+    resultsTitle: {
+        fontSize: scale(16),
+        fontWeight: "600",
+        color: colors.white,
+    },
+    resultsCount: {
+        fontSize: scale(14),
+        color: colors.neutral400,
+    },
+
+    // List
+    listContent: {
+        paddingBottom: verticalScale(100),
+    },
+
+    // Empty State
+    emptyState: {
+        alignItems: "center",
+        paddingVertical: verticalScale(60),
+    },
+    emptyIcon: {
+        width: scale(96),
+        height: scale(96),
+        borderRadius: scale(48),
+        backgroundColor: colors.neutral800,
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: verticalScale(16),
+    },
+    emptyTitle: {
+        fontSize: scale(16),
+        fontWeight: "600",
+        color: colors.neutral300,
+        marginBottom: verticalScale(4),
+    },
+    emptySubtitle: {
+        fontSize: scale(14),
+        color: colors.neutral500,
+    },
+
+    // Footer
+    footerText: {
+        fontSize: scale(13),
+        color: colors.neutral500,
+        textAlign: "center",
+        paddingVertical: verticalScale(24),
+    },
 });
