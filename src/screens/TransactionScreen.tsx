@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   FlatList,
+  ScrollView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTransactionMutations } from "@/hooks/useTransactionMutations";
@@ -25,7 +26,6 @@ import Header from "@/components/Header";
 import Input from "@/components/Input";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useWallets } from "@/hooks/useWallets";
-import AddCategoryModal from "@/components/AddCategoryModal";
 import { useTransfer } from "@/hooks/useTransfer";
 import {
   END_CONDITION_OPTIONS,
@@ -40,7 +40,6 @@ import TagSelector from "@/components/TagSelector";
 
 const screenHeight = Dimensions.get("window").height;
 
-// --- DEFINISI KOMPONEN SCREEN BARU ---
 export default function TransactionScreen() {
   // 🟢 Navigasi & Props
   const navigation = useNavigation();
@@ -70,6 +69,7 @@ export default function TransactionScreen() {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryIcon, setCategoryIcon] = useState<string>("grid-outline");
   const [walletId, setWalletId] = useState<string | null>(null);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [fromWalletId, setFromWalletId] = useState<string | null>(null);
@@ -99,6 +99,7 @@ export default function TransactionScreen() {
     const mapped = filtered.map((cat) => ({
       label: toTitleCase(cat.name),
       value: cat.id,
+      icon: cat.icon,
     }));
     return [
       ...mapped,
@@ -177,25 +178,25 @@ export default function TransactionScreen() {
     // 1. Definisikan Payload Recurring
     const recurrencePayload = isRecurring
       ? {
-          is_recurring: true,
-          recurrence_rule: recurrenceRule,
-          date: date.toISOString(), // Tanggal Jatuh Tempo Awal
-          end_condition: endCondition,
-          end_value:
-            endCondition === "until_date"
-              ? new Date(endValue).toISOString()
-              : endCondition === "after_count"
+        is_recurring: true,
+        recurrence_rule: recurrenceRule,
+        date: date.toISOString(), // Tanggal Jatuh Tempo Awal
+        end_condition: endCondition,
+        end_value:
+          endCondition === "until_date"
+            ? new Date(endValue).toISOString()
+            : endCondition === "after_count"
               ? String(endValue)
               : null,
-          transaction_count: 0,
-        }
+        transaction_count: 0,
+      }
       : {
-          is_recurring: false,
-          recurrence_rule: null,
-          end_condition: "never",
-          end_value: null,
-          transaction_count: null,
-        };
+        is_recurring: false,
+        recurrence_rule: null,
+        end_condition: "never",
+        end_value: null,
+        transaction_count: null,
+      };
 
     try {
       // 🟢 Handle TRANSFER (Non-Recurring di Fase 1)
@@ -262,8 +263,7 @@ export default function TransactionScreen() {
         if (matchingBill) {
           Alert.alert(
             "Deteksi Tagihan Berulang",
-            `Anda memiliki tagihan "${
-              matchingBill.categories?.name || "Unknown"
+            `Anda memiliki tagihan "${matchingBill.categories?.name || "Unknown"
             }" yang akan datang. Apakah transaksi ini adalah pembayaran untuk tagihan tersebut?`,
             [
               {
@@ -399,7 +399,6 @@ export default function TransactionScreen() {
     );
   };
 
-  // --- Fungsi Baru: Menghapus Siklus Tagihan (Template Induk) ---
   const onDeleteRecurring = async () => {
     try {
       const idToDelete = initialData?.id; // ID Transaksi Induk (Template)
@@ -452,443 +451,565 @@ export default function TransactionScreen() {
     }
   };
 
+  // --- Render Components ----
+
   return (
     <ScreenWrapper>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.screenContainer}
       >
-        <View style={styles.content}>
-          {/* Header */}
-          <Header
-            title={isEditing ? "Edit Transaksi" : "Tambah Transaksi"}
-            leftIcon={
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Ionicons name="chevron-back" size={28} color={colors.white} />
+        <Header
+          title={type === 'transfer' ? "Transfer Funds" : (isEditing ? "Edit Transaction" : "New Transaction")}
+          leftIcon={
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Ionicons name="arrow-back" size={24} color={colors.white} />
+            </TouchableOpacity>
+          }
+        />
+
+        <ScrollView contentContainerStyle={styles.content}>
+
+          {/* Expense/Income Toggle */}
+          {type !== 'transfer' && (
+            <View style={styles.toggleContainer}>
+              <View style={styles.toggleWrapper}>
+                <TouchableOpacity
+                  style={[styles.toggleBtn, type === 'expense' && styles.toggleBtnActive]}
+                  onPress={() => setType('expense')}
+                >
+                  <Typo size={14} fontWeight="600" color={type === 'expense' ? colors.accentGreen : colors.neutral400}>Expense</Typo>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.toggleBtn, type === 'income' && styles.toggleBtnActive]}
+                  onPress={() => setType('income')}
+                >
+                  <Typo size={14} fontWeight="600" color={type === 'income' ? colors.accentGreen : colors.neutral400}>Income</Typo>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity onPress={() => setType('transfer')} style={styles.miniTransferBtn}>
+                <Ionicons name="swap-horizontal" size={20} color={colors.neutral400} />
               </TouchableOpacity>
-            }
-          />
+            </View>
+          )}
 
-          {/* Tab Form */}
-          <FlatList
-            data={[{ key: "form" }]}
-            renderItem={() => (
-              <>
-                {/* Tabs */}
-                <View style={styles.tabContainer}>
-                  {["expense", "income", "transfer"].map((tab) => (
-                    <TouchableOpacity
-                      key={tab}
-                      disabled={isEditing}
-                      style={[
-                        styles.tab,
-                        type === tab &&
-                          (tab === "expense"
-                            ? styles.activeExpenseTab
-                            : tab === "income"
-                            ? styles.activeIncomeTab
-                            : styles.activeTransferTab),
-                      ]}
-                      onPress={() => {
-                        setType(tab as any);
-                        setCategoryId(null);
-                      }}
-                    >
-                      <Text
-                        style={[
-                          styles.tabText,
-                          type === tab &&
-                            (tab === "expense"
-                              ? styles.activeExpenseText
-                              : tab === "income"
-                              ? styles.activeIncomeText
-                              : styles.activeTransferText),
-                        ]}
-                      >
-                        {tab === "expense"
-                          ? "Pengeluaran"
-                          : tab === "income"
-                          ? "Pemasukan"
-                          : "Transfer"}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+          {/* Amount Input */}
+          <View style={styles.amountSection}>
+            {type === 'transfer' && (
+              <Typo size={12} color={colors.neutral400} style={{ marginBottom: 8, letterSpacing: 1 }}>AMOUNT TO SEND</Typo>
+            )}
+            <View style={styles.amountRow}>
+              <Typo size={24} fontWeight="600" color={colors.neutral500} style={{ marginRight: 8 }}>
+                {type === 'transfer' ? "$" : "Rp"}
+              </Typo>
+              <Input
+                placeholder="0"
+                onChangeText={(text) => {
+                  const numericValue = text.replace(/\D/g, "");
+                  setAmount(
+                    numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                  );
+                }}
+                value={amount}
+                keyboardType="numeric"
+                containerStyle={styles.amountInputContainer}
+                inputStyle={styles.amountInputText}
+                placeholderTextColor={colors.neutral500}
+              />
+            </View>
+          </View>
+
+          {/* --- FORM INCOME / EXPENSE --- */}
+          {type !== 'transfer' && (
+            <View style={styles.formGroup}>
+              {/* Category Selection */}
+              <View style={styles.inputCard}>
+                <View style={styles.inputIconBox}>
+                  <Ionicons name={categoryIcon as any} size={20} color={colors.primary} />
                 </View>
+                <View style={{ flex: 1 }}>
+                  <Typo size={12} color={colors.neutral400}>Category</Typo>
+                  <View style={styles.invisibleDropdownWrapper}>
+                    <BaseDropdown
+                      data={dropdownCategoriesData as any}
+                      value={categoryId}
+                      placeholder="Select Category"
+                      onChange={(item: any) => {
+                        if (item.value === "__add_new__") {
+                          setShowAddCategoryModal(true);
+                        } else {
+                          setCategoryId(item.value as string);
+                          setCategoryIcon(item.icon as string);
+                        }
+                      }}
+                      style={styles.cleanDropdown}
+                      placeholderStyle={{ color: colors.white, fontSize: 16, fontWeight: '600' }}
+                      selectedTextStyle={{ color: colors.white, fontSize: 16, fontWeight: '600' }}
+                    />
+                  </View>
+                </View>
+              </View>
 
-                {/* Inputs */}
-                <View style={styles.form}>
-                  {/* Tanggal Transaksi */}
-                  <View style={styles.dateInput}>
-                    <TouchableOpacity
-                      onPress={() => setShowDatePicker(true)}
-                      style={styles.dateTouchable}
-                    >
-                      <IconComponent
-                        item={{ icon: "calendar-outline" } as any}
-                        size={verticalScale(20)}
-                        color={colors.neutral300}
-                      />
-                      <Typo size={16} color={colors.neutral100}>
-                        {date.toLocaleDateString("id-ID", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </Typo>
-                    </TouchableOpacity>
+              {/* Wallet Selection */}
+              <View style={styles.inputCard}>
+                <View style={styles.inputIconBox}>
+                  <Ionicons name="wallet-outline" size={20} color={colors.primary} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Typo size={12} color={colors.neutral400}>Wallet</Typo>
+                  <View style={styles.invisibleDropdownWrapper}>
+                    <BaseDropdown
+                      data={wallets.map((wallet) => ({
+                        label: toTitleCase(wallet.name),
+                        value: wallet.id,
+                      }))}
+                      value={walletId}
+                      placeholder="Select Wallet"
+                      onChange={(item) => setWalletId(item.value as any)}
+                      style={styles.cleanDropdown}
+                      placeholderStyle={{ color: colors.white, fontSize: 16, fontWeight: '600' }}
+                      selectedTextStyle={{ color: colors.white, fontSize: 16, fontWeight: '600' }}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              {/* Date & Time (Split) */}
+              <View style={styles.rowGap}>
+                <TouchableOpacity style={[styles.inputCard, { flex: 1 }]} onPress={() => setShowDatePicker(true)}>
+                  <View style={[styles.inputIconBox, { backgroundColor: 'transparent' }]}>
+                    <Ionicons name="calendar" size={20} color={colors.neutral400} />
+                  </View>
+                  <View>
+                    <Typo size={12} color={colors.neutral400}>Date</Typo>
+                    <Typo size={16} fontWeight="600" color={colors.white}>
+                      {date.toLocaleDateString("en-US", { day: '2-digit', month: 'short' })}
+                    </Typo>
+                    {/* Hack to display "Today" if today? logic omitted for brevity */}
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.inputCard, { flex: 1 }]}>
+                  <View style={[styles.inputIconBox, { backgroundColor: 'transparent' }]}>
+                    <Ionicons name="time" size={20} color={colors.neutral400} />
+                  </View>
+                  <View>
+                    <Typo size={12} color={colors.neutral400}>Time</Typo>
+                    <Typo size={16} fontWeight="600" color={colors.white}>
+                      {date.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', hour12: false })}
+                    </Typo>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+              {/* Note */}
+              <View style={styles.inputCardPlain}>
+                <Ionicons name="create-outline" size={20} color={colors.neutral400} style={{ marginRight: 10 }} />
+                <Input
+                  placeholder="Add a note..."
+                  value={note}
+                  onChangeText={setNote}
+                  containerStyle={{ backgroundColor: 'transparent', borderWidth: 0, flex: 1, height: '100%' }}
+                  inputStyle={{ color: colors.white }}
+                  placeholderTextColor={colors.neutral400}
+                />
+              </View>
+
+              {/* Tags */}
+              <View>
+                <TagSelector
+                  selectedTagIds={selectedTagIds}
+                  onToggleTag={handleToggleTag}
+                />
+              </View>
+
+              {/* Repeat Toggle */}
+              <View style={styles.toggleRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <View style={styles.iconCircleSmall}>
+                    <Ionicons name="repeat" size={16} color={colors.accentGreen} />
+                  </View>
+                  <Typo size={16} fontWeight="600" color={colors.white}>Repeat Transaction</Typo>
+                </View>
+                <TouchableOpacity onPress={() => setIsRecurring(!isRecurring)}>
+                  <MaterialCommunityIcons
+                    name={isRecurring ? "toggle-switch" : "toggle-switch-off-outline"}
+                    size={40}
+                    color={isRecurring ? colors.accentGreen : colors.neutral600}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* Recurring Options */}
+              {isRecurring && (
+                <View style={styles.recurringOptions}>
+                  {/* Frequency */}
+                  <View style={styles.inputCard}>
+                    <View style={styles.inputIconBox}>
+                      <MaterialCommunityIcons name="calendar-refresh" size={20} color={colors.primary} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Typo size={12} color={colors.neutral400}>Frequency</Typo>
+                      <View style={styles.invisibleDropdownWrapper}>
+                        <BaseDropdown
+                          data={RECURRENCE_OPTIONS.filter((o) => o.value !== "none")}
+                          value={recurrenceRule}
+                          placeholder="Frequency"
+                          onChange={(item) => setRecurrenceRule(item.value)}
+                          style={styles.cleanDropdown}
+                          placeholderStyle={{ color: colors.white, fontSize: 16, fontWeight: '600' }}
+                          selectedTextStyle={{ color: colors.white, fontSize: 16, fontWeight: '600' }}
+                        />
+                      </View>
+                    </View>
                   </View>
 
-                  {/* Wallet/Transfer Dropdowns */}
-                  {type === "transfer" ? (
-                    // ... (Transfer Dropdowns JSX) ...
-                    <>
-                      <View style={styles.inputContainer}>
+                  {/* End Condition */}
+                  <View style={styles.inputCard}>
+                    <View style={styles.inputIconBox}>
+                      <MaterialCommunityIcons name="flag-checkered" size={20} color={colors.primary} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Typo size={12} color={colors.neutral400}>End Condition</Typo>
+                      <View style={styles.invisibleDropdownWrapper}>
                         <BaseDropdown
-                          data={wallets.map((w) => ({
+                          data={END_CONDITION_OPTIONS}
+                          value={endCondition}
+                          placeholder="End Condition"
+                          onChange={(item) => setEndCondition(item.value)}
+                          style={styles.cleanDropdown}
+                          placeholderStyle={{ color: colors.white, fontSize: 16, fontWeight: '600' }}
+                          selectedTextStyle={{ color: colors.white, fontSize: 16, fontWeight: '600' }}
+                        />
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* Dynamic End Value Inputs */}
+                  {endCondition === "until_date" && (
+                    <TouchableOpacity style={styles.inputCard} onPress={() => setShowRecurrenceDatePicker(true)}>
+                      <View style={styles.inputIconBox}>
+                        <Ionicons name="calendar" size={20} color={colors.primary} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Typo size={12} color={colors.neutral400}>End Date</Typo>
+                        <Typo size={16} fontWeight="600" color={colors.white}>
+                          {endValue ? new Date(endValue).toLocaleDateString() : "Select Date"}
+                        </Typo>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+
+                  {endCondition === "after_count" && (
+                    <View style={styles.inputCard}>
+                      <View style={styles.inputIconBox}>
+                        <Ionicons name="repeat" size={20} color={colors.primary} />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Typo size={12} color={colors.neutral400}>Occurrences</Typo>
+                        <Input
+                          placeholder="e.g. 10"
+                          keyboardType="numeric"
+                          value={endValue}
+                          onChangeText={setEndValue}
+                          containerStyle={{ backgroundColor: 'transparent', borderWidth: 0, height: 30, paddingLeft: 0 }}
+                          inputStyle={{ color: colors.white, fontSize: 16, fontWeight: '600', paddingLeft: 0, paddingVertical: 0 }} // Remove default padding
+                          placeholderTextColor={colors.neutral500}
+                        />
+                      </View>
+                    </View>
+                  )}
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* --- FORM TRANSFER --- */}
+          {type === 'transfer' && (
+            <View style={styles.formGroup}>
+              {/* Wallets Transfer Row */}
+              <View style={styles.transferRow}>
+                {/* FROM */}
+                <View style={[styles.transferCard, { flex: 1 }]}>
+                  <View style={[styles.iconCircleSmall, { backgroundColor: colors.primary + '20' }]}>
+                    <Ionicons name="wallet" size={16} color={colors.primaryLight} />
+                  </View>
+                  <View style={{ marginTop: 10 }}>
+                    <Typo size={12} color={colors.white} fontWeight="600">From</Typo>
+                    <View style={styles.invisibleDropdownWrapper}>
+                      <BaseDropdown
+                        data={wallets.map((w) => ({
+                          label: toTitleCase(w.name),
+                          value: w.id,
+                        }))}
+                        value={fromWalletId}
+                        placeholder="Select"
+                        onChange={(item) => setFromWalletId(item.value as any)}
+                        style={styles.cleanDropdown}
+                        placeholderStyle={{ color: colors.neutral400, fontSize: 12 }}
+                        selectedTextStyle={{ color: colors.neutral400, fontSize: 12 }}
+                      />
+                    </View>
+                    <Typo size={12} color={colors.accentGreen}>****</Typo>
+                  </View>
+                </View>
+
+                {/* Arrow */}
+                <View style={styles.arrowCircle}>
+                  <Ionicons name="arrow-forward" size={20} color={colors.accentGreen} />
+                </View>
+
+                {/* TO */}
+                <View style={[styles.transferCard, { flex: 1 }]}>
+                  <View style={[styles.iconCircleSmall, { backgroundColor: colors.rose + '20' }]}>
+                    <Ionicons name="wallet" size={16} color={colors.roseLight} />
+                  </View>
+                  <View style={{ marginTop: 10, alignItems: 'flex-end' }}>
+                    <Typo size={12} color={colors.white} fontWeight="600">To</Typo>
+                    <View style={styles.invisibleDropdownWrapper}>
+                      <BaseDropdown
+                        data={wallets
+                          .filter((w) => w.id !== fromWalletId)
+                          .map((w) => ({
                             label: toTitleCase(w.name),
                             value: w.id,
                           }))}
-                          value={fromWalletId}
-                          placeholder="Dari Wallet"
-                          onChange={(item) =>
-                            setFromWalletId(item.value as any)
-                          }
-                        />
-                      </View>
-                      <View style={styles.inputContainer}>
-                        <BaseDropdown
-                          data={wallets
-                            .filter((w) => w.id !== fromWalletId)
-                            .map((w) => ({
-                              label: toTitleCase(w.name),
-                              value: w.id,
-                            }))}
-                          value={toWalletId}
-                          placeholder="Ke Wallet"
-                          onChange={(item) => setToWalletId(item.value as any)}
-                        />
-                      </View>
-                    </>
-                  ) : (
-                    // ... (Income/Expense Dropdowns JSX) ...
-                    <>
-                      <View style={styles.inputContainer}>
-                        <BaseDropdown
-                          data={wallets.map((wallet) => ({
-                            label: toTitleCase(wallet.name),
-                            value: wallet.id,
-                          }))}
-                          value={walletId}
-                          placeholder="Select Wallet"
-                          onChange={(item) => {
-                            setWalletId(item.value as any);
-                          }}
-                        />
-                      </View>
-                      <View style={styles.inputContainer}>
-                        <BaseDropdown
-                          data={dropdownCategoriesData as any}
-                          value={categoryId}
-                          placeholder="Select Category"
-                          onChange={(item) => {
-                            if (item.value === "__add_new__") {
-                              setShowAddCategoryModal(true);
-                            } else {
-                              setCategoryId(item.value as string);
-                            }
-                          }}
-                        />
-                      </View>
-                    </>
-                  )}
-
-                  {/* Jumlah & Deskripsi */}
-                  <Input
-                    placeholder="Jumlah"
-                    onChangeText={(text) => {
-                      const numericValue = text.replace(/\D/g, "");
-                      setAmount(
-                        numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-                      );
-                    }}
-                    value={amount}
-                    keyboardType="numeric"
-                  />
-                  <View style={styles.inputContainer}>
-                    <Input
-                      placeholder="Description (optional)"
-                      value={note}
-                      onChangeText={setNote}
-                      multiline
-                      containerStyle={styles.descriptionInput}
-                    />
+                        value={toWalletId}
+                        placeholder="Select"
+                        onChange={(item) => setToWalletId(item.value as any)}
+                        style={styles.cleanDropdown}
+                        placeholderStyle={{ color: colors.neutral400, fontSize: 12, textAlign: 'right' }}
+                        selectedTextStyle={{ color: colors.neutral400, fontSize: 12, textAlign: 'right' }}
+                      />
+                    </View>
+                    <Typo size={12} color={colors.neutral500}>Target</Typo>
                   </View>
-
-                  <TagSelector
-                      selectedTagIds={selectedTagIds}
-                      onToggleTag={handleToggleTag}
-                  />
-
-                  {/* 🟢 TOMBOL TOGGLE RECURRING */}
-                  {type !== "transfer" && (
-                    <View style={styles.recurringToggleRow}>
-                      <Typo color={colors.white} size={16}>
-                        Atur sebagai Tagihan Berulang
-                      </Typo>
-                      <TouchableOpacity
-                        onPress={() => setIsRecurring(!isRecurring)}
-                      >
-                        <MaterialCommunityIcons
-                          name={
-                            isRecurring
-                              ? "toggle-switch"
-                              : "toggle-switch-off-outline"
-                          }
-                          size={48}
-                          color={
-                            isRecurring ? colors.primary : colors.neutral700
-                          }
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-
-                  {/* 🟢 INPUT KONTROL BERULANG (Jika recurring aktif) */}
-                  {isRecurring && type !== "transfer" && (
-                    <View style={styles.recurringGroup}>
-                      {/* FIELD A: FREKUENSI ULANGI */}
-                      <Typo
-                        color={colors.neutral400}
-                        size={14}
-                        style={styles.sectionTitle}
-                      >
-                        Ulangi Setiap:
-                      </Typo>
-                      <BaseDropdown
-                        data={RECURRENCE_OPTIONS.filter(
-                          (o) => o.value !== "none"
-                        )}
-                        value={recurrenceRule}
-                        placeholder="Pilih Frekuensi"
-                        onChange={(item) => setRecurrenceRule(item.value)}
-                      />
-
-                      {/* FIELD B: KONDISI AKHIR (Dropdown) */}
-                      <Typo
-                        color={colors.neutral400}
-                        size={14}
-                        style={styles.sectionTitle}
-                      >
-                        Akhiri Pengulangan:
-                      </Typo>
-                      <BaseDropdown
-                        data={END_CONDITION_OPTIONS}
-                        value={endCondition}
-                        placeholder="Kondisi Akhir"
-                        onChange={(item) => setEndCondition(item.value)}
-                      />
-
-                      {/* FIELD C: NILAI AKHIR (Kondisional) */}
-                      {endCondition !== "never" && (
-                        <View style={{ gap: 15, marginTop: 5 }}>
-                          {endCondition === "until_date" && (
-                            <TouchableOpacity
-                              style={styles.dateInput}
-                              onPress={() => {
-                                setShowRecurrenceDatePicker(true);
-                                if (!endValue)
-                                  setEndValue(new Date().toISOString());
-                              }}
-                            >
-                              <Typo size={16} color={colors.white}>
-                                Sampai Tanggal:{" "}
-                                {new Date(
-                                  endValue || new Date()
-                                ).toLocaleDateString("id-ID")}
-                              </Typo>
-                            </TouchableOpacity>
-                          )}
-                          {endCondition === "after_count" && (
-                            <Input
-                              placeholder="Setelah Berapa Kali Transaksi?"
-                              keyboardType="numeric"
-                              value={endValue}
-                              onChangeText={setEndValue}
-                            />
-                          )}
-                        </View>
-                      )}
-                    </View>
-                  )}
                 </View>
+              </View>
 
-                {/* Footer (Simpan/Hapus) */}
-                <View style={styles.footer}>
-                  {isEditing && (
-                    <Button
-                      onPress={() => showDeleteAlert()}
-                      style={styles.deleteButton}
-                    >
-                      <IconComponent
-                        item={{ icon: "trash" } as any}
-                        size={verticalScale(20)}
-                        color={colors.neutral100}
-                      />
-                    </Button>
-                  )}
-                  <Button onPress={handleSave} style={styles.submitButton}>
-                    <Typo color={colors.black} fontWeight={"700"}>
-                      {isEditing ? "Update" : "Submit"}
-                    </Typo>
-                  </Button>
-                </View>
-              </>
-            )}
-            contentContainerStyle={styles.flatListContent}
-            nestedScrollEnabled
-            showsVerticalScrollIndicator={false}
-          />
+              {/* Date Input Full Width */}
+              <TouchableOpacity style={styles.inputCard} onPress={() => setShowDatePicker(true)}>
+                <Ionicons name="calendar-outline" size={20} color={colors.neutral400} style={{ marginRight: 10 }} />
+                <Typo size={16} color={colors.white}>
+                  {date.toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })}
+                </Typo>
+                <View style={{ flex: 1 }} />
+                <Ionicons name="pencil" size={16} color={colors.neutral500} />
+              </TouchableOpacity>
+
+              {/* Note Input Full Width */}
+              <View style={styles.inputCardPlain}>
+                <Ionicons name="document-text-outline" size={20} color={colors.neutral400} style={{ marginRight: 10 }} />
+                <Input
+                  placeholder="Add a note (e.g. Rent)"
+                  value={note}
+                  onChangeText={setNote}
+                  containerStyle={{ backgroundColor: 'transparent', borderWidth: 0, flex: 1 }}
+                  inputStyle={{ color: colors.white }}
+                  placeholderTextColor={colors.neutral400}
+                />
+              </View>
+
+              {/* Go back to Expense/Income Link */}
+              <TouchableOpacity onPress={() => setType('expense')} style={{ alignSelf: 'center', marginTop: 10 }}>
+                <Typo color={colors.neutral500} size={12}>Switch to Transaction Mode</Typo>
+              </TouchableOpacity>
+
+            </View>
+          )}
+
+          <View style={{ height: 100 }} />
+        </ScrollView>
+
+        {/* Footer Button Positioned at Bottom */}
+        <View style={styles.footer}>
+          <Button onPress={handleSave} style={[styles.mainButton, type === 'transfer' ? { backgroundColor: colors.accentGreen } : {}]}>
+            <Typo size={16} fontWeight="700" color={colors.background}>
+              {type === 'transfer' ? "Transfer Now" : (isEditing ? "Save Changes" : "Save Transaction")}
+            </Typo>
+            <Ionicons name="arrow-forward" size={20} color={colors.background} style={{ marginLeft: 8 }} />
+          </Button>
+
+          {isEditing && (
+            <TouchableOpacity onPress={showDeleteAlert} style={{ alignSelf: 'center', marginTop: 15 }}>
+              <Typo color={colors.rose} fontWeight="600">Delete Transaction</Typo>
+            </TouchableOpacity>
+          )}
         </View>
+
       </KeyboardAvoidingView>
-      {/* Date Picker Modal */}
+
       {showRecurrenceDatePicker && (
         <DateTimePicker
-          // Jika until_date, pakai endValue.
           value={new Date(Date.parse(endValue) ? endValue : new Date())}
           mode="date"
-          display="default"
           onChange={(_e, date) => {
             setShowRecurrenceDatePicker(false);
             if (date) {
-              if (endCondition === "until_date") {
-                setEndValue(date.toISOString());
-              }
+              if (endCondition === "until_date") setEndValue(date.toISOString());
             }
           }}
         />
       )}
-
       {showDatePicker && (
         <DateTimePicker
-          value={date} // Menggunakan state 'date' Anda
+          value={date}
           mode="date"
-          display="default"
-          onChange={handleDateChange} // Menggunakan handler 'handleDateChange'
+          onChange={handleDateChange}
         />
       )}
     </ScreenWrapper>
   );
 }
 
-/* ===============================
- * Styles
- * =============================== */
 const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
+    backgroundColor: colors.background,
   },
   content: {
-    flex: 1,
-    backgroundColor: colors.neutral900,
     paddingHorizontal: spacingX._20,
+    paddingTop: 10,
   },
-  form: {
-    gap: spacingY._20,
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 30
   },
-  tabContainer: {
-    flexDirection: "row",
+  toggleWrapper: {
+    flex: 1,
+    flexDirection: 'row',
     backgroundColor: colors.neutral800,
-    borderRadius: 10,
-    overflow: "hidden",
-    marginBottom: 16,
+    borderRadius: 30,
+    padding: 4,
   },
-  tab: {
+  toggleBtn: {
     flex: 1,
     paddingVertical: 10,
-    alignItems: "center",
+    alignItems: 'center',
+    borderRadius: 24,
   },
-  activeExpenseTab: { backgroundColor: "#ffebee" },
-  activeExpenseText: { color: "#e53935", fontWeight: "bold" },
-  activeIncomeTab: { backgroundColor: "#e8f5e9" },
-  activeTransferTab: { backgroundColor: "#bdf1faff" },
-  activeIncomeText: { color: "#43a047", fontWeight: "bold" },
-  activeTransferText: { color: "#0f76fcff", fontWeight: "bold" },
-
-  dateInput: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
+  toggleBtnActive: {
+    backgroundColor: 'rgba(5, 199, 126, 0.1)', // Green Tint
+  },
+  miniTransferBtn: {
+    width: 44, height: 44, borderRadius: 22,
     backgroundColor: colors.neutral800,
-    borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center'
+  },
+  amountSection: {
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  amountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  amountInputContainer: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    width: 'auto',
+    minWidth: 100,
+    height: 60,
+  },
+  amountInputText: {
+    fontSize: 48,
+    fontWeight: '700',
+    color: colors.white,
+    textAlign: 'center',
+    height: 60,
+    padding: 0
+  },
+  formGroup: {
+    gap: 15
+  },
+  inputCard: {
+    backgroundColor: colors.neutral800,
+    padding: 16,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12
+  },
+  inputCardPlain: {
+    backgroundColor: colors.neutral800,
+    paddingHorizontal: 16,
+    paddingVertical: 4, // Input has own height
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputIconBox: {
+    width: 40, height: 40, borderRadius: 12,
+    backgroundColor: 'rgba(5, 199, 126, 0.1)',
+    justifyContent: 'center', alignItems: 'center'
+  },
+  invisibleDropdownWrapper: {
+    marginTop: -8, // Pull up to align with label
+    marginLeft: -8, // Pull left
+  },
+  cleanDropdown: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    paddingHorizontal: 8,
+    height: 30
+  },
+  rowGap: {
+    flexDirection: 'row',
+    gap: 12
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  iconCircleSmall: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: 'rgba(5, 199, 126, 0.1)',
+    justifyContent: 'center', alignItems: 'center'
+  },
+  recurringOptions: {
+    gap: 12,
+    marginTop: 10
+  },
+  // Transfer Styles
+  transferRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
-    borderWidth: 1,
-    borderColor: colors.neutral700,
+    marginBottom: 10
   },
-  recurringToggleRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 10,
-    marginBottom: 10,
+  transferCard: {
     backgroundColor: colors.neutral800,
-    borderRadius: 10,
-    paddingHorizontal: 15,
+    padding: 16,
+    borderRadius: 24,
+    height: 120,
+    justifyContent: 'space-between'
   },
-  recurringGroup: {
-    paddingTop: 10,
-    paddingBottom: 20,
-    gap: 15,
-    borderTopWidth: 1,
-    borderTopColor: colors.neutral700,
-    marginTop: 10,
-  },
-  sectionTitle: {
-    marginBottom: 5,
-    marginTop: 10,
-    fontWeight: "600",
+  arrowCircle: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: colors.neutral800,
+    justifyContent: 'center', alignItems: 'center',
+    borderWidth: 1, borderColor: colors.neutral700
   },
   footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingVertical: spacingY._15,
-    gap: scale(12),
-    borderTopWidth: 1,
-    borderTopColor: colors.neutral700,
-    backgroundColor: colors.neutral900,
+    position: 'absolute',
+    bottom: 0,
+    left: 0, right: 0,
+    backgroundColor: colors.background,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 30, // Safe area
   },
-  submitButton: {
-    flex: 1,
-    backgroundColor: colors.primary, // Ganti warna default
-    padding: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  deleteButton: {
-    paddingHorizontal: spacingX._15,
-    backgroundColor: colors.rose,
-    borderRadius: 10,
-    justifyContent: "center",
-  },
-  descriptionInput: {
-    height: verticalScale(100),
-    flexDirection: "row",
-    alignItems: "flex-start",
-    paddingBottom: 20,
-  },
-  flatListContent: {
-    paddingBottom: 20, // Tambahkan padding untuk footer
-  },
-  inputContainer: {
-    gap: spacingY._10,
-  },
-  tabText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#777",
-  },
-  dateTouchable: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
+  mainButton: {
+    backgroundColor: colors.accentGreen,
+    borderRadius: 30,
+    height: 56,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 });

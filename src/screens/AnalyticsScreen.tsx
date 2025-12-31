@@ -98,20 +98,18 @@ export default function DashboardAnalytics() {
         {/* 4. METRIK KUNCI (Dinamis) */}
 
         <View style={styles.keyMetrics}>
-          {" "}
           <Typo size={16} fontWeight="600" color={colors.neutral400}>
             Net Income Periode Ini ({currentFilter.toUpperCase()}):{" "}
           </Typo>
-          {/* Nilai Net Income */}{" "}
+          {/* Nilai Net Income */}
           <Typo size={24} fontWeight="800" color={comparisonColor}>
-            {" "}
             {isLoadingCombined
               ? "..."
-              : formatRupiah(netIncome, netIncome < 0)}{" "}
+              : formatRupiah(netIncome, netIncome < 0)}
           </Typo>
-          {/* Teks Perbandingan */}{" "}
+          {/* Teks Perbandingan */}
           <Typo size={12} color={comparisonColor}>
-            {isLoadingCombined ? "..." : comparisonText}{" "}
+            {isLoadingCombined ? "..." : comparisonText}
           </Typo>
           {/* Tambahan: Tampilkan Total Income dan Total Expense Absolut */}
           <View style={{ marginTop: 15, flexDirection: "row", gap: 20 }}>
@@ -121,7 +119,7 @@ export default function DashboardAnalytics() {
             <Typo size={14} color={colors.rose}>
               Expense: {formatRupiah(keyMetrics?.totalExpense || 0)}
             </Typo>
-          </View>{" "}
+          </View>
         </View>
 
         {/* 3. Placeholder untuk Chart Kategori (Tanpa Perubahan) */}
@@ -157,7 +155,10 @@ const styles = StyleSheet.create({
   },
   keyMetrics: {
     marginTop: 30,
-    padding: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+    backgroundColor: colors.neutral800,
+    borderRadius: 24,
     alignItems: "center",
   },
 });

@@ -1,40 +1,40 @@
 import { scale, verticalScale } from "@/utils/styling";
 
 export const colors = {
-  // Background - Deep Navy
-  background: "#0F172A",
-  backgroundAlt: "#11224E",
+  // Background - Dark Forest Green
+  background: "#0C1A14",     // Latar belakang paling dasar (sangat gelap)
+  backgroundAlt: "#14261F",  // Permukaan sedikit lebih terang
 
-  // Primary/Accent - Teal Green
-  primary: "#67C090",
-  primaryLight: "#8BD4AC",
-  primaryDark: "#4A9A70",
-  accentGreen: "#05C77E", // Vibrant green for Pay button
+  // Primary/Accent - Emerald Green
+  primary: "#23C16B",        // Hijau cerah pada tombol 'Dinner'
+  primaryLight: "#35E086",   // Hover/Highlight
+  primaryDark: "#1A8B4D",    // Tekan/Active
+  accentGreen: "#23C16B",    // Sama dengan primary (untuk konsistensi)
 
   // Text colors
-  text: "#fff",
-  textLight: "#e2e8f0",
-  textLighter: "#cbd5e1",
-  white: "#fff",
-  black: "#000",
+  text: "#FFFFFF",           // Putih murni untuk angka saldo
+  textLight: "#A9B3AD",      // Abu-abu kehijauan untuk label (Category, Wallet)
+  textLighter: "#7C8A82",    // Deskripsi kecil
+  white: "#FFFFFF",
+  black: "#000000",
 
   // Semantic colors
-  rose: "#F43F5E",       // Expense indicator (Soft Red/Rose)
+  rose: "#FF4D4D",           // Tetap merah untuk indikator pengeluaran jika perlu
+  green: "#23C16B",
   roseLight: "#FB7185",
-  green: "#67C090",      // Income indicator (same as primary)
 
-  // Neutral scale - Slate tones for dark mode
-  neutral50: "#fafafa",
-  neutral100: "#f5f5f5",
+  // Neutral scale - Deep Forest/Olive Tones (Bukan Slate/Blue)
+  neutral50: "#F2F4F3",
+  neutral100: "#E6E9E7",
   neutral200: "#e5e5e5",
   neutral300: "#d4d4d4",
   neutral350: "#CCCCCC",
   neutral400: "#94a3b8",
   neutral500: "#64748b",
   neutral600: "#475569",
-  neutral700: "#334155",  // Card backgrounds
-  neutral800: "#1e293b",  // Elevated surfaces
-  neutral900: "#0F172A",  // Base background (Deep Navy)
+  neutral700: "#1A2E26",     // Background Card (Food & Dining, Wallet)
+  neutral800: "#14261F",     // Input field/Note background
+  neutral900: "#0C1A14",     // Base background
 };
 
 export const spacingX = {

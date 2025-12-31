@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   dropdownPlaceholder: {
     color: colors.neutral500,
-    fontSize: 14, 
+    fontSize: 14,
   },
   dropdownSelectedText: {
     color: colors.neutral200,
@@ -94,5 +94,7 @@ const styles = StyleSheet.create({
   },
   dropdownIcon: {
     tintColor: colors.neutral500,
+    width: 25,
+    height: 25,
   },
 });

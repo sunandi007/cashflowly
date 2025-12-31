@@ -6,6 +6,7 @@ import {
   TextStyle,
   TouchableOpacityProps,
   ViewStyle,
+  StyleProp,
 } from "react-native";
 
 /* ===========================================
@@ -13,12 +14,12 @@ import {
  * ===========================================
  */
 export type ScreenWrapperProps = {
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   children: ReactNode;
 };
 
 export type ModalWrapperProps = {
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   bg?: string;
   children: ReactNode;
 };
@@ -32,31 +33,31 @@ export type TypoProps = {
   color?: string;
   fontWeight?: TextStyle["fontWeight"];
   children: ReactNode;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
   textProps?: TextProps;
 };
 
 export type HeaderProps = {
   title?: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
 };
 
 export type BackButtonProps = {
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   iconSize?: number;
 };
 
 export interface InputProps extends TextInputProps {
   icon?: ReactNode;
-  containerStyle?: ViewStyle;
-  inputStyle?: TextStyle;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
   inputRef?: React.RefObject<TextInput>;
 }
 
 export interface CustomButtonProps extends TouchableOpacityProps {
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   loading?: boolean;
   children: ReactNode;
