@@ -5,4 +5,5 @@ export type RootStackParamList = {
   Register: undefined;
   Main: undefined;
   SearchScreen: undefined;
+  WalletDetail: { wallet: any };
 };

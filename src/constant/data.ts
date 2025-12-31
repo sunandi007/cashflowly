@@ -4,11 +4,6 @@ import { colors } from "./theme";
 // Group 1: Account & Management
 export const accountOptionsGroup1: AccountOptionType[] = [
   {
-    title: "Account Info",
-    icon: "person",
-    bgColor: "#3B82F6", // Blue
-  },
-  {
     title: "Wallets",
     icon: "wallet",
     bgColor: "#8B5CF6", // Purple

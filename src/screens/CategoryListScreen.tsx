@@ -188,7 +188,7 @@ export default function CategoryListScreen() {
   );
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container]}>
       {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -311,6 +311,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.neutral900,
+    paddingTop: 10
   },
 
   // Header
@@ -319,7 +320,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: spacingX._20,
-    paddingVertical: verticalScale(16),
+    paddingVertical: verticalScale(10),
   },
   backButton: {
     width: scale(40),
@@ -358,7 +359,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: verticalScale(16),
+    paddingVertical: verticalScale(10),
   },
   itemLeft: {
     flexDirection: "row",

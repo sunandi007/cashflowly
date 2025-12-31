@@ -129,7 +129,7 @@ export default function DashboardScreen() {
         </View>
 
         {/* Quick Actions */}
-        <View style={styles.quickActionsContainer}>
+        {/* <View style={styles.quickActionsContainer}>
           {QUICK_ACTIONS.map((action) => (
             <TouchableOpacity
               key={action.id}
@@ -152,7 +152,7 @@ export default function DashboardScreen() {
               </Typo>
             </TouchableOpacity>
           ))}
-        </View>
+        </View> */}
 
         {/* Recent Transactions */}
         <FlatList

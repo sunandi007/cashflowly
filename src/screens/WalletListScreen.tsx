@@ -15,7 +15,8 @@ import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import WalletAddModal from "@/components/WalletModal";
 import { scale, verticalScale } from "@/utils/styling";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "@/types/navigation";
 
 // Wallet type colors mapping
 const WALLET_GRADIENTS: Record<string, string[]> = {
@@ -60,7 +61,7 @@ const getWalletLabel = (name: string): string => {
 };
 
 export default function WalletScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { wallets, totalBalance, addWallet, updateWallet, deleteWallet } =
     useWallets();
   const [showAdd, setShowAdd] = useState(false);
@@ -76,12 +77,6 @@ export default function WalletScreen() {
     return `$${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  // Generate masked account number
-  const getMaskedAccountNumber = (index: number) => {
-    const lastFour = String(1000 + index * 111 + 8821).slice(-4);
-    return `**** **** **** ${lastFour}`;
-  };
-
   const renderWalletCard = ({ item, index }: { item: any; index: number }) => {
     const walletType = getWalletType(item.name);
     const gradient = WALLET_GRADIENTS[walletType] || WALLET_GRADIENTS.default;
@@ -92,8 +87,7 @@ export default function WalletScreen() {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {
-          setSelectedWallet(item as any);
-          setShowAdd(true);
+          navigation.navigate("WalletDetail", { wallet: item });
         }}
         style={styles.cardWrapper}
       >
@@ -123,9 +117,6 @@ export default function WalletScreen() {
             <Text style={styles.cardBalance}>
               {formatCurrency(item.balance)}
             </Text>
-            <Text style={styles.cardAccountNumber}>
-              {getMaskedAccountNumber(index)}
-            </Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -146,7 +137,12 @@ export default function WalletScreen() {
         <Text style={styles.headerTitle}>My Wallets</Text>
 
         <TouchableOpacity style={styles.headerButton}>
-          <Ionicons name="settings-outline" size={scale(22)} color={colors.white} />
+          <Ionicons name="add-circle-outline"
+            onPress={() => {
+              setSelectedWallet(null);
+              setShowAdd(true);
+            }}
+            size={scale(28)} color={colors.white} />
         </TouchableOpacity>
       </View>
 
@@ -174,27 +170,6 @@ export default function WalletScreen() {
             </View>
           ))}
         </View>
-
-        {/* Add New Wallet Button */}
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => {
-            setSelectedWallet(null);
-            setShowAdd(true);
-          }}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="add" size={scale(22)} color={colors.neutral900} />
-          <Text style={styles.addButtonText}>Add New Wallet</Text>
-        </TouchableOpacity>
-
-        {/* Connect Another Account Link */}
-        <TouchableOpacity style={styles.connectLink} activeOpacity={0.7}>
-          <View style={styles.connectIconWrapper}>
-            <Ionicons name="add" size={scale(16)} color={colors.neutral400} />
-          </View>
-          <Text style={styles.connectText}>Connect another account</Text>
-        </TouchableOpacity>
       </ScrollView>
 
       <WalletAddModal
