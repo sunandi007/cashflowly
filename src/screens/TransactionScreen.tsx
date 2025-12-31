@@ -500,7 +500,7 @@ export default function TransactionScreen() {
             )}
             <View style={styles.amountRow}>
               <Typo size={24} fontWeight="600" color={colors.neutral500} style={{ marginRight: 8 }}>
-                {type === 'transfer' ? "$" : "Rp"}
+                Rp
               </Typo>
               <Input
                 placeholder="0"
@@ -574,33 +574,18 @@ export default function TransactionScreen() {
                 </View>
               </View>
 
-              {/* Date & Time (Split) */}
-              <View style={styles.rowGap}>
-                <TouchableOpacity style={[styles.inputCard, { flex: 1 }]} onPress={() => setShowDatePicker(true)}>
-                  <View style={[styles.inputIconBox, { backgroundColor: 'transparent' }]}>
-                    <Ionicons name="calendar" size={20} color={colors.neutral400} />
-                  </View>
-                  <View>
-                    <Typo size={12} color={colors.neutral400}>Date</Typo>
-                    <Typo size={16} fontWeight="600" color={colors.white}>
-                      {date.toLocaleDateString("en-US", { day: '2-digit', month: 'short' })}
-                    </Typo>
-                    {/* Hack to display "Today" if today? logic omitted for brevity */}
-                  </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={[styles.inputCard, { flex: 1 }]}>
-                  <View style={[styles.inputIconBox, { backgroundColor: 'transparent' }]}>
-                    <Ionicons name="time" size={20} color={colors.neutral400} />
-                  </View>
-                  <View>
-                    <Typo size={12} color={colors.neutral400}>Time</Typo>
-                    <Typo size={16} fontWeight="600" color={colors.white}>
-                      {date.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', hour12: false })}
-                    </Typo>
-                  </View>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity style={[styles.inputCard, { flex: 1 }]} onPress={() => setShowDatePicker(true)}>
+                <View style={[styles.inputIconBox, { backgroundColor: 'transparent' }]}>
+                  <Ionicons name="calendar" size={20} color={colors.neutral400} />
+                </View>
+                <View>
+                  <Typo size={12} color={colors.neutral400}>Date</Typo>
+                  <Typo size={16} fontWeight="600" color={colors.white}>
+                    {date.toLocaleDateString("en-US", { day: '2-digit', month: 'short' })}
+                  </Typo>
+                  {/* Hack to display "Today" if today? logic omitted for brevity */}
+                </View>
+              </TouchableOpacity>
 
               {/* Note */}
               <View style={styles.inputCardPlain}>
@@ -748,9 +733,9 @@ export default function TransactionScreen() {
                         style={styles.cleanDropdown}
                         placeholderStyle={{ color: colors.neutral400, fontSize: 12 }}
                         selectedTextStyle={{ color: colors.neutral400, fontSize: 12 }}
+                        containerStyle={{ width: 220 }}
                       />
                     </View>
-                    <Typo size={12} color={colors.accentGreen}>****</Typo>
                   </View>
                 </View>
 
@@ -764,7 +749,7 @@ export default function TransactionScreen() {
                   <View style={[styles.iconCircleSmall, { backgroundColor: colors.rose + '20' }]}>
                     <Ionicons name="wallet" size={16} color={colors.roseLight} />
                   </View>
-                  <View style={{ marginTop: 10, alignItems: 'flex-end' }}>
+                  <View style={{ marginTop: 10 }}>
                     <Typo size={12} color={colors.white} fontWeight="600">To</Typo>
                     <View style={styles.invisibleDropdownWrapper}>
                       <BaseDropdown
@@ -778,11 +763,11 @@ export default function TransactionScreen() {
                         placeholder="Select"
                         onChange={(item) => setToWalletId(item.value as any)}
                         style={styles.cleanDropdown}
-                        placeholderStyle={{ color: colors.neutral400, fontSize: 12, textAlign: 'right' }}
-                        selectedTextStyle={{ color: colors.neutral400, fontSize: 12, textAlign: 'right' }}
+                        placeholderStyle={{ color: colors.neutral400, fontSize: 12 }}
+                        selectedTextStyle={{ color: colors.neutral400, fontSize: 12 }}
+                        containerStyle={{ width: 150 }}
                       />
                     </View>
-                    <Typo size={12} color={colors.neutral500}>Target</Typo>
                   </View>
                 </View>
               </View>
@@ -911,7 +896,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 0,
     width: 'auto',
-    minWidth: 100,
+    minWidth: '80%',
     height: 60,
   },
   amountInputText: {
@@ -927,7 +912,7 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     backgroundColor: colors.neutral800,
-    padding: 16,
+    padding: 10,
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
@@ -947,8 +932,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center'
   },
   invisibleDropdownWrapper: {
-    marginTop: -8, // Pull up to align with label
-    marginLeft: -8, // Pull left
+    marginTop: -8,
+    marginLeft: -8,
+    paddingVertical: 8,
   },
   cleanDropdown: {
     backgroundColor: 'transparent',
