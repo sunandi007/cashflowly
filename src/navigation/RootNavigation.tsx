@@ -16,6 +16,7 @@ import BillsScreen from "@/screens/BillsScreen";
 import TransactionScreen from "@/screens/TransactionScreen";
 import SearchScreen from "@/screens/SearchScreen";
 import WalletDetailScreen from "@/screens/WalletDetailScreen";
+import TagListScreen from "@/screens/TagListScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,6 +47,7 @@ export default function RootNavigation() {
             options={{ animation: 'fade_from_bottom' }} // Opsional: animasi muncul
           />
           <Stack.Screen name="WalletDetail" component={WalletDetailScreen} />
+          <Stack.Screen name="TagList" component={TagListScreen} />
         </>
       ) : (
         <>

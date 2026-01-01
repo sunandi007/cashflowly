@@ -169,6 +169,16 @@ export type WalletType = {
   createdAt?: Date;
 };
 
+// -------- TAG TABLE --------
+export type TagType = {
+  id: string;
+  user_id: string;
+  name: string;
+  created_at: string;
+  updated_at?: string;
+  usage_count?: number; // For UI display
+};
+
 // -------- ANALITIC TABLE --------
 export type AnalyticsData = {
   income: number;

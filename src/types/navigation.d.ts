@@ -6,4 +6,5 @@ export type RootStackParamList = {
   Main: undefined;
   SearchScreen: undefined;
   WalletDetail: { wallet: any };
+  TagList: undefined;
 };

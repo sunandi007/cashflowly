@@ -60,6 +60,8 @@ const ProfileScreen = () => {
       setIsSettingsModalVisible(true);
     } else if (item.title === "Manage Categories" || item.title === "Kustomisasi Kategori") {
       navigation.navigate("Category" as never);
+    } else if (item.title === "Manage Tags") {
+      navigation.navigate("TagList" as never);
     } else if (item.title === "Edit Profile" || item.title === "Account Info") {
       setShowModal(true);
     } else if (item.title === "Tagihan Berulang" || item.title === "Wallets") {

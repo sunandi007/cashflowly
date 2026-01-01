@@ -13,6 +13,11 @@ export const accountOptionsGroup1: AccountOptionType[] = [
     icon: "pricetag",
     bgColor: colors.primary, // Green
   },
+  {
+    title: "Manage Tags",
+    icon: "pricetags",
+    bgColor: "#0ea5e9", // Sky Blue
+  },
 ];
 
 // Group 2: Settings & Support
