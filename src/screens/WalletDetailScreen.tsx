@@ -75,7 +75,7 @@ export default function WalletDetailScreen() {
             const yesterday = new Date();
             yesterday.setDate(today.getDate() - 1);
 
-            let title = date.toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric' });
+            let title = date.toLocaleDateString("id-ID", { month: 'long', day: 'numeric', year: 'numeric' });
 
             if (date.toDateString() === today.toDateString()) title = "Today";
             else if (date.toDateString() === yesterday.toDateString()) title = "Yesterday";

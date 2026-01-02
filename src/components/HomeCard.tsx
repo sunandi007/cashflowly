@@ -56,30 +56,31 @@ const HomeCard = () => {
 
   // Fungsi utilitas untuk memformat mata uang
   const formatCurrency = (amount: number, showSign = false) => {
-    const formatted = Number(Math.abs(amount)).toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+    const formatted = Number(Math.abs(amount)).toLocaleString("id-ID", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     });
 
     if (showSign && amount > 0) {
-      return `+${formatted}`;
+      return `+Rp ${formatted}`;
     }
     if (showSign && amount < 0) {
-      return `-${formatted.replace("-", "")}`;
+      return `-Rp ${formatted}`;
     }
-    return formatted;
+    return `Rp ${formatted}`;
   };
 
   const formatCompact = (amount: number) => {
+    if (amount >= 1000000000) {
+      return `Rp ${(amount / 1000000000).toFixed(1)}M`;
+    }
     if (amount >= 1000000) {
-      return `$${(amount / 1000000).toFixed(1)}M`;
+      return `Rp ${(amount / 1000000).toFixed(1)}jt`;
     }
     if (amount >= 1000) {
-      return `$${(amount / 1000).toFixed(1)}K`;
+      return `Rp ${(amount / 1000).toFixed(0)}rb`;
     }
-    return `$${amount.toFixed(0)}`;
+    return `Rp ${amount.toFixed(0)}`;
   };
 
   return (
@@ -91,7 +92,7 @@ const HomeCard = () => {
             Total Balance
           </Typo>
           <Typo size={32} fontWeight="bold" color={colors.white}>
-            ${totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            Rp {totalBalance.toLocaleString("id-ID", { minimumFractionDigits: 0 })}
           </Typo>
         </View>
 

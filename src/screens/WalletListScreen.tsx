@@ -74,7 +74,7 @@ export default function WalletScreen() {
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return `$${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `Rp ${amount.toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
   };
 
   const renderWalletCard = ({ item, index }: { item: any; index: number }) => {

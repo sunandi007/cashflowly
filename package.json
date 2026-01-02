@@ -21,13 +21,16 @@
     "date-fns": "^4.1.0",
     "expo": "~54.0.13",
     "expo-constants": "^18.0.10",
-    "expo-file-system": "~19.0.17",
+    "expo-document-picker": "~14.0.8",
+    "expo-file-system": "~19.0.21",
     "expo-image": "~3.0.9",
     "expo-image-picker": "~17.0.8",
     "expo-linear-gradient": "~15.0.7",
+    "expo-sharing": "~14.0.8",
     "expo-status-bar": "~3.0.8",
     "expo-web-browser": "~15.0.9",
     "lodash": "^4.17.21",
+    "papaparse": "^5.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.4",
@@ -48,6 +51,7 @@
   "private": true,
   "devDependencies": {
     "@types/lodash": "^4.17.20",
+    "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.2"
   }
 }

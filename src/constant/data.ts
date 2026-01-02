@@ -18,10 +18,20 @@ export const accountOptionsGroup1: AccountOptionType[] = [
     icon: "pricetags",
     bgColor: "#0ea5e9", // Sky Blue
   },
+  {
+    title: "Data Management",
+    icon: "cloud-download-outline",
+    bgColor: "#0ea5e9",
+  },
 ];
 
 // Group 2: Settings & Support
 export const accountOptionsGroup2: AccountOptionType[] = [
+  {
+    title: "Settings",
+    icon: "settings-outline",
+    bgColor: "#069669",
+  },
   {
     title: "Notifications",
     icon: "notifications",
@@ -61,6 +71,11 @@ export const accountOptions: AccountOptionType[] = [
     title: "Tagihan Berulang",
     icon: "folder-open-outline",
     bgColor: "#cfec67ff",
+  },
+  {
+    title: "Data Management",
+    icon: "cloud-download-outline",
+    bgColor: "#0ea5e9",
   },
   {
     title: "Privacy Policey",

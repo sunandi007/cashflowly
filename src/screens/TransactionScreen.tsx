@@ -581,7 +581,7 @@ export default function TransactionScreen() {
                 <View>
                   <Typo size={12} color={colors.neutral400}>Date</Typo>
                   <Typo size={16} fontWeight="600" color={colors.white}>
-                    {date.toLocaleDateString("en-US", { day: '2-digit', month: 'short' })}
+                    {date.toLocaleDateString("id-ID", { day: '2-digit', month: 'short' })}
                   </Typo>
                   {/* Hack to display "Today" if today? logic omitted for brevity */}
                 </View>
@@ -776,7 +776,7 @@ export default function TransactionScreen() {
               <TouchableOpacity style={styles.inputCard} onPress={() => setShowDatePicker(true)}>
                 <Ionicons name="calendar-outline" size={20} color={colors.neutral400} style={{ marginRight: 10 }} />
                 <Typo size={16} color={colors.white}>
-                  {date.toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })}
+                  {date.toLocaleDateString("id-ID", { weekday: 'short', month: 'short', day: 'numeric' })}
                 </Typo>
                 <View style={{ flex: 1 }} />
                 <Ionicons name="pencil" size={16} color={colors.neutral500} />
