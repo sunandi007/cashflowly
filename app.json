@@ -2,6 +2,7 @@
   "expo": {
     "name": "CashFlowly",
     "slug": "CashFlowly",
+    "scheme": "cashflowly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +22,36 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.sunandi.CashFlowly"
+      "package": "com.sunandi.CashFlowly",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "ehlascpnadaraaltoopa.supabase.co",
+              "pathPrefix": "/auth/v1/callback"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "945b83f5-f442-4d5c-8260-689243aa1c3e"
+      }
+    },
+    "owner": "sunandi",
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }

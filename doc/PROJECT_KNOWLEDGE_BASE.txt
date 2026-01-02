@@ -1,0 +1,35 @@
+# KNOWLEDGE BASE: React Native Supabase Money Tracker Pro (CASHFLOWLY)
+
+## 1. STRUKTUR PROYEK FRONTEND (REACT NATIVE)
+
+### A. Folder Kunci
+* **`src/screens`:** Views utama (`Dashboard.tsx`, `AnalyticsScreen.tsx`, `WalletListScreen.tsx`, `ProfileScreen.tsx`).
+* **`src/components`:** Komponen UI yang dapat digunakan kembali (`TransactionItem.tsx`, `WalletModal.tsx`, `Button.tsx`).
+* **`src/services`:** Layer Supabase (`supabaseClient.ts`).
+* **`src/types`:** Definisi TypeScript (`model.ts`).
+
+### B. Custom Hooks (Inti Manajemen Data)
+
+Semua interaksi data menggunakan *custom hooks* TanStack Query:
+
+| Hook | Tabel Terkait | Tujuan |
+| :--- | :--- | :--- |
+| `useAuth.ts` | `auth` | Login/Logout/Registrasi. |
+| **`useTransactions.ts`** | `transactions` | Fetch data transaksi Dashboard/List. |
+| **`useTransactionMutations.ts`** | `transactions` | INSERT/UPDATE/DELETE Transaksi (Income/Expense). |
+| **`useTransfer.ts`** | `transfers` | [cite_start]Memanggil fungsi Supabase `perform_wallet_transfer`[cite: 7]. |
+| `useWallets.ts` | `wallets` | Fetch data dan mutasi Wallet (kecuali saldo). |
+| `useCategories.ts` | `categories` | Fetch data kategori. |
+| `useProfile.ts` | `profiles` | Fetch data profil. |
+| `useAnalytics.ts` / `usePieChartAnalytics.ts` | `transactions` | Logika komputasi untuk grafik statistik. |
+
+---
+
+## 2. FITUR UTAMA APLIKASI
+
+1.  **Dashboard:** Menampilkan seluruh transaksi (Income/Expense/Transfer) terkini.
+2.  **Statistic:** Menampilkan grafik analitis keuangan (menggunakan `react-native-gifted-charts`).
+3.  **Wallet:** Menambah dan mengedit nama dompet. Saldo dompet **hanya** diperbarui melalui transaksi/transfer.
+4.  **Profile:** Memperbarui data profil (`full_name`, `avatar_url`) dan fungsi *Logout*.
+
+---

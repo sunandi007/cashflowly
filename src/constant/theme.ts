@@ -1,27 +1,40 @@
 import { scale, verticalScale } from "@/utils/styling";
 
 export const colors = {
-  primary: "#67C090",
-  primaryLight: "#0ea5e9",
-  primaryDark: "#124170",
-  text: "#fff",
-  textLight: "#e5e5e5",
-  textLighter: "#d4d4d4",
-  white: "#fff",
-  black: "#000",
-  rose: "#ef4444",
-  green: "#16a34a",
-  neutral50: "#fafafa",
-  neutral100: "#f5f5f5",
+  // Background - Dark Forest Green
+  background: "#0C1A14",     // Latar belakang paling dasar (sangat gelap)
+  backgroundAlt: "#14261F",  // Permukaan sedikit lebih terang
+
+  // Primary/Accent - Emerald Green
+  primary: "#23C16B",        // Hijau cerah pada tombol 'Dinner'
+  primaryLight: "#35E086",   // Hover/Highlight
+  primaryDark: "#1A8B4D",    // Tekan/Active
+  accentGreen: "#23C16B",    // Sama dengan primary (untuk konsistensi)
+
+  // Text colors
+  text: "#FFFFFF",           // Putih murni untuk angka saldo
+  textLight: "#A9B3AD",      // Abu-abu kehijauan untuk label (Category, Wallet)
+  textLighter: "#7C8A82",    // Deskripsi kecil
+  white: "#FFFFFF",
+  black: "#000000",
+
+  // Semantic colors
+  rose: "#FF4D4D",           // Tetap merah untuk indikator pengeluaran jika perlu
+  green: "#23C16B",
+  roseLight: "#FB7185",
+
+  // Neutral scale - Deep Forest/Olive Tones (Bukan Slate/Blue)
+  neutral50: "#F2F4F3",
+  neutral100: "#E6E9E7",
   neutral200: "#e5e5e5",
   neutral300: "#d4d4d4",
   neutral350: "#CCCCCC",
-  neutral400: "#a3a3a3",
-  neutral500: "#737373",
-  neutral600: "#525252",
-  neutral700: "#404040",
-  neutral800: "#262626",
-  neutral900: "#171717",
+  neutral400: "#94a3b8",
+  neutral500: "#64748b",
+  neutral600: "#475569",
+  neutral700: "#1A2E26",     // Background Card (Food & Dining, Wallet)
+  neutral800: "#14261F",     // Input field/Note background
+  neutral900: "#0C1A14",     // Base background
 };
 
 export const spacingX = {

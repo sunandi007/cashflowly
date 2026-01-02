@@ -13,7 +13,7 @@ const Input = (props: InputProps) => {
         style={[styles.input, props.inputStyle]}
         placeholderTextColor={colors.neutral400}
         ref={props.inputRef && props.inputRef}
-        keyboardType={props.keyboardType || "default"} 
+        keyboardType={props.keyboardType || "default"}
         {...props}
       ></TextInput>
     </View>
@@ -28,8 +28,9 @@ const styles = StyleSheet.create({
     height: verticalScale(54),
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: colors.neutral800, // Dark gray background
     borderWidth: 1,
-    borderColor: colors.neutral300,
+    borderColor: colors.neutral700,     // Subtle border
     borderRadius: radius._17,
     borderCurve: "continuous",
     paddingHorizontal: spacingX._15,

@@ -4,4 +4,7 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Main: undefined;
+  SearchScreen: undefined;
+  WalletDetail: { wallet: any };
+  TagList: undefined;
 };

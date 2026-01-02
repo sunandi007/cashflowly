@@ -1,143 +1,206 @@
-import { colors, spacingX, spacingY } from "@/constant/theme";
-import { WalletType } from "@/types/model";
+import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import { scale, verticalScale } from "@/utils/styling";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
-import { ImageBackground, StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import Typo from "./Typo";
 import { useAuth } from "@/hooks/useAuth";
-import { calculateSummary } from "@/utils/finance";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useWallets } from "@/hooks/useWallets";
 
 const HomeCard = () => {
-    const { session } = useAuth();
+  const { session } = useAuth();
   const userId = session?.user?.id;
 
-   const { data: transactions = [], isLoading } = useTransactions(
-    userId /*, period*/
-  );
+  // 1. Ambil data WALLET untuk Total Balance
+  const { wallets } = useWallets();
 
+  // 2. Ambil data TRANSAKSI untuk Summary Income/Expense (periode saat ini)
+  const { data: transactions = [], isLoading: isLoadingTransactions } =
+    useTransactions(userId);
 
-    // ---- Summary aman (konversi angka) ----
-  const { income, expense, balance } = useMemo(
-    () =>
-      calculateSummary(
-        (transactions ?? []).map((t: any) => ({
-          ...t,
-          amount: Number(t.amount) || 0,
-        }))
-      ),
-    [transactions]
-  );
+  // HITUNG TOTAL BALANCE dari SEMUA DOMPET
+  const totalBalance = useMemo(() => {
+    if (wallets.length === 0) return 0;
+    return wallets.reduce((sum, wallet) => sum + (Number(wallet.balance) || 0), 0);
+  }, [wallets]);
 
+  // HITUNG INCOME & EXPENSE untuk RINGKASAN PERIODE
+  const { income, expense } = useMemo(() => {
+    if (!transactions.length) return { income: 0, expense: 0 };
 
+    const normalTx = transactions.filter(
+      (t: any) => !t.transfer_id && t.type !== 'transfer'
+    );
 
+    const incomeAmount = normalTx
+      .filter((t) => t.type === "income")
+      .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+    const expenseAmount = normalTx
+      .filter((t) => t.type === "expense")
+      .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+    return { income: incomeAmount, expense: expenseAmount };
+  }, [transactions]);
+
+  const isLoading = isLoadingTransactions;
+
+  if (isLoading) {
+    return (
+      <View style={[styles.card, styles.loadingPlaceholder]}>
+        <Typo color={colors.neutral500}>Loading data...</Typo>
+      </View>
+    );
+  }
+
+  // Fungsi utilitas untuk memformat mata uang
+  const formatCurrency = (amount: number, showSign = false) => {
+    const formatted = Number(Math.abs(amount)).toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    if (showSign && amount > 0) {
+      return `+${formatted}`;
+    }
+    if (showSign && amount < 0) {
+      return `-${formatted.replace("-", "")}`;
+    }
+    return formatted;
+  };
+
+  const formatCompact = (amount: number) => {
+    if (amount >= 1000000) {
+      return `$${(amount / 1000000).toFixed(1)}M`;
+    }
+    if (amount >= 1000) {
+      return `$${(amount / 1000).toFixed(1)}K`;
+    }
+    return `$${amount.toFixed(0)}`;
+  };
 
   return (
-    <ImageBackground
-      source={require("../../assets/images/card.png")}
-      resizeMode="stretch"
-      style={styles.bgImage}
-    >
-      <View style={styles.container}>
+    <View style={styles.card}>
+      {/* Top Section */}
+      <View style={styles.topSection}>
         <View>
-          <View style={styles.totalBalanceRow}>
-            <Typo size={17} color={colors.neutral800} fontWeight={"500"}>
-              Total Balance
-            </Typo>
-            <Ionicons
-              name="ellipsis-horizontal"
-              size={scale(20)}
-              color={colors.neutral400}
-            />
-          </View>
-          <Typo size={30} fontWeight={"bold"} color={colors.black}>
-              Rp {Number(balance).toLocaleString("id-ID")}
+          <Typo size={14} color={colors.neutral400} style={styles.balanceLabel}>
+            Total Balance
+          </Typo>
+          <Typo size={32} fontWeight="bold" color={colors.white}>
+            ${totalBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
           </Typo>
         </View>
 
-        {/* total income and expense */}
-        <View style={styles.stats}>
-          {/* income */}
-          <View style={{ gap: verticalScale(5) }}>
-            <View style={styles.incomeExpense}>
-              <View style={styles.statsIcon}>
-                <Ionicons
-                  name="arrow-down"
-                  size={scale(20)}
-                  color={colors.black}
-                />
-              </View>
-              <Typo size={16} fontWeight={"500"} color={colors.neutral700}>
-                Income
-              </Typo>
-            </View>
-            <View style={{ alignSelf: "center" }}>
-              <Typo size={17} fontWeight={"600"} color={colors.green}>
-                Rp {Number(income).toLocaleString("id-ID")}
-              </Typo>
-            </View>
-          </View>
+        {/* Menu dots */}
+        <TouchableOpacity style={styles.menuButton}>
+          <Ionicons
+            name="ellipsis-horizontal"
+            size={scale(20)}
+            color={colors.neutral400}
+          />
+        </TouchableOpacity>
+      </View>
 
-          {/* expence */}
-          <View style={{ gap: verticalScale(5) }}>
-            <View style={styles.incomeExpense}>
-              <View style={styles.statsIcon}>
-                <Ionicons
-                  name="arrow-up"
-                  size={scale(20)}
-                  color={colors.black}
-                />
-              </View>
-              <Typo size={16} fontWeight={"500"} color={colors.neutral700}>
-                Expense
-              </Typo>
-            </View>
-            <View style={{ alignSelf: "center" }}>
-              <Typo size={17} fontWeight={"600"} color={colors.rose}>
-                Rp {Number(expense).toLocaleString("id-ID")}
-              </Typo>
-            </View>
+      {/* Income & Expense Pills */}
+      <View style={styles.pillsContainer}>
+        {/* Income Pill */}
+        <View style={styles.pill}>
+          <View style={styles.pillIcon}>
+            <Ionicons
+              name="arrow-down"
+              size={scale(16)}
+              color={colors.primary}
+            />
+          </View>
+          <View>
+            <Typo size={12} color={colors.neutral400}>Income</Typo>
+            <Typo size={14} fontWeight="600" color={colors.primary}>
+              +{formatCompact(income)}
+            </Typo>
+          </View>
+        </View>
+
+        {/* Expense Pill */}
+        <View style={styles.pill}>
+          <View style={[styles.pillIcon, styles.expenseIcon]}>
+            <Ionicons
+              name="arrow-up"
+              size={scale(16)}
+              color={colors.rose}
+            />
+          </View>
+          <View>
+            <Typo size={12} color={colors.neutral400}>Expense</Typo>
+            <Typo size={14} fontWeight="600" color={colors.white}>
+              -{formatCompact(expense)}
+            </Typo>
           </View>
         </View>
       </View>
-    </ImageBackground>
+    </View>
   );
 };
 
 export default HomeCard;
 
 const styles = StyleSheet.create({
-  bgImage: {
-    height: scale(210),
-    width: "100%",
-  },
-  container: {
+  card: {
+    backgroundColor: colors.neutral800,
+    borderRadius: radius._20,
     padding: spacingX._20,
-    paddingHorizontal: scale(23),
-    height: "87%",
-    width: "100%",
-    justifyContent: "space-between",
+    paddingVertical: verticalScale(24),
+    borderWidth: 1,
+    borderColor: `${colors.primary}30`,
   },
-  totalBalanceRow: {
+  loadingPlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: scale(160),
+  },
+  topSection: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: spacingY._5,
+    alignItems: "flex-start",
+    marginBottom: verticalScale(24),
   },
-  stats: {
+  balanceLabel: {
+    marginBottom: verticalScale(4),
+  },
+  menuButton: {
+    width: scale(36),
+    height: scale(36),
+    borderRadius: scale(18),
+    backgroundColor: colors.neutral700,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pillsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    gap: scale(12),
   },
-  statsIcon: {
-    backgroundColor: colors.neutral350,
-    padding: spacingY._5,
-    borderRadius: 50,
-  },
-  incomeExpense: {
+  pill: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: spacingY._7,
+    gap: scale(10),
+    backgroundColor: colors.neutral700,
+    paddingVertical: verticalScale(12),
+    paddingHorizontal: spacingX._12,
+    borderRadius: radius._30,
+  },
+  pillIcon: {
+    width: scale(32),
+    height: scale(32),
+    borderRadius: scale(16),
+    backgroundColor: `${colors.primary}20`,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  expenseIcon: {
+    backgroundColor: `${colors.rose}20`,
   },
 });

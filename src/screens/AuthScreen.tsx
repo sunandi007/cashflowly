@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { View, Alert, Pressable, StyleSheet } from "react-native";
+import { View, Alert, Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types/navigation";
 import { useNavigation } from "@react-navigation/native";
 import { supabase } from "@/services/supabaseClient";
-import { colors, spacingX, spacingY } from "@/constant/theme";
+import { colors, radius, spacingX, spacingY } from "@/constant/theme";
 import { verticalScale } from "@/utils/styling";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -15,6 +15,8 @@ import Input from "@/components/Input";
 import Typo from "@/components/Typo";
 import { useWallets } from "@/hooks/useWallets";
 import { useQueryClient } from "@tanstack/react-query";
+import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "@/hooks/useAuth";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type AuthMode = "login" | "register";
@@ -29,10 +31,19 @@ export default function AuthScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { signInWithGoogle, loading: authLoading } = useAuth();
 
   const { wallets, addWallet, isLoading } = useWallets();
 
   const isLogin = mode === "login";
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    await signInWithGoogle();
+    // Sesi akan diperbarui secara otomatis oleh listener di RootNavigation,
+    // jadi tidak perlu setLoading(false) di sini.
+  };
 
   const handleSubmit = async () => {
     try {
@@ -81,11 +92,24 @@ export default function AuthScreen() {
           </Typo>
 
           <Input placeholder="Enter your Email" onChangeText={setEmail} />
-          <Input
-            placeholder="Enter your Password"
-            secureTextEntry
-            onChangeText={setPassword}
-          />
+          <View style={styles.passwordContainer}>
+            <Input
+              placeholder="Enter your Password"
+              // Jika visible true, secureTextEntry false (teks terlihat), dan sebaliknya
+              secureTextEntry={!isPasswordVisible}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity
+              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+              style={styles.eyeIcon}
+            >
+              <Ionicons
+                name={isPasswordVisible ? "eye" : "eye-off"}
+                size={24}
+                color={colors.textLight}
+              />
+            </TouchableOpacity>
+          </View>
 
           <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
             Forgot Password?
@@ -96,6 +120,23 @@ export default function AuthScreen() {
               {isLogin ? "Login" : "Sign Up"}
             </Typo>
           </Button>
+
+          <View style={styles.dividerContainer}>
+            <View style={styles.divider} />
+            <Typo color={colors.neutral400}>ATAU</Typo>
+            <View style={styles.divider} />
+          </View>
+
+          <TouchableOpacity
+            style={styles.googleButton}
+            onPress={handleGoogleLogin}
+            disabled={loading} // Nonaktifkan jika sedang loading
+          >
+            <Ionicons name="logo-google" size={24} color={colors.white} />
+            <Typo style={styles.googleButtonText} fontWeight="600">
+              Lanjutkan dengan Google
+            </Typo>
+          </TouchableOpacity>
         </View>
 
         {/* Footer */}
@@ -129,12 +170,50 @@ const styles = StyleSheet.create({
   form: {
     gap: spacingY._20,
   },
+  passwordContainer: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 15,
+    // Menyesuaikan tinggi agar pas di tengah vertikal, sesuaikan jika perlu
+    alignSelf: 'center',
+  },
   footer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     gap: 5,
   },
+
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacingX._15,
+    marginTop: spacingY._20,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.neutral600,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',  // Outline style
+    borderWidth: 1,
+    borderColor: colors.neutral400,
+    paddingVertical: spacingY._15,
+    borderRadius: 16,  // Per design spec
+    marginTop: spacingY._20,
+    gap: spacingX._10,
+  },
+  googleButtonText: {
+    color: colors.white,  // White text for dark mode
+    fontSize: 16,
+  }
 });
 
 async function createDefaultWalletIfNeeded(userId: string) {

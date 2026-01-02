@@ -2,15 +2,18 @@ import { useState, useEffect, useCallback } from "react";
 import { Alert } from "react-native";
 import { supabase } from "@/services/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 export type ProfileType = {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
   created_at?: string;
+  currency_code?: string | null;
 };
 
 export function useProfile() {
+  const queryClient = useQueryClient();
   const { session } = useAuth();
   const user = session?.user;
   const userId = user?.id;
@@ -66,6 +69,30 @@ export function useProfile() {
     [userId, profile, fetchProfile]
   );
 
+  const updateCurrency = useMutation({
+    mutationFn: async (currencyCode: string) => {
+      if (!userId) throw new Error("Pengguna tidak terautentikasi.");
+
+      // Logika: Update kolom currency_code di tabel profiles
+      const { error } = await supabase
+        .from("profiles")
+        .update({ currency_code: currencyCode })
+        .eq("id", userId); // Menggunakan RLS, update hanya untuk user saat ini
+
+      if (error) throw error;
+      return true;
+    },
+    onSuccess: () => {
+      // Invalidate query untuk me-refresh data profil yang ada di cache
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (err: any) => {
+      // Anda mungkin ingin menambahkan notifikasi error di sini
+      console.error("Gagal update mata uang:", err.message);
+      throw new Error(`Gagal mengubah mata uang: ${err.message}`);
+    },
+  });
+
   useEffect(() => {
     if (userId) fetchProfile();
   }, [userId]);
@@ -76,6 +103,8 @@ export function useProfile() {
     error,
     refetch: fetchProfile,
     updateProfile,
+    updateCurrency: updateCurrency.mutateAsync,
+    isUpdatingCurrency: updateCurrency.isPending,
     userEmail: user?.email,
   };
 }

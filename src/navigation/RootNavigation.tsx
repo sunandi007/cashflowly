@@ -6,11 +6,17 @@ import AuthScreen from "@/screens/AuthScreen";
 import WelcomeScreen from "@/screens/WelcomeScreen";
 import DashboardScreen from "@/screens/Dashboard";
 import ProfileScreen from "@/screens/ProfileScreen";
+import CategoryListScreen from "@/screens/CategoryListScreen";
 import WalletScreen from "@/screens/WalletListScreen";
-import ReportScreen from "@/screens/ReportScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActivityIndicator, View } from "react-native";
+import DashboardAnalyticsScreen from "@/screens/AnalyticsScreen";
+import BillsScreen from "@/screens/BillsScreen";
+import TransactionScreen from "@/screens/TransactionScreen";
+import SearchScreen from "@/screens/SearchScreen";
+import WalletDetailScreen from "@/screens/WalletDetailScreen";
+import TagListScreen from "@/screens/TagListScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,7 +36,19 @@ export default function RootNavigation() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {session ? (
-        <Stack.Screen name="Main" component={MainTabs} />
+        <>
+          <Stack.Screen name="Main" component={MainTabs} />
+          <Stack.Screen name="Category" component={CategoryListScreen} />
+          <Stack.Screen name="BillsScreen" component={BillsScreen} />
+          <Stack.Screen name="TransactionScreen" component={TransactionScreen} />
+          <Stack.Screen
+            name="SearchScreen"
+            component={SearchScreen}
+            options={{ animation: 'fade_from_bottom' }} // Opsional: animasi muncul
+          />
+          <Stack.Screen name="WalletDetail" component={WalletDetailScreen} />
+          <Stack.Screen name="TagList" component={TagListScreen} />
+        </>
       ) : (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
@@ -63,7 +81,7 @@ function MainTabs() {
             case "Dashboard":
               iconName = focused ? "home" : "home-outline";
               break;
-            case "Report":
+            case "Analitics":
               iconName = focused ? "bar-chart" : "bar-chart-outline";
               break;
             case "Wallet":
@@ -85,7 +103,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
-      <Tab.Screen name="Report" component={ReportScreen} />
+      <Tab.Screen name="Analitics" component={DashboardAnalyticsScreen} />
       <Tab.Screen name="Wallet" component={WalletScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

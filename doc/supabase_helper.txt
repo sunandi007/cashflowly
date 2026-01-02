@@ -1,0 +1,79 @@
+# LOGIKA BACKEND SUPABASE (FUNCTIONS & TRIGGERS)
+
+---
+## FUNCTIONS
+
+### 1. handle_new_user_setup (SECURITY: Definer, EVENT: Trigger/Auth)
+- **Kegunaan:** Dijalankan setelah pengguna baru mendaftar (Biasanya dipicu oleh Auth Trigger INSERT pada tabel auth.users).
+- **Tindakan:**
+    1. Membuat 1 Wallet Default ('Main Wallet', Saldo 0).
+    2. Membuat **16 Kategori Default** (Expense, Income, dan Transfer) dengan ikon dan warna.
+    3. Membuat record di tabel `public.profiles` dengan `full_name` dari metadata pengguna.
+
+### 2. perform_wallet_transfer (Ditemukan 2 versi)
+- **Parameter:** `p_user_id, p_from_wallet, p_to_wallet, p_amount, p_note, p_date`.
+- **Logika:**
+    1. **Validasi Saldo:** Memastikan saldo dompet asal (`p_from_wallet`) mencukupi (`v_from_balance < p_amount`).
+    2. **Update Saldo:** Melakukan pengurangan dan penambahan saldo di tabel `wallets`.
+    3. **Catat Transfer:** INSERT record ke tabel **`transfers`**.
+- **Status:** **Versi yang Benar.** Setelah INSERT ke `transfers`, *Trigger* `transfers_sync_to_transactions` akan secara otomatis membuat record di tabel `transactions`.
+
+### 3. rollback_wallet_balance (SECURITY: Invoker, EVENT: Trigger AFTER DELETE pada transactions)
+- **Kegunaan:** Membatalkan perubahan saldo dompet ketika sebuah transaksi **dihapus**.
+- **Logika:**
+    1. Mengabaikan jika transaksi adalah hasil dari transfer (`OLD.transfer_id IS NOT NULL`).
+    2. Jika transaksi adalah 'income', saldo dikurangi.
+    3. Jika transaksi adalah 'expense', saldo ditambah.
+- **Trigger:** `transactions_delete_balance`.
+
+### 4. sync_transfer_to_transactions (SECURITY: Invoker, EVENT: Trigger AFTER INSERT/UPDATE/DELETE pada transfers)
+- **Kegunaan:** Menjaga sinkronisasi antara tabel **`transfers`** dan tabel **`transactions`**.
+- **Logika:**
+    - **INSERT:** Membuat 2 transaksi (1 expense, 1 income) di tabel `transactions`, menggunakan `transfer_id` sebagai Foreign Key.
+    - **UPDATE:** Memperbarui 2 transaksi terkait (expense dan income) di tabel `transactions`.
+    - **DELETE:** Menghapus 2 transaksi terkait dari tabel `transactions`.
+- **Trigger:** `transfers_sync_to_transactions`.
+
+### 5. update_wallet_balance (SECURITY: Invoker, EVENT: Trigger AFTER INSERT/UPDATE pada transactions)
+- **Kegunaan:** Memperbarui saldo dompet ketika sebuah transaksi **dibuat atau diubah**.
+- **Logika:**
+    1. Mengabaikan jika transaksi adalah hasil dari transfer (`NEW.transfer_id IS NOT NULL`).
+    2. Jika transaksi 'income', saldo ditambah.
+    3. Jika transaksi 'expense', saldo dikurangi.
+- **Trigger:** `transactions_wallet_balance`.
+
+### 6. update_wallet_transfer (Ditemukan 2 versi)
+- **Logika:**
+    1. Mengambil data lama dari tabel **`transfers`**.
+    2. **Revert Saldo Lama:** Mengembalikan saldo dompet asal dan tujuan ke kondisi sebelum transfer diubah.
+    3. **Update Transfer:** Memperbarui record di tabel `transfers`.
+    4. **Terapkan Saldo Baru:** Menerapkan perubahan saldo baru di tabel `wallets`.
+- **Catatan Audit:** Logika ini benar karena setelah `transfers` di-UPDATE, *Trigger* **`sync_transfer_to_transactions`** akan otomatis memperbarui record terkait di tabel `transactions`.
+
+---
+
+## 2. Ringkasan Triggers
+
+| Nama Trigger | Tabel Terkait | Fungsi Pemicu | Event | Tujuan Sederhana |
+| :--- | :--- | :--- | :--- | :--- |
+| **transactions\_wallet\_balance** | `transactions` | `update_wallet_balance` | AFTER INSERT/UPDATE | Otomatis memperbarui saldo dompet ketika transaksi biasa dibuat atau diubah. |
+| **transactions\_delete\_balance** | `transactions` | `rollback_wallet_balance` | AFTER DELETE | Otomatis mengembalikan saldo dompet ketika transaksi biasa dihapus. |
+| **transfers\_sync\_to\_transactions** | `transfers` | `sync_transfer_to_transactions` | AFTER INSERT/UPDATE/DELETE | Menjaga transaksi kembar (expense/income) tetap sinkron di tabel `transactions` setiap kali transfer dibuat, diubah, atau dihapus. |
+
+---
+
+## 3. Audit dan Konsistensi Skema
+
+Berdasarkan kode SQL dan gambar, sistem Anda bekerja dengan **konsistensi yang sangat baik** karena mengandalkan *Triggers* daripada melakukan *UPDATE* saldo secara manual.
+
+| Area | Audit | Penjelasan & Tips untuk Gem |
+| :--- | :--- | :--- |
+| **Sistem Saldo** | **Sistem Transfer 3-Lapis (Transfers -> Transactions -> Wallets)** | Ini adalah pendekatan yang **kuat**. Anda tidak mengandalkan *client* (React Native) untuk memperbarui saldo. Sebaliknya, saat data masuk ke `transactions` atau `transfers`, *Triggers* secara otomatis mengurus `wallets`. |
+| **Duplikat Fungsi** | **`perform_wallet_transfer`** dan **`update_wallet_transfer`** ada 2 versi. | **Gem harus diinstruksikan untuk menggunakan versi yang mengacu pada tabel `transfers`**. Versi yang mengacu pada `transactions` dan melakukan *UPDATE* manual pada saldo sudah usang/salah karena melangkahi *Triggers* Anda. |
+| **Transaksi vs. Transfer** | **Pemfilteran Transfer (If `NEW.transfer_id IS NOT NULL`)** | Logika di `rollback_wallet_balance` dan `update_wallet_balance` untuk mengabaikan transaksi hasil transfer (`transfer_id IS NOT NULL`) adalah **BENAR**. Ini mencegah pembaruan saldo dompet ganda, karena saldo dompet sudah diurus oleh `perform_wallet_transfer` dan `update_wallet_transfer` saat berinteraksi dengan tabel `transfers`. |
+| **Kategori Transfer** | **`handle_new_user_setup`** membuat kategori **`'Transfer'`** dengan `type: 'transfer'`. | Pastikan Gem Anda tahu bahwa transaksi transfer harus menggunakan kategori ini, meskipun logika inti transfernya diurus di tabel `transfers`. |
+
+### Kesimpulan untuk Gemini Gem:
+
+* **Instruksi Tambahan:** Tambahkan catatan ke Gem Anda agar **JANGAN PERNAH** menyarankan kode React Native untuk memperbarui saldo dompet secara langsung. Semua perubahan saldo harus dipicu oleh **INSERT/UPDATE/DELETE** di tabel **`transactions`** atau **`transfers`** agar *Triggers* dapat bekerja.
+* **Prioritaskan:** Jika ada *conflict* kode, Gem harus memprioritaskan fungsi yang berinteraksi dengan tabel **`transfers`** (Versi 2) untuk transfer.

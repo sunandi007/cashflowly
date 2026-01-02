@@ -1,0 +1,71 @@
+# SKEMA DATABASE SUPABASE UNTUK MONEY TRACKER (SQL-Based Reference)
+
+---
+TABEL: profiles
+PK: id (UUID)
+FK: id -> auth.users.id (Satu-ke-Satu)
+Kolom Penting:
+- id
+- full_name (TEXT)
+- avatar_url (TEXT)
+- updated_at (TIMESTAMP)
+
+---
+TABEL: wallets
+PK: id (UUID)
+FK: user_id -> auth.users.id
+Kolom Penting:
+- id
+- user_id
+- name (TEXT)
+- balance (NUMERIC)
+- icon (TEXT)
+
+---
+TABEL: categories
+PK: id (UUID)
+FK: user_id -> auth.users.id
+Kolom Penting:
+- id
+- user_id
+- name (TEXT)
+- icon (TEXT)
+- type (TEXT: 'income' atau 'expense')
+- bgColor (TEXT)
+
+---
+TABEL: transfers
+PK: id (UUID)
+FK: user_id -> auth.users.id
+FK: source_wallet_id -> wallets.id
+FK: destination_wallet_id -> wallets.id
+Kolom Penting:
+- id
+- user_id
+- amount (NUMERIC, NOT NULL)
+- source_wallet_id
+- destination_wallet_id
+- status (TEXT, default 'completed')
+- date (TIMESTAMP)
+
+---
+TABEL: transactions
+PK: id (UUID)
+FK: user_id -> auth.users.id
+FK: wallet_id -> wallets.id
+FK: category_id -> categories.id
+FK: transfer_id -> transfers.id (Relasi opsional untuk transaksi transfer)
+Kolom Penting:
+- id
+- user_id
+- amount (NUMERIC)
+- type (TEXT)
+- wallet_id
+- category_id
+- description (TEXT)
+- tags (ARRAY)
+- date (TIMESTAMP)
+
+---
+ASUMSI UMUM RLS:
+Asumsikan SEMUA tabel yang memiliki kolom 'user_id' harus menerapkan Row Level Security (RLS) berdasarkan 'user_id = auth.uid()'.
