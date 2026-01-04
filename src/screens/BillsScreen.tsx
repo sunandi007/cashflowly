@@ -54,9 +54,6 @@ export default function BillsScreen() {
       minimumFractionDigits: 0,
     }).format(amount);
 
-  const formatUSD = (amount: number) =>
-    `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
   // Calculate total due this month
   const totalDueThisMonth = useMemo(() => {
     return bills.reduce((sum: number, bill: any) => sum + (Number(bill.amount) || 0), 0);
@@ -192,7 +189,7 @@ export default function BillsScreen() {
       {/* Total Due Card */}
       <View style={styles.totalDueCard}>
         <Text style={styles.totalDueLabel}>TOTAL DUE THIS MONTH</Text>
-        <Text style={styles.totalDueAmount}>{formatUSD(totalDueThisMonth)}</Text>
+        <Text style={styles.totalDueAmount}>{formatCurrency(totalDueThisMonth)}</Text>
         <Text style={styles.totalDueSubtitle}>
           You have {billsDueIn7Days} bills due in the next 7 days.
         </Text>

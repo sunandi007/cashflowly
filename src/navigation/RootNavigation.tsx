@@ -17,6 +17,7 @@ import TransactionScreen from "@/screens/TransactionScreen";
 import SearchScreen from "@/screens/SearchScreen";
 import WalletDetailScreen from "@/screens/WalletDetailScreen";
 import TagListScreen from "@/screens/TagListScreen";
+import DataManagementScreen from "@/screens/DataManagementScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -48,6 +49,7 @@ export default function RootNavigation() {
           />
           <Stack.Screen name="WalletDetail" component={WalletDetailScreen} />
           <Stack.Screen name="TagList" component={TagListScreen} />
+          <Stack.Screen name="DataManagement" component={DataManagementScreen} />
         </>
       ) : (
         <>

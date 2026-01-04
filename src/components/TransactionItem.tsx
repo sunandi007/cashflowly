@@ -29,10 +29,10 @@ const formatTransactionDate = (dateValue: any): string => {
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    const timeStr = date.toLocaleTimeString("en-US", {
+    const timeStr = date.toLocaleTimeString("id-ID", {
       hour: "numeric",
       minute: "2-digit",
-      hour12: true,
+      hour12: false,
     });
 
     // Check if today
@@ -46,7 +46,7 @@ const formatTransactionDate = (dateValue: any): string => {
     }
 
     // Otherwise show date
-    const dateStr = date.toLocaleDateString("en-US", {
+    const dateStr = date.toLocaleDateString("id-ID", {
       month: "short",
       day: "numeric",
     });
@@ -58,15 +58,15 @@ const formatTransactionDate = (dateValue: any): string => {
 
 // Format currency for display
 const formatAmount = (amount: number, type: string): string => {
-  const formatted = Math.abs(amount).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+  const formatted = Math.abs(amount).toLocaleString("id-ID", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   });
 
   if (type === "income") {
-    return `+$${formatted}`;
+    return `+Rp ${formatted}`;
   }
-  return `-$${formatted}`;
+  return `-Rp ${formatted}`;
 };
 
 /**
@@ -124,7 +124,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
           {/* Jumlah */}
           <View style={styles.amountContainer}>
             <Typo size={16} fontWeight="600" color={colors.neutral300}>
-              ${Number(item?.amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              Rp {Number(item?.amount).toLocaleString("id-ID", { minimumFractionDigits: 0 })}
             </Typo>
           </View>
         </TouchableOpacity>
@@ -133,7 +133,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   }
 
   // 💰 CASE NORMAL TRANSACTION
-  const amountColor = item?.type === "income" ? colors.primary : colors.white;
+  const amountColor = item?.type === "income" ? colors.primary : colors.rose;
 
   return (
     <Animated.View

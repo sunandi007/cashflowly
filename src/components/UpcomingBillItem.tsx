@@ -59,9 +59,9 @@ export default function UpcomingBillItem({
         }
     };
 
-    // Format amount in USD
-    const formatUSD = (amount: number): string => {
-        return `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // Format amount in IDR
+    const formatIDR = (amount: number): string => {
+        return `Rp ${amount.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     };
 
     const dateDisplay = formatDueDate(dueDate);
@@ -81,7 +81,7 @@ export default function UpcomingBillItem({
             <View style={styles.infoSection}>
                 <Text style={styles.billName}>{toTitleCase(categoryName)}</Text>
                 <Text style={styles.billSubtitle}>
-                    {dateDisplay} • {formatUSD(item.amount)}
+                    {dateDisplay} • {formatIDR(item.amount)}
                 </Text>
             </View>
 

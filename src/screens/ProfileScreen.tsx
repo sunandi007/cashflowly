@@ -66,6 +66,8 @@ const ProfileScreen = () => {
       setShowModal(true);
     } else if (item.title === "Tagihan Berulang" || item.title === "Wallets") {
       navigation.navigate("BillsScreen" as never);
+    } else if (item.title === "Data Management") {
+      navigation.navigate("DataManagement" as never);
     }
   };
 
