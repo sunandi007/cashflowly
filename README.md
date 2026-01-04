@@ -24,3 +24,8 @@ git clone https://github.com/sunandi007/cashflowly.git
 cd cashflowly
 npm install
 npx expo start
+
+
+Steps to build android
+1. Buka app.json, ganti "version"
+2. run `npx expo build:android`

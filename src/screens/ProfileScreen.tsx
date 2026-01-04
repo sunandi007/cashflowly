@@ -22,9 +22,10 @@ import SettingsModal from "@/components/SettingsModal";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Application from 'expo-application';
 
-const APP_VERSION = "2.4.0";
-const BUILD_NUMBER = "302";
+const APP_VERSION = Application.nativeApplicationVersion;
+const BUILD_NUMBER = Application.nativeBuildVersion;
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
