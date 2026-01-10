@@ -18,7 +18,6 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { accountOptionsGroup1, accountOptionsGroup2 } from "@/constant/data";
 import ProfileUpdateModal from "@/components/ProfileUpdateModal";
 import { useProfile } from "@/hooks/useProfile";
-import SettingsModal from "@/components/SettingsModal";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -32,7 +31,6 @@ const ProfileScreen = () => {
   const [showModal, setShowModal] = useState(false);
 
   const { profile, loading, refetch, updateProfile, userEmail } = useProfile();
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
   const handleLogOut = async () => {
     await supabase.auth.signOut();
@@ -57,7 +55,7 @@ const ProfileScreen = () => {
     if (item.title === "Logout") {
       showLogoutAlert();
     } else if (item.title === "Settings" || item.title === "Security & Password") {
-      setIsSettingsModalVisible(true);
+      navigation.navigate("Settings" as never);
     } else if (item.title === "Manage Categories" || item.title === "Kustomisasi Kategori") {
       navigation.navigate("Category" as never);
     } else if (item.title === "Manage Tags") {
@@ -227,12 +225,6 @@ const ProfileScreen = () => {
           setShowModal(false);
           setTimeout(() => refetch(), 400);
         }}
-      />
-
-      {/* Modal Settings */}
-      <SettingsModal
-        visible={isSettingsModalVisible}
-        onClose={() => setIsSettingsModalVisible(false)}
       />
     </ScreenWrapper>
   );

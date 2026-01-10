@@ -135,7 +135,7 @@ export default function CategoryListScreen() {
   const renderItem = ({ item }: { item: Category }) => (
     <View style={styles.itemContainer}>
       <View style={styles.itemLeft}>
-        <View style={[styles.iconWrapper, { backgroundColor: item.bgColor }]}>
+        <View style={[styles.iconWrapper, { backgroundColor: item.bgColor + '80' }]}>
           <Ionicons
             name={item.icon as any}
             size={scale(22)}

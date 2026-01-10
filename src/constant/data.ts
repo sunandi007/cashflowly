@@ -6,22 +6,22 @@ export const accountOptionsGroup1: AccountOptionType[] = [
   {
     title: "Wallets",
     icon: "wallet",
-    bgColor: "#8B5CF6", // Purple
+    bgColor: colors.primary + '30', // Purple
   },
   {
     title: "Manage Categories",
     icon: "pricetag",
-    bgColor: colors.primary, // Green
+    bgColor: colors.primary + '30', // Green
   },
   {
     title: "Manage Tags",
     icon: "pricetags",
-    bgColor: "#0ea5e9", // Sky Blue
+    bgColor: colors.primary + '30', // Sky Blue
   },
   {
     title: "Data Management",
     icon: "cloud-download-outline",
-    bgColor: "#0ea5e9",
+    bgColor: colors.primary + '30',
   },
 ];
 
@@ -30,61 +30,17 @@ export const accountOptionsGroup2: AccountOptionType[] = [
   {
     title: "Settings",
     icon: "settings-outline",
-    bgColor: "#069669",
+    bgColor: colors.primary + '30',
   },
   {
     title: "Notifications",
     icon: "notifications",
-    bgColor: "#F59E0B", // Amber
+    bgColor: colors.primary + '30', // Amber
     badge: 2,
-  },
-  {
-    title: "Security & Password",
-    icon: "lock-closed",
-    bgColor: colors.neutral600, // Gray
   },
   {
     title: "Help & Support",
     icon: "help-circle",
-    bgColor: "#EC4899", // Pink
-  },
-];
-
-// Legacy export for backward compatibility
-export const accountOptions: AccountOptionType[] = [
-  {
-    title: "Edit Profile",
-    icon: "person-circle-outline",
-    bgColor: "#6366f1",
-  },
-  {
-    title: "Settings",
-    icon: "settings-outline",
-    bgColor: "#069669",
-  },
-  {
-    title: "Kustomisasi Kategori",
-    icon: "folder-open-outline",
-    bgColor: "#d8521dff",
-  },
-  {
-    title: "Tagihan Berulang",
-    icon: "folder-open-outline",
-    bgColor: "#cfec67ff",
-  },
-  {
-    title: "Data Management",
-    icon: "cloud-download-outline",
-    bgColor: "#0ea5e9",
-  },
-  {
-    title: "Privacy Policey",
-    icon: "shield-checkmark-outline",
-    bgColor: colors.neutral600,
-  },
-  {
-    title: "Logout",
-    icon: "log-out-outline",
-    bgColor: "#e11d48",
+    bgColor: colors.primary + '30', // Pink
   },
 ];

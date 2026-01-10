@@ -9,7 +9,6 @@ import BaseDropdown from './Dropdown';
 import Button from './Button';
 import { useProfile } from '@/hooks/useProfile';
 
-// Daftar mata uang yang didukung (dapat diperluas)
 const CURRENCIES = [
     { label: 'Rupiah (IDR)', value: 'IDR' },
     { label: 'US Dollar (USD)', value: 'USD' },
@@ -24,13 +23,12 @@ interface SettingsModalProps {
 export default function SettingsModal({ visible, onClose }: SettingsModalProps) {
     const { profile, updateCurrency, isUpdatingCurrency } = useProfile();
     const currentCode = profile?.currency_code || 'IDR';
-    
+
     const [selectedCurrency, setSelectedCurrency] = useState(currentCode);
 
     useEffect(() => {
-        // Sinkronisasi state lokal saat modal dibuka atau profile di-fetch
         if (visible) {
-             setSelectedCurrency(currentCode);
+            setSelectedCurrency(currentCode);
         }
     }, [visible, currentCode]);
 
@@ -61,7 +59,7 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
                             </TouchableOpacity>
                         }
                     />
-                    
+
                     <View style={styles.settingItem}>
                         <Typo size={16} color={colors.white}>Mata Uang Dasar</Typo>
                         <BaseDropdown
@@ -72,8 +70,8 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
                         />
                     </View>
 
-                    <Button 
-                        onPress={handleSave} 
+                    <Button
+                        onPress={handleSave}
                         style={styles.saveButton}
                         loading={isUpdatingCurrency}
                     >

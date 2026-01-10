@@ -148,7 +148,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         <View
           style={[
             styles.icon,
-            { backgroundColor: item?.categories?.bgColor || colors.neutral700 },
+            { backgroundColor: item?.categories?.bgColor + '80' || colors.neutral700 },
           ]}
         >
           <IconComponent

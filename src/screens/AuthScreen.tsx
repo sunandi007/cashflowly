@@ -111,9 +111,11 @@ export default function AuthScreen() {
             </TouchableOpacity>
           </View>
 
-          <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
-            Forgot Password?
-          </Typo>
+          <Pressable onPress={() => navigation.navigate("ForgotPassword" as never)}>
+            <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
+              Forgot Password?
+            </Typo>
+          </Pressable>
 
           <Button loading={loading} onPress={handleSubmit}>
             <Typo fontWeight={"700"} color={colors.black} size={21}>

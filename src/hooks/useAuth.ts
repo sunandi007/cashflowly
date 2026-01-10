@@ -1,7 +1,7 @@
 import { supabase } from "@/services/supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
-import {Alert} from "react-native";
+import { Alert } from "react-native";
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
@@ -18,9 +18,9 @@ export function useAuth() {
 
       // Set up listener untuk perubahan state autentikasi
       const { data: listener } = supabase.auth.onAuthStateChange(
-          (_event, newSession) => {
-            setSession(newSession);
-          }
+        (_event, newSession) => {
+          setSession(newSession);
+        }
       );
 
       // Bersihkan listener saat komponen unmount
@@ -65,11 +65,47 @@ export function useAuth() {
     }
   };
 
+  const forgotPassword = async (email: string) => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'cashflowly://reset-password',
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (error: any) {
+      console.error("Forgot Password Error:", error.message);
+      Alert.alert("Gagal Mengirim Email", error.message);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (newPassword: string) => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (error: any) {
+      console.error("Reset Password Error:", error.message);
+      Alert.alert("Gagal Mereset Password", error.message);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     session,
     isReady,
     loading, // <-- Sekarang sudah diekspor
     signOut,
-    signInWithGoogle
+    signInWithGoogle,
+    forgotPassword,
+    resetPassword
   };
 }

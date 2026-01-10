@@ -18,6 +18,10 @@ import SearchScreen from "@/screens/SearchScreen";
 import WalletDetailScreen from "@/screens/WalletDetailScreen";
 import TagListScreen from "@/screens/TagListScreen";
 import DataManagementScreen from "@/screens/DataManagementScreen";
+import ForgotPasswordScreen from "@/screens/ForgotPasswordScreen";
+import ResetPasswordScreen from "@/screens/ResetPasswordScreen";
+import ChangePasswordScreen from "@/screens/ChangePasswordScreen";
+import SettingsScreen from "@/screens/SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -50,11 +54,15 @@ export default function RootNavigation() {
           <Stack.Screen name="WalletDetail" component={WalletDetailScreen} />
           <Stack.Screen name="TagList" component={TagListScreen} />
           <Stack.Screen name="DataManagement" component={DataManagementScreen} />
+          <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
         </>
       ) : (
         <>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="Auth" component={AuthScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         </>
       )}
     </Stack.Navigator>

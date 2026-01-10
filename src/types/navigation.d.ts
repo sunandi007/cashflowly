@@ -7,4 +7,8 @@ export type RootStackParamList = {
   SearchScreen: undefined;
   WalletDetail: { wallet: any };
   TagList: undefined;
+  ForgotPassword: undefined;
+  ResetPassword: undefined;
+  ChangePassword: undefined;
+  Settings: undefined;
 };
