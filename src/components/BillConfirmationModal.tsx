@@ -7,11 +7,11 @@ import {
     StyleSheet,
     TouchableOpacity,
     TextInput,
-    Alert,
     Text
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Typo from './Typo';
+import { useAlert } from '@/hooks/useAlert';
 import { colors, spacingX, spacingY, radius } from '@/constant/theme';
 import { toTitleCase } from '@/utils/text';
 import { scale, verticalScale } from '@/utils/styling';
@@ -34,6 +34,7 @@ export default function BillConfirmationModal({
     isProcessing
 }: BillConfirmationModalProps) {
     const [amountInput, setAmountInput] = useState('');
+    const alert = useAlert();
 
     useEffect(() => {
         if (visible && bill) {
@@ -48,7 +49,7 @@ export default function BillConfirmationModal({
         const numericAmount = Number(amountInput.replace(/\./g, '')) || 0;
 
         if (numericAmount <= 0) {
-            Alert.alert("Error", "Jumlah pembayaran harus lebih besar dari nol.");
+            alert("Error", "Jumlah pembayaran harus lebih besar dari nol.", undefined, { type: 'error' });
             return;
         }
 

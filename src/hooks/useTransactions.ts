@@ -47,10 +47,12 @@ export function useTransactions(
         `
         )
         .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+        .order("date", { ascending: false });
+      // .order("created_at", { ascending: false });
 
       if (start && end) {
-        query = query.gte("created_at", start).lte("created_at", end);
+        query = query.gte("date", start).lte("date", end);
+        // query = query.gte("created_at", start).lte("created_at", end);
       }
 
       const { data, error } = await query;
@@ -70,8 +72,8 @@ function mergeTransfers(transactions: any[]) {
   for (const tx of transactions) {
     if (!tx.transfer_id) {
       // Transaksi Normal: Income atau Expense
-      normalTx.push({ 
-        ...tx, 
+      normalTx.push({
+        ...tx,
         is_transfer: false,
         // Konversi amount menjadi Number di sini untuk memastikan konsistensi tipe data
         amount: Number(tx.amount) || 0,
@@ -97,9 +99,17 @@ function mergeTransfers(transactions: any[]) {
   }
 
   const mergedTransfers = Object.values(transferMap);
-  return [...mergedTransfers, ...normalTx].sort(
-    (a, b) =>
-      new Date(b.created_at || b.date).getTime() -
-      new Date(a.created_at || a.date).getTime()
-  );
+  return [...mergedTransfers, ...normalTx].sort((a, b) => {
+    const dateA = new Date(a.date).getTime();
+    const dateB = new Date(b.date).getTime();
+
+    // Jika tanggal sama persis, baru cek created_at biar urutan input terjaga
+    if (dateA === dateB) {
+      const createdA = new Date(a.created_at).getTime();
+      const createdB = new Date(b.created_at).getTime();
+      return createdB - createdA;
+    }
+
+    return dateB - dateA; // Descending (Terbaru paling atas)
+  });
 }

@@ -1,8 +1,9 @@
 // src/components/CategoryModal.tsx
 
 import React, { useState, useEffect } from 'react';
-import { Modal, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Modal, View, StyleSheet, TouchableOpacity } from 'react-native';
 import Typo from './Typo';
+import { useAlert } from '@/hooks/useAlert';
 import { colors, spacingX, spacingY } from "@/constant/theme";
 import Header from './Header';
 import Input from './Input';
@@ -50,7 +51,8 @@ const COLOR_OPTIONS = [
 export default function CategoryModal({ visible, onClose, initialData }: CategoryModalProps) {
     const isEditing = !!initialData;
     const { addCategory, updateCategory, isCreating, isUpdating } = useCategoryMutations();
-    
+    const alert = useAlert();
+
     const [name, setName] = useState('');
     const [type, setType] = useState<'income' | 'expense' | 'transfer'>('expense');
     const [icon, setIcon] = useState('');
@@ -73,7 +75,7 @@ export default function CategoryModal({ visible, onClose, initialData }: Categor
 
     const handleSave = async () => {
         if (!name || !icon || !type) {
-            return Alert.alert('Error', 'Nama, Tipe, dan Ikon wajib diisi.');
+            return alert('Error', 'Nama, Tipe, dan Ikon wajib diisi.', undefined, { type: 'error' });
         }
 
         const payload = { name, type, icon, bgColor };
@@ -85,15 +87,15 @@ export default function CategoryModal({ visible, onClose, initialData }: Categor
             if (isEditing && initialData) {
                 // UPDATE
                 await updateCategory({ id: initialData.id, updates: payload });
-                Alert.alert('Sukses', 'Kategori berhasil diperbarui.');
+                alert('Sukses', 'Kategori berhasil diperbarui.', undefined, { type: 'success' });
             } else {
                 // CREATE
                 await addCategory(payload);
-                Alert.alert('Sukses', 'Kategori baru berhasil ditambahkan.');
+                alert('Sukses', 'Kategori baru berhasil ditambahkan.', undefined, { type: 'success' });
             }
             onClose();
         } catch (error: any) {
-            Alert.alert('Gagal', error.message);
+            alert('Gagal', error.message, undefined, { type: 'error' });
         }
     };
 
@@ -109,21 +111,21 @@ export default function CategoryModal({ visible, onClose, initialData }: Categor
                             </TouchableOpacity>
                         }
                     />
-                    
+
                     <View style={styles.formContainer}>
-                        <Input 
-                            placeholder="Nama Kategori (misal: Gaji, Makan Siang)" 
-                            value={name} 
-                            onChangeText={setName} 
+                        <Input
+                            placeholder="Nama Kategori (misal: Gaji, Makan Siang)"
+                            value={name}
+                            onChangeText={setName}
                         />
-                        
+
                         <BaseDropdown
                             data={TYPE_OPTIONS}
                             value={type}
                             placeholder="Pilih Tipe"
                             onChange={(item) => setType(item.value as any)}
                         />
-                        
+
                         <BaseDropdown
                             data={ICON_OPTIONS}
                             value={icon}
@@ -139,8 +141,8 @@ export default function CategoryModal({ visible, onClose, initialData }: Categor
                         />
                     </View>
 
-                    <Button 
-                        onPress={handleSave} 
+                    <Button
+                        onPress={handleSave}
                         style={styles.saveButton}
                         loading={isCreating || isUpdating}
                     >

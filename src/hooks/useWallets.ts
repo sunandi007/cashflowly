@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
-import { Alert } from "react-native";
 
 export type WalletType = {
   id: string;
@@ -65,11 +64,9 @@ export function useWallets() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallets", userId] });
-      Alert.alert("✅ Success", "Wallet berhasil ditambahkan!");
+      // Component akan handle success alert menggunakan useAlert()
     },
-    onError: (err: any) => {
-      Alert.alert("❌ Gagal menambah wallet", err.message);
-    },
+    // Error akan di-throw ke component yang menggunakan hook ini
   });
 
   /* ----------------------------- 🔹 UPDATE WALLET ----------------------------- */
@@ -110,7 +107,7 @@ export function useWallets() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wallets", userId] });
-      Alert.alert("🗑️ Wallet Dihapus", "Wallet telah berhasil dihapus.");
+      // Component akan handle success alert menggunakan useAlert()
     },
   });
 

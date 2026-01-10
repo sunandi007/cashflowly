@@ -14,6 +14,7 @@ import Header from "./Header";
 import Input from "./Input";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale } from "@/utils/styling";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 export default function TagModal({
     visible,
@@ -33,6 +34,7 @@ export default function TagModal({
     const isEditing = !!initialData;
     const [name, setName] = useState(initialData?.name || "");
     const [loading, setLoading] = useState(false);
+    const snackbar = useSnackbar();
 
     useEffect(() => {
         if (visible && initialData) setName(initialData.name || "");
@@ -41,7 +43,7 @@ export default function TagModal({
 
     const handleSubmit = async () => {
         if (!name.trim()) {
-            Alert.alert("Error", "Tag name is required.");
+            snackbar.error("Error", "Tag name is required.");
             return;
         }
 
@@ -52,17 +54,14 @@ export default function TagModal({
                     id: initialData.id,
                     name: name.trim(),
                 });
-                // Alert.alert("Success", "Tag updated successfully.");
+                snackbar.success("Success", "Tag updated successfully.");
             } else if (onSave) {
                 await onSave(name.trim());
-                // Alert.alert("Success", "New tag added successfully.");
+                snackbar.success("Success", "New tag added successfully.");
             }
             onClose();
         } catch (err: any) {
-            Alert.alert(
-                "Error",
-                err.message || "An error occurred while saving."
-            );
+            snackbar.error("Error", err.message || "An error occurred while saving.");
         } finally {
             setLoading(false);
         }
@@ -81,7 +80,7 @@ export default function TagModal({
                         await onDelete(initialData.id);
                         onClose();
                     } catch (err: any) {
-                        Alert.alert("Error", err.message);
+                        snackbar.error("Error", err.message);
                     } finally {
                         setLoading(false);
                     }

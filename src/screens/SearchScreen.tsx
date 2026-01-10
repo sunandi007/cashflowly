@@ -129,9 +129,9 @@ export default function SearchScreen() {
                 <Typo size={22} fontWeight="700" color={colors.white}>
                     Search
                 </Typo>
-                <TouchableOpacity style={styles.settingsButton}>
+                {/* <TouchableOpacity style={styles.settingsButton}>
                     <Ionicons name="settings-outline" size={scale(24)} color={colors.white} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
 
             {/* Search Input */}

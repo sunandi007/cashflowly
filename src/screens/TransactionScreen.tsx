@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
@@ -15,6 +14,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTransactionMutations } from "@/hooks/useTransactionMutations";
 import { useAuth } from "@/hooks/useAuth";
 import { useCategories } from "@/hooks/useCategories";
+import { useAlert } from "@/hooks/useAlert";
 import Typo from "@/components/Typo";
 import { colors, radius, spacingX, spacingY } from "@/constant/theme";
 import { scale, verticalScale } from "@/utils/styling";
@@ -37,6 +37,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUpcomingBills } from "@/hooks/useUpcomingBills";
 import { useBillPayment } from "@/hooks/useBillPayment";
 import TagSelector from "@/components/TagSelector";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -59,6 +60,8 @@ export default function TransactionScreen() {
   const { performTransfer, updateTransfer, deleteTransfer } = useTransfer();
   const { data: activeBills = [] } = useUpcomingBills();
   const { processManualBillPayment } = useBillPayment();
+  const alert = useAlert();
+  const snackbar = useSnackbar();
 
   // 🟢 States
   const [type, setType] = useState<"expense" | "income" | "transfer">(
@@ -170,7 +173,7 @@ export default function TransactionScreen() {
   const handleSave = async () => {
     const matchingBill = activeBills.find((b) => b.category_id === categoryId);
 
-    if (!amount) return Alert.alert("Error", "Harap isi jumlah");
+    if (!amount) return snackbar.error("Harap isi jumlah");
     const numericAmount = Number(amount.replace(/\./g, ""));
     const UUID_RX =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -202,7 +205,7 @@ export default function TransactionScreen() {
       // 🟢 Handle TRANSFER (Non-Recurring di Fase 1)
       if (type === "transfer") {
         if (!fromWalletId || !toWalletId || fromWalletId === toWalletId) {
-          return Alert.alert("Error", "Validasi Transfer Gagal.");
+          return snackbar.error("Validasi Transfer Gagal.");
         }
         const rawId =
           initialData?.idToUpdate ??
@@ -235,7 +238,7 @@ export default function TransactionScreen() {
 
       // 🟡 Handle INCOME / EXPENSE
       if (type === "expense" && !categoryId) {
-        return Alert.alert("Error", "Harap pilih kategori untuk pengeluaran");
+        return snackbar.error("Harap pilih kategori untuk pengeluaran");
       }
 
       // 2. Payload Transaksi Dasar
@@ -261,7 +264,7 @@ export default function TransactionScreen() {
         });
       } else {
         if (matchingBill) {
-          Alert.alert(
+          alert(
             "Deteksi Tagihan Berulang",
             `Anda memiliki tagihan "${matchingBill.categories?.name || "Unknown"
             }" yang akan datang. Apakah transaksi ini adalah pembayaran untuk tagihan tersebut?`,
@@ -292,7 +295,7 @@ export default function TransactionScreen() {
                     navigation.goBack();
                     await refetchWallets();
                   } catch (err: any) {
-                    Alert.alert("Gagal Membayar Tagihan", err.message);
+                    snackbar.error("Gagal Membayar Tagihan", err.message);
                   }
                 },
               },
@@ -316,7 +319,8 @@ export default function TransactionScreen() {
                 },
               },
               { text: "Batal", style: "cancel" },
-            ]
+            ],
+            { type: 'info' }
           );
           return; // Hentikan eksekusi
         }
@@ -351,7 +355,7 @@ export default function TransactionScreen() {
       navigation.goBack();
       await refetchWallets();
     } catch (err: any) {
-      Alert.alert("Error", err.message);
+      snackbar.error("Gagal Menambahkan Transaksi", err.message);
     }
   };
 
@@ -368,34 +372,32 @@ export default function TransactionScreen() {
 
     // 2. Opsi Jika Bukan Tagihan Berulang
     if (!isRecurringBill) {
-      Alert.alert("Konfirmasi Hapus", "Yakin ingin menghapus transaksi ini?", [
+      alert("Konfirmasi Hapus", "Yakin ingin menghapus transaksi ini?", [
         ...standardOptions,
         {
           text: "Hapus Permanen",
-          style: "destructive" as const, // <-- Menggunakan 'as const'
           onPress: () => onDelete(),
         },
-      ]);
+      ], { type: 'warning' });
       return;
     }
 
     // 3. Opsi Jika Adalah Tagihan Berulang (MENGHENTIKAN)
-    Alert.alert(
+    alert(
       "Hapus Tagihan Berulang",
       "Apa yang ingin Anda lakukan dengan siklus tagihan ini?",
       [
         ...standardOptions,
         {
           text: "Hapus HANYA Transaksi Ini",
-          style: "default" as const, // <-- Menggunakan 'as const'
           onPress: () => onDelete(),
         },
         {
           text: "Hentikan Siklus Tagihan",
-          style: "destructive" as const, // <-- Menggunakan 'as const'
           onPress: () => onDeleteRecurring(),
         },
-      ]
+      ],
+      { type: 'warning' }
     );
   };
 
@@ -412,10 +414,10 @@ export default function TransactionScreen() {
       });
       await queryClient.invalidateQueries({ queryKey: ["bills", userId] });
 
-      Alert.alert("Sukses", "Siklus tagihan berulang telah dihentikan.");
+      snackbar.success("Siklus tagihan berulang telah dihentikan.");
       navigation.goBack();
     } catch (err: any) {
-      Alert.alert("Gagal Menghapus", err.message);
+      snackbar.error("Gagal Menghapus", err.message);
     }
   };
 
@@ -446,8 +448,7 @@ export default function TransactionScreen() {
 
       navigation.goBack();
     } catch (err: any) {
-      Alert.alert("Error", err.message);
-      return;
+      snackbar.error(err.message);
     }
   };
 
@@ -475,10 +476,10 @@ export default function TransactionScreen() {
             <View style={styles.toggleContainer}>
               <View style={styles.toggleWrapper}>
                 <TouchableOpacity
-                  style={[styles.toggleBtn, type === 'expense' && styles.toggleBtnActive]}
+                  style={[styles.toggleBtn, type === 'expense' && styles.toggleBtnExpenseActive]}
                   onPress={() => setType('expense')}
                 >
-                  <Typo size={14} fontWeight="600" color={type === 'expense' ? colors.accentGreen : colors.neutral400}>Expense</Typo>
+                  <Typo size={14} fontWeight="600" color={type === 'expense' ? colors.rose : colors.neutral400}>Expense</Typo>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.toggleBtn, type === 'income' && styles.toggleBtnActive]}
@@ -877,6 +878,9 @@ const styles = StyleSheet.create({
   },
   toggleBtnActive: {
     backgroundColor: 'rgba(5, 199, 126, 0.1)', // Green Tint
+  },
+  toggleBtnExpenseActive: {
+    backgroundColor: 'rgba(255, 102, 102, 0.1)', // Red Tint
   },
   miniTransferBtn: {
     width: 44, height: 44, borderRadius: 22,

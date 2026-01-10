@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { Alert } from "react-native";
 import { supabase } from "@/services/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -57,11 +56,11 @@ export function useProfile() {
         });
         if (error) throw error;
 
-        Alert.alert("✅ Sukses", "Profil berhasil diperbarui!");
         // Refresh setelah update
-        fetchProfile();
+        await fetchProfile();
+        return true; // Return success indicator
       } catch (err: any) {
-        Alert.alert("Error", "Gagal memperbarui profil.");
+        throw err; // Throw error untuk di-handle oleh component
       } finally {
         setLoading(false);
       }

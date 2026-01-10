@@ -24,12 +24,14 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useUploadImage } from "@/hooks/useUploadImage";
 import { Ionicons } from "@expo/vector-icons";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 export default function ProfileUpdateModal({ visible = false, onClose, profile, userEmail, updateProfile, loading }: any) {
   const { session } = useAuth();
   const user = session?.user;
   const userId = user?.id;
 
+  const snackbar = useSnackbar();
   const { uploadImage, uploading } = useUploadImage();
 
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -46,10 +48,7 @@ export default function ProfileUpdateModal({ visible = false, onClose, profile, 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert(
-        "Izin diperlukan",
-        "Akses galeri diperlukan untuk mengunggah foto."
-      );
+      snackbar.error("Izin diperlukan", "Akses galeri diperlukan untuk mengunggah foto.");
       return;
     }
 
@@ -72,10 +71,10 @@ export default function ProfileUpdateModal({ visible = false, onClose, profile, 
         full_name: fullName,
         avatar_url: avatarUrl,
       });
-      Alert.alert("Sukses", "Profil berhasil diperbarui!");
+      snackbar.success("Sukses", "Profil berhasil diperbarui!");
       setTimeout(() => onClose(), 400);
     } catch (error) {
-      Alert.alert("Error", "Gagal memperbarui profil.");
+      snackbar.error("Error", "Gagal memperbarui profil.");
     }
   };
 
@@ -98,15 +97,13 @@ export default function ProfileUpdateModal({ visible = false, onClose, profile, 
 
             {/* Header */}
             <Header
-              style={styles.header}
               title="Update Profile"
               leftIcon={
-                <TouchableOpacity onPress={onClose} style={styles.backButtonWrapper}>
+                <TouchableOpacity onPress={onClose}>
                   <Ionicons name="arrow-back" size={24} color={colors.white} />
                 </TouchableOpacity>
               }
             />
-
             <View style={styles.contentContainer}>
               {/* Avatar Section */}
               <TouchableOpacity onPress={pickImage} style={styles.avatarContainer} activeOpacity={0.8}>

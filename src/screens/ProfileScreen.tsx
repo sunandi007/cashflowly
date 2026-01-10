@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import { Image } from "expo-image";
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -18,11 +17,11 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { accountOptionsGroup1, accountOptionsGroup2 } from "@/constant/data";
 import ProfileUpdateModal from "@/components/ProfileUpdateModal";
 import { useProfile } from "@/hooks/useProfile";
-import SettingsModal from "@/components/SettingsModal";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Application from 'expo-application';
+import { useAlert } from "@/hooks/useAlert";
 
 const APP_VERSION = Application.nativeApplicationVersion;
 const BUILD_NUMBER = Application.nativeBuildVersion;
@@ -34,38 +33,43 @@ const ProfileScreen = () => {
 
   const { profile, loading, refetch, updateProfile, userEmail } = useProfile();
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
+  const alert = useAlert();
 
   const handleLogOut = async () => {
     await supabase.auth.signOut();
   };
 
   const showLogoutAlert = () => {
-    Alert.alert("Confirm", "Are you sure you want to logout?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-        onPress: () => console.log("Cancel logout"),
-      },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: () => handleLogOut(),
-      },
-    ]);
+    alert(
+      "Confirm Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => console.log("Cancel logout"),
+        },
+        {
+          text: "Logout",
+          onPress: () => handleLogOut(),
+        },
+      ],
+      { type: "warning" }
+    );
   };
 
   const handlePress = async (item: AccountOptionType) => {
     if (item.title === "Logout") {
       showLogoutAlert();
     } else if (item.title === "Settings" || item.title === "Security & Password") {
-      setIsSettingsModalVisible(true);
+      navigation.navigate("Settings" as never);
     } else if (item.title === "Manage Categories" || item.title === "Kustomisasi Kategori") {
       navigation.navigate("Category" as never);
     } else if (item.title === "Manage Tags") {
       navigation.navigate("TagList" as never);
     } else if (item.title === "Edit Profile" || item.title === "Account Info") {
       setShowModal(true);
-    } else if (item.title === "Tagihan Berulang" || item.title === "Wallets") {
+    } else if (item.title === "Tagihan Berulang") {
       navigation.navigate("BillsScreen" as never);
     } else if (item.title === "Data Management") {
       navigation.navigate("DataManagement" as never);
@@ -228,12 +232,6 @@ const ProfileScreen = () => {
           setShowModal(false);
           setTimeout(() => refetch(), 400);
         }}
-      />
-
-      {/* Modal Settings */}
-      <SettingsModal
-        visible={isSettingsModalVisible}
-        onClose={() => setIsSettingsModalVisible(false)}
       />
     </ScreenWrapper>
   );

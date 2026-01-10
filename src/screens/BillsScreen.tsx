@@ -6,12 +6,11 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   Text,
   ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Typo from "@/components/Typo";
+import { useAlert } from "@/hooks/useAlert";
 import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import { useUpcomingBills } from "@/hooks/useUpcomingBills";
 import UpcomingBillItem from "@/components/UpcomingBillItem";
@@ -23,6 +22,7 @@ import BillDetailModal from "@/components/BillDetailModal";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale } from "@/utils/styling";
 import ScreenWrapper from "@/components/ScreenWrapper";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 const FILTER_OPTIONS = [
   { label: 'All Bills', value: 'all' },
@@ -37,6 +37,8 @@ export default function BillsScreen() {
   const { deleteTransaction } = useTransactionMutations();
   const { processManualBillPayment, isProcessing } = useBillPayment();
   const { wallets } = useWallets();
+  const alert = useAlert();
+  const snack = useSnackbar();
 
   const [billToPay, setBillToPay] = useState<any>(null);
   const [selectedBill, setSelectedBill] = useState<any>(null);
@@ -96,7 +98,7 @@ export default function BillsScreen() {
 
   const handleConfirmPayment = async (updatedAmount: number) => {
     if (!billToPay || !mainWalletId) {
-      Alert.alert("Error", "Data pembayaran atau Wallet Utama tidak tersedia.");
+      snack.error("Data pembayaran atau Wallet Utama tidak tersedia.");
       return;
     }
     const payload = {
@@ -111,23 +113,17 @@ export default function BillsScreen() {
 
     try {
       await processManualBillPayment(payload);
-      Alert.alert(
-        "Success",
-        `Bill ${billToPay.categories?.name || "payment"} has been processed!`
-      );
+      snack.success(`Bill ${billToPay.categories?.name || "payment"} has been processed!`);
       setBillToPay(null);
     } catch (error: any) {
-      Alert.alert(
-        "Failed",
-        error.message || "An unexpected error occurred."
-      );
+      snack.error(error.message || "An unexpected error occurred.");
       setBillToPay(null);
     }
   };
 
   const handleInitialPayClick = (item: any) => {
     if (!mainWalletId) {
-      Alert.alert("Error", "Please create a Main Wallet first.");
+      snack.error("Please create a Main Wallet first.");
       return;
     }
     setBillToPay(item);
@@ -140,24 +136,24 @@ export default function BillsScreen() {
   };
 
   const handleDeletePress = (item: any) => {
-    Alert.alert(
+    alert(
       "Stop Recurring Bill",
       `Are you sure you want to stop "${item.categories?.name || item.note}" recurring bill?`,
       [
         { text: "Cancel", style: "cancel" },
         {
           text: "Stop",
-          style: "destructive",
           onPress: async () => {
             try {
               await deleteTransaction.mutateAsync(item.id);
-              Alert.alert("Success", "Recurring bill has been stopped.");
+              snack.success("Recurring bill has been stopped.");
             } catch (error: any) {
-              Alert.alert("Failed", "Failed to stop recurring bill.");
+              snack.error("Failed to stop recurring bill.");
             }
           },
         },
-      ]
+      ],
+      { type: 'warning' }
     );
   };
 
