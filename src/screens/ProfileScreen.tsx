@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import { Image } from "expo-image";
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -21,6 +20,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAlert } from "@/hooks/useAlert";
 
 const APP_VERSION = "2.4.0";
 const BUILD_NUMBER = "302";
@@ -31,24 +31,30 @@ const ProfileScreen = () => {
   const [showModal, setShowModal] = useState(false);
 
   const { profile, loading, refetch, updateProfile, userEmail } = useProfile();
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
+  const alert = useAlert();
 
   const handleLogOut = async () => {
     await supabase.auth.signOut();
   };
 
   const showLogoutAlert = () => {
-    Alert.alert("Confirm", "Are you sure you want to logout?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-        onPress: () => console.log("Cancel logout"),
-      },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: () => handleLogOut(),
-      },
-    ]);
+    alert(
+      "Confirm Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => console.log("Cancel logout"),
+        },
+        {
+          text: "Logout",
+          onPress: () => handleLogOut(),
+        },
+      ],
+      { type: "warning" }
+    );
   };
 
   const handlePress = async (item: AccountOptionType) => {
@@ -62,7 +68,7 @@ const ProfileScreen = () => {
       navigation.navigate("TagList" as never);
     } else if (item.title === "Edit Profile" || item.title === "Account Info") {
       setShowModal(true);
-    } else if (item.title === "Tagihan Berulang" || item.title === "Wallets") {
+    } else if (item.title === "Tagihan Berulang") {
       navigation.navigate("BillsScreen" as never);
     } else if (item.title === "Data Management") {
       navigation.navigate("DataManagement" as never);

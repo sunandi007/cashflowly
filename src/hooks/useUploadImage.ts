@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import { supabase } from "@/services/supabaseClient";
 import * as FileSystem from "expo-file-system/legacy";
 import { decode } from "base64-arraybuffer";
+import { useSnackbar } from "./useSnackbar";
 
 export function useUploadImage() {
   const [uploading, setUploading] = useState(false);
@@ -14,6 +15,7 @@ export function useUploadImage() {
   ): Promise<string | null> => {
     try {
       setUploading(true);
+      const snackbar = useSnackbar();
 
       // 1️⃣ Baca file dari uri ke base64
       const base64 = await FileSystem.readAsStringAsync(uri, {
@@ -50,12 +52,13 @@ export function useUploadImage() {
         throw new Error("Public URL tidak ditemukan");
       }
 
-      Alert.alert("Berhasil", "Foto profil berhasil diunggah!");
+      snackbar.success("Berhasil", "Foto profil berhasil diunggah!");
+
 
       return publicUrl;
     } catch (error: any) {
-      Alert.alert("Error", "Gagal mengunggah gambar: " + error.message);
-      return null;
+      console.error("Upload image error:", error.message);
+      throw error; // Throw error untuk di-handle oleh component
     } finally {
       setUploading(false);
     }

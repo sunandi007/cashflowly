@@ -1,13 +1,14 @@
 import { supabase } from "@/services/supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
-import { Alert } from "react-native";
+import { useSnackbar } from "./useSnackbar";
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const snackbar = useSnackbar();
   useEffect(() => {
     // Fungsi async untuk mengambil sesi dan menyiapkan listener
     const setupAuthListener = async () => {
@@ -46,7 +47,7 @@ export function useAuth() {
 
     } catch (error: any) {
       console.error("Google Sign-In Error:", error.message);
-      Alert.alert("Login Gagal", error.message);
+      throw error; // Throw error untuk di-handle oleh component
     } finally {
       setLoading(false);
     }
@@ -59,7 +60,7 @@ export function useAuth() {
       if (error) throw error;
     } catch (error: any) {
       console.error("Logout Error:", error.message);
-      Alert.alert("Logout Gagal", error.message);
+      throw error; // Throw error untuk di-handle oleh component
     } finally {
       setLoading(false);
     }
@@ -75,7 +76,7 @@ export function useAuth() {
       return { success: true };
     } catch (error: any) {
       console.error("Forgot Password Error:", error.message);
-      Alert.alert("Gagal Mengirim Email", error.message);
+      snackbar.error("Gagal Mengirim Email", error.message);
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
@@ -92,10 +93,30 @@ export function useAuth() {
       return { success: true };
     } catch (error: any) {
       console.error("Reset Password Error:", error.message);
-      Alert.alert("Gagal Mereset Password", error.message);
+      snackbar.error("Gagal Mereset Password", error.message);
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    try {
+      // Panggil RPC function untuk mengecek email di auth.users
+      const { data, error } = await supabase
+        .rpc('check_email_exists', {
+          check_email: email.toLowerCase().trim()
+        });
+
+      if (error) {
+        console.error("Check email RPC error:", error.message);
+        return false; // Jika error, anggap email belum ada (fail-safe)
+      }
+
+      return data === true;
+    } catch (error: any) {
+      console.error("Check email exception:", error.message);
+      return false; // Jika error, anggap email belum ada (fail-safe)
     }
   };
 
@@ -106,6 +127,7 @@ export function useAuth() {
     signOut,
     signInWithGoogle,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    checkEmailExists
   };
 }

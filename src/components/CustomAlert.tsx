@@ -73,13 +73,13 @@ export default function CustomAlert({
     useEffect(() => {
         if (visible) {
             setShowModal(true);
-            opacityValue.value = withTiming(1, { duration: 200 });
-            scaleValue.value = withSpring(1, { damping: 12 });
+            opacityValue.value = withTiming(1, { duration: 10 });
+            scaleValue.value = withSpring(1, { damping: 80 });
         } else {
-            opacityValue.value = withTiming(0, { duration: 200 }, () => {
+            opacityValue.value = withTiming(0, { duration: 10 }, () => {
                 runOnJS(setShowModal)(false);
             });
-            scaleValue.value = withTiming(0, { duration: 200 });
+            scaleValue.value = withTiming(0, { duration: 10 });
         }
     }, [visible]);
 

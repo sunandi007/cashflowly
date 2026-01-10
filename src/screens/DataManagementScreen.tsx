@@ -20,9 +20,11 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { format } from "date-fns";
 import CsvService from "@/services/CsvService";
 import { useAuth } from "@/hooks/useAuth";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 const DataManagementScreen = () => {
     const { session } = useAuth();
+    const snackbar = useSnackbar();
     const [isLoading, setIsLoading] = useState(false);
 
     // Export Data State
@@ -47,9 +49,9 @@ const DataManagementScreen = () => {
         setIsLoading(false);
 
         if (result.success) {
-            Alert.alert("Success", "Data exported successfully!");
+            snackbar.success("Success", "Data exported successfully!");
         } else {
-            Alert.alert("Export Failed", result.message);
+            snackbar.error("Export Failed", result.message);
         }
     };
 
@@ -71,7 +73,7 @@ const DataManagementScreen = () => {
                 Alert.alert("File Loaded", `${data.rows.length} rows found.`);
             }
         } catch (error) {
-            Alert.alert("Error", "Failed to parse CSV file.");
+            snackbar.error("Error", "Failed to parse CSV file.");
         }
     };
 

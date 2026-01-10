@@ -244,10 +244,27 @@ class CsvService {
                 };
             }
 
+            // Clean data untuk preview
+            const cleanRows = parseResult.data.map((row: any) => ({
+                ...row,
+                Date: row.Date,
+                Amount: row.Amount,
+            }));
+
+            // 👇 LOGIKA BARU: SORTING (Terbaru Paling Atas)
+            cleanRows.sort((a: any, b: any) => {
+                // Kita gunakan helper normalizeDate agar format tanggalnya valid dulu sebelum dibandingkan
+                const dateA = new Date(this.normalizeDate(a.Date)).getTime();
+                const dateB = new Date(this.normalizeDate(b.Date)).getTime();
+
+                // dateB - dateA artinya Descending (Besar ke Kecil / Baru ke Lama)
+                return dateB - dateA;
+            });
+
             return {
                 success: true,
-                data: parseResult.data,
-                rows: parseResult.data,
+                data: cleanRows,
+                rows: cleanRows,
                 fileName: fileName,
             };
         } catch (error) {

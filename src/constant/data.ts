@@ -4,7 +4,7 @@ import { colors } from "./theme";
 // Group 1: Account & Management
 export const accountOptionsGroup1: AccountOptionType[] = [
   {
-    title: "Wallets",
+    title: "Recurring Billing",
     icon: "wallet",
     bgColor: colors.primary + '30', // Purple
   },

@@ -8,6 +8,7 @@ import Header from './Header';
 import BaseDropdown from './Dropdown';
 import Button from './Button';
 import { useProfile } from '@/hooks/useProfile';
+import { useSnackbar } from '@/hooks/useSnackbar';
 
 const CURRENCIES = [
     { label: 'Rupiah (IDR)', value: 'IDR' },
@@ -23,6 +24,7 @@ interface SettingsModalProps {
 export default function SettingsModal({ visible, onClose }: SettingsModalProps) {
     const { profile, updateCurrency, isUpdatingCurrency } = useProfile();
     const currentCode = profile?.currency_code || 'IDR';
+    const snackbar = useSnackbar();
 
     const [selectedCurrency, setSelectedCurrency] = useState(currentCode);
 
@@ -40,10 +42,10 @@ export default function SettingsModal({ visible, onClose }: SettingsModalProps) 
 
         try {
             await updateCurrency(selectedCurrency);
-            Alert.alert("Sukses", "Mata uang dasar berhasil diubah!");
+            snackbar.success("Sukses", "Mata uang dasar berhasil diubah!");
             onClose();
         } catch (error: any) {
-            Alert.alert("Gagal", error.message);
+            snackbar.error("Gagal", error.message);
         }
     };
 

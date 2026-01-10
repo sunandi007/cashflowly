@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
-import { Alert } from "react-native";
 
 /**
  * Hook untuk melakukan transfer antar wallet.
@@ -61,15 +60,9 @@ export function useTransfer() {
       await queryClient.invalidateQueries({
         queryKey: ["transactions", userId],
       });
-
-      Alert.alert(
-        "✅ Transfer Berhasil",
-        "Dana berhasil ditransfer antar wallet!"
-      );
+      // Component akan handle success alert menggunakan useAlert()
     },
-    onError: (err: any) => {
-      Alert.alert("❌ Gagal Transfer", err.message);
-    },
+    // Error akan di-throw ke component yang menggunakan hook ini
   });
 
   const updateTransfer = useMutation({
@@ -111,11 +104,9 @@ export function useTransfer() {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["wallets"] });
       await queryClient.refetchQueries({ queryKey: ["transactions"] });
-      Alert.alert("✅ Transfer Diperbarui", "Transfer berhasil diperbarui!");
+      // Component akan handle success alert menggunakan useAlert()
     },
-    onError: (err: any) => {
-      Alert.alert("❌ Gagal Update Transfer", err.message);
-    },
+    // Error akan di-throw ke component yang menggunakan hook ini
   });
 
   const deleteTransfer = useMutation({
@@ -135,11 +126,9 @@ export function useTransfer() {
       // Invalidate cache untuk memperbarui UI dan saldo dompet
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["wallets"] });
-      Alert.alert("✅ Transfer Dihapus", "Transfer berhasil dibatalkan!");
+      // Component akan handle success alert menggunakan useAlert()
     },
-    onError: (err: any) => {
-      Alert.alert("❌ Gagal Hapus Transfer", err.message);
-    },
+    // Error akan di-throw ke component yang menggunakan hook ini
   });
 
   return {

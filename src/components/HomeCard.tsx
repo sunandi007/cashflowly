@@ -3,6 +3,7 @@ import { scale, verticalScale } from "@/utils/styling";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import Typo from "./Typo";
 import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -84,7 +85,16 @@ const HomeCard = () => {
   };
 
   return (
-    <View style={styles.card}>
+    <LinearGradient
+      colors={[
+        '#1A3A2E',  // Dark forest green (top)
+        '#14261F',  // Medium dark (middle)
+        '#0C1A14',  // Darkest (bottom)
+      ]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.card}
+    >
       {/* Top Section */}
       <View style={styles.topSection}>
         <View>
@@ -97,13 +107,13 @@ const HomeCard = () => {
         </View>
 
         {/* Menu dots */}
-        <TouchableOpacity style={styles.menuButton}>
+        {/* <TouchableOpacity style={styles.menuButton}>
           <Ionicons
             name="ellipsis-horizontal"
             size={scale(20)}
             color={colors.neutral400}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Income & Expense Pills */}
@@ -142,7 +152,7 @@ const HomeCard = () => {
           </View>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -150,12 +160,20 @@ export default HomeCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.neutral800,
     borderRadius: radius._20,
     padding: spacingX._20,
     paddingVertical: verticalScale(24),
     borderWidth: 1,
-    borderColor: `${colors.primary}30`,
+    borderColor: `${colors.primary}40`,
+    // Shadow untuk depth
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
   },
   loadingPlaceholder: {
     justifyContent: 'center',

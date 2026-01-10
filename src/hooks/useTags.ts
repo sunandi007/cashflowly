@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
 import { useAuth } from "@/hooks/useAuth";
-import { Alert } from "react-native";
 import { TagType } from "@/types/model";
 
 export function useTags() {
@@ -59,9 +58,7 @@ export function useTags() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tags", userId] });
         },
-        onError: (err: any) => {
-            Alert.alert("Error adding tag", err.message);
-        },
+        // Error akan di-throw ke component yang menggunakan hook ini
     });
 
     /* ----------------------------- 🔹 UPDATE TAG ----------------------------- */
@@ -81,9 +78,7 @@ export function useTags() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tags", userId] });
         },
-        onError: (err: any) => {
-            Alert.alert("Error updating tag", err.message);
-        },
+        // Error akan di-throw ke component yang menggunakan hook ini
     });
 
     /* ----------------------------- 🔹 DELETE TAG ----------------------------- */
@@ -99,9 +94,7 @@ export function useTags() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tags", userId] });
         },
-        onError: (err: any) => {
-            Alert.alert("Error deleting tag", err.message);
-        },
+        // Error akan di-throw ke component yang menggunakan hook ini
     });
 
     return {

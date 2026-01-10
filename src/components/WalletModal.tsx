@@ -4,10 +4,10 @@ import {
   Modal,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { colors, radius, spacingX, spacingY } from "@/constant/theme";
+import { useAlert } from "@/hooks/useAlert";
 import Typo from "./Typo";
 import Button from "./Button";
 import Header from "./Header";
@@ -32,6 +32,7 @@ export default function WalletAddModal({
   const isEditing = !!initialData;
   const [name, setName] = useState(initialData?.name || "");
   const [loading, setLoading] = useState(false);
+  const alert = useAlert();
 
   useEffect(() => {
     if (visible && initialData) setName(initialData.name || "");
@@ -40,7 +41,7 @@ export default function WalletAddModal({
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      Alert.alert("Error", "Nama wallet wajib diisi.");
+      alert("Error", "Nama wallet wajib diisi.", undefined, { type: 'error' });
       return;
     }
 
@@ -51,16 +52,18 @@ export default function WalletAddModal({
           id: initialData.id,
           updates: { name: name.trim() },
         });
-        Alert.alert("Berhasil 🎉", "Perubahan wallet berhasil disimpan.");
+        alert("Berhasil 🎉", "Perubahan wallet berhasil disimpan.", undefined, { type: 'success' });
       } else if (onSave) {
         await onSave({ name: name.trim() });
-        Alert.alert("Sukses 🎉", "Wallet baru berhasil ditambahkan.");
+        alert("Sukses 🎉", "Wallet baru berhasil ditambahkan.", undefined, { type: 'success' });
       }
       onClose();
     } catch (err: any) {
-      Alert.alert(
+      alert(
         "Gagal 😞",
-        err.message || "Terjadi kesalahan saat menyimpan data."
+        err.message || "Terjadi kesalahan saat menyimpan data.",
+        undefined,
+        { type: 'error' }
       );
     } finally {
       setLoading(false);
@@ -69,24 +72,23 @@ export default function WalletAddModal({
 
   const handleDelete = () => {
     if (!onDelete || !initialData?.id) return;
-    Alert.alert("Hapus Wallet", "Yakin ingin menghapus wallet ini?", [
+    alert("Hapus Wallet", "Yakin ingin menghapus wallet ini?", [
       { text: "Batal", style: "cancel" },
       {
         text: "Hapus",
-        style: "destructive",
         onPress: async () => {
           setLoading(true);
           try {
             await onDelete(initialData.id);
             onClose();
           } catch (err: any) {
-            Alert.alert("Error", err.message);
+            alert("Error", err.message, undefined, { type: 'error' });
           } finally {
             setLoading(false);
           }
         },
       },
-    ]);
+    ], { type: 'warning' });
   };
 
   return (

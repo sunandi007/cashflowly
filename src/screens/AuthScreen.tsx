@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Alert, Pressable, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types/navigation";
@@ -17,6 +17,8 @@ import { useWallets } from "@/hooks/useWallets";
 import { useQueryClient } from "@tanstack/react-query";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/hooks/useAuth";
+import { useAlert } from "@/hooks/useAlert";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type AuthMode = "login" | "register";
@@ -32,20 +34,67 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const { signInWithGoogle, loading: authLoading } = useAuth();
+  const { signInWithGoogle, checkEmailExists, loading: authLoading } = useAuth();
 
   const { wallets, addWallet, isLoading } = useWallets();
+  const alert = useAlert();
+  const snack = useSnackbar();
 
   const isLogin = mode === "login";
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
-    await signInWithGoogle();
-    // Sesi akan diperbarui secara otomatis oleh listener di RootNavigation,
-    // jadi tidak perlu setLoading(false) di sini.
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+      // Sesi akan diperbarui secara otomatis oleh listener di RootNavigation,
+      // jadi tidak perlu setLoading(false) di sini.
+    } catch (error: any) {
+      snack.error("Login Gagal", error.message);
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
+    // Validation: Check if email or password is empty
+    if (!email.trim() || !password.trim()) {
+      snack.error(
+        "Validasi Gagal",
+        "Email dan password harus diisi"
+      );
+      return;
+    }
+
+    // Validation: Check if email format is valid
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      snack.error(
+        "Format Email Salah",
+        "Masukkan alamat email yang valid"
+      );
+      return;
+    }
+
+    // Validation: Check if password has minimum 6 characters
+    if (password.length < 6) {
+      snack.error(
+        "Password Terlalu Pendek",
+        "Password minimal 6 karakter"
+      );
+      return;
+    }
+
+    // Validation: Check if email already exists (only for registration)
+    if (!isLogin) {
+      const emailExists = await checkEmailExists(email.trim());
+      if (emailExists) {
+        snack.error(
+          "Email Sudah Terdaftar",
+          "Email ini sudah digunakan. Silakan login atau gunakan email lain."
+        );
+        return;
+      }
+    }
+
     try {
       setLoading(true);
 
@@ -56,13 +105,21 @@ export default function AuthScreen() {
         });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await supabase.auth.signUp({
+          email, password, options: {
+            emailRedirectTo: 'https://jade-lokum-b3177e.netlify.app/'
+          }
+        });
         if (error) throw error;
-        Alert.alert("Registrasi sukses 🎉", "Cek email untuk verifikasi.");
+        snack.success("Registrasi sukses 🎉", "Cek email untuk verifikasi.");
         setLoading(true);
       }
     } catch (error: any) {
-      Alert.alert(isLogin ? "Login gagal" : "Registrasi gagal", error.message);
+      if (!isLogin && error.message) {
+        snack.error("Registrasi gagal", error.message);
+      } else {
+        snack.error(isLogin ? "Login gagal" : "Registrasi gagal", error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -123,13 +180,13 @@ export default function AuthScreen() {
             </Typo>
           </Button>
 
-          <View style={styles.dividerContainer}>
+          {/* <View style={styles.dividerContainer}>
             <View style={styles.divider} />
             <Typo color={colors.neutral400}>ATAU</Typo>
             <View style={styles.divider} />
-          </View>
+          </View> */}
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.googleButton}
             onPress={handleGoogleLogin}
             disabled={loading} // Nonaktifkan jika sedang loading
@@ -138,7 +195,7 @@ export default function AuthScreen() {
             <Typo style={styles.googleButtonText} fontWeight="600">
               Lanjutkan dengan Google
             </Typo>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Footer */}

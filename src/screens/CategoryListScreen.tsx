@@ -6,9 +6,9 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import Typo from "@/components/Typo";
+import { useAlert } from "@/hooks/useAlert";
 import { colors, spacingX, radius } from "@/constant/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useCategories, useCategoryMutations } from "@/hooks/useCategories";
@@ -57,6 +57,7 @@ export default function CategoryListScreen() {
   const userId = session?.user?.id;
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const alert = useAlert();
 
   const { data: categories = [], isLoading } = useCategories(userId);
   const { deleteCategory } = useCategoryMutations(userId);
@@ -108,27 +109,29 @@ export default function CategoryListScreen() {
   }, [categories]);
 
   const handleDelete = (category: Category) => {
-    Alert.alert(
+    alert(
       "Konfirmasi Hapus",
       `Yakin ingin menghapus kategori '${category.name}'? Ini mungkin memengaruhi transaksi yang sudah ada.`,
       [
         { text: "Batal", style: "cancel" },
         {
           text: "Hapus",
-          style: "destructive",
           onPress: async () => {
             try {
               await deleteCategory(category.id);
-              Alert.alert("Sukses", "Kategori berhasil dihapus.");
+              alert("Sukses", "Kategori berhasil dihapus.", undefined, { type: 'success' });
             } catch (error: any) {
-              Alert.alert(
+              alert(
                 "Gagal",
-                "Gagal menghapus kategori. Pastikan tidak ada transaksi yang terkait."
+                "Gagal menghapus kategori. Pastikan tidak ada transaksi yang terkait.",
+                undefined,
+                { type: 'error' }
               );
             }
           },
         },
-      ]
+      ],
+      { type: 'warning' }
     );
   };
 

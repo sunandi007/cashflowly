@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Dimensions,
   ScrollView,
   KeyboardAvoidingView,
@@ -14,6 +13,7 @@ import {
 } from "react-native";
 import { useCategoryMutations } from "@/hooks/useCategories";
 import { useAuth } from "@/hooks/useAuth";
+import { useSnackbar } from "@/hooks/useSnackbar";
 import { colors, spacingX, radius } from "@/constant/theme";
 import Typo from "./Typo";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/constant/categoryOptions";
@@ -48,16 +48,17 @@ export default function AddCategoryModal({
   const userId = session?.user?.id;
   const { updateCategory, isUpdating, addCategory, isCreating } =
     useCategoryMutations(userId);
+  const snackbar = useSnackbar();
 
   const handleSave = async () => {
     const isEditing = !!initialData;
 
     if (!name.trim()) {
-      Alert.alert("Error", "Nama kategori tidak boleh kosong");
+      snackbar.error("Nama wajib diisi", "Nama kategori tidak boleh kosong");
       return;
     }
     if (!icon || !bgColor) {
-      Alert.alert("Error", "Ikon dan Warna harus dipilih.");
+      snackbar.error("Ikon dan warna wajib dipilih", "Lengkapi data kategori");
       return;
     }
 
@@ -69,10 +70,10 @@ export default function AddCategoryModal({
           id: initialData.id,
           updates: payload,
         });
-        Alert.alert("Sukses", "Kategori berhasil diperbarui.");
+        snackbar.success("Kategori diperbarui", "Perubahan berhasil disimpan");
       } else {
         await addCategory(payload);
-        Alert.alert("Sukses", "Kategori baru berhasil ditambahkan.");
+        snackbar.success("Kategori ditambahkan", "Kategori baru berhasil dibuat");
       }
 
       setName("");
@@ -80,7 +81,7 @@ export default function AddCategoryModal({
       setBgColor(CATEGORY_COLORS[0]);
       onClose();
     } catch (err: any) {
-      Alert.alert("Gagal Menyimpan", err.message);
+      snackbar.error("Gagal menyimpan", err.message);
     }
   };
 
