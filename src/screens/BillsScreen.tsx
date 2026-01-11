@@ -23,6 +23,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale } from "@/utils/styling";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import { useSnackbar } from "@/hooks/useSnackbar";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const FILTER_OPTIONS = [
   { label: 'All Bills', value: 'all' },
@@ -33,6 +34,7 @@ const FILTER_OPTIONS = [
 export default function BillsScreen() {
   const navigation = useNavigation<any>();
   const { data: bills = [], isLoading } = useUpcomingBills();
+  const { formatMoney } = useCurrency();
 
   const { deleteTransaction } = useTransactionMutations();
   const { processManualBillPayment, isProcessing } = useBillPayment();
@@ -48,13 +50,6 @@ export default function BillsScreen() {
   const mainWallet =
     wallets.find((w) => w.name === "Main Wallet") || wallets[0];
   const mainWalletId = mainWallet?.id;
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(amount);
 
   // Calculate total due this month
   const totalDueThisMonth = useMemo(() => {
@@ -164,7 +159,7 @@ export default function BillsScreen() {
       onDeletePress={handleDeletePress}
       onEditPress={handleEditPress}
       isProcessing={isProcessing}
-      formatCurrency={formatCurrency}
+      formatCurrency={formatMoney}
       onDetailPress={handleDetailPress}
     />
   );
@@ -174,18 +169,18 @@ export default function BillsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.welcomeText}>Welcome back,</Text>
+          {/* <Text style={styles.welcomeText}>Welcome back,</Text> */}
           <Text style={styles.headerTitle}>Recurring Bills</Text>
         </View>
-        <TouchableOpacity style={styles.filterIconButton}>
+        {/* <TouchableOpacity style={styles.filterIconButton}>
           <Ionicons name="options-outline" size={scale(22)} color={colors.white} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Total Due Card */}
       <View style={styles.totalDueCard}>
         <Text style={styles.totalDueLabel}>TOTAL DUE THIS MONTH</Text>
-        <Text style={styles.totalDueAmount}>{formatCurrency(totalDueThisMonth)}</Text>
+        <Text style={styles.totalDueAmount}>{formatMoney(totalDueThisMonth)}</Text>
         <Text style={styles.totalDueSubtitle}>
           You have {billsDueIn7Days} bills due in the next 7 days.
         </Text>
@@ -331,7 +326,7 @@ const styles = StyleSheet.create({
   // Filter Chips
   filterRow: {
     marginBottom: verticalScale(20),
-    maxHeight: verticalScale(50),
+    maxHeight: verticalScale(40),
   },
   filterRowContent: {
     paddingHorizontal: spacingX._20,
@@ -339,7 +334,7 @@ const styles = StyleSheet.create({
   },
   filterChip: {
     backgroundColor: colors.neutral800,
-    paddingVertical: verticalScale(12),
+    paddingVertical: verticalScale(9),
     paddingHorizontal: scale(20),
     borderRadius: scale(24),
   },

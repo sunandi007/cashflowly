@@ -8,10 +8,12 @@ import Typo from "./Typo";
 import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useWallets } from "@/hooks/useWallets";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const HomeCard = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;
+  const { formatMoney } = useCurrency(); // Get formatMoney from context
 
   // 1. Ambil data WALLET untuk Total Balance
   const { wallets } = useWallets();
@@ -55,33 +57,20 @@ const HomeCard = () => {
     );
   }
 
-  // Fungsi utilitas untuk memformat mata uang
-  const formatCurrency = (amount: number, showSign = false) => {
-    const formatted = Number(Math.abs(amount)).toLocaleString("id-ID", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
-
-    if (showSign && amount > 0) {
-      return `+Rp ${formatted}`;
-    }
-    if (showSign && amount < 0) {
-      return `-Rp ${formatted}`;
-    }
-    return `Rp ${formatted}`;
-  };
-
+  // Fungsi format compact dengan currency dynamic
   const formatCompact = (amount: number) => {
+    const { symbol } = useCurrency();
+
     if (amount >= 1000000000) {
-      return `Rp ${(amount / 1000000000).toFixed(1)}M`;
+      return `${symbol} ${(amount / 1000000000).toFixed(1)}M`;
     }
     if (amount >= 1000000) {
-      return `Rp ${(amount / 1000000).toFixed(1)}jt`;
+      return `${symbol} ${(amount / 1000000).toFixed(1)}jt`;
     }
     if (amount >= 1000) {
-      return `Rp ${(amount / 1000).toFixed(0)}rb`;
+      return `${symbol} ${(amount / 1000).toFixed(0)}rb`;
     }
-    return `Rp ${amount.toFixed(0)}`;
+    return formatMoney(amount);
   };
 
   return (
@@ -102,7 +91,7 @@ const HomeCard = () => {
             Total Balance
           </Typo>
           <Typo size={32} fontWeight="bold" color={colors.white}>
-            Rp {totalBalance.toLocaleString("id-ID", { minimumFractionDigits: 0 })}
+            {formatMoney(totalBalance)}
           </Typo>
         </View>
 

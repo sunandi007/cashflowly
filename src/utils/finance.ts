@@ -43,18 +43,18 @@ export function groupByMonth(transactions: any[]) {
   }));
 }
 
-export const formatRupiahLabel = (value: number): string => {
+export const formatRupiahLabel = (value: number, symbol: string = "Rp"): string => {
   if (value >= 1000000) {
     // Tampilkan dalam Juta (Jt)
     const million = (value / 1000000).toFixed(1).replace(/\.0$/, ''); // Hapus .0 jika angkanya bulat
-    return `Rp ${million} Jt`;
+    return `${symbol} ${million} Jt`;
   }
   if (value >= 1000) {
     // Tampilkan dalam Ribu (K)
     const thousand = (value / 1000).toFixed(0);
-    return `Rp ${thousand}K`;
+    return `${symbol} ${thousand}K`;
   }
-  return `Rp ${value}`;
+  return `${symbol} ${value}`;
 };
 
 /**
@@ -62,24 +62,24 @@ export const formatRupiahLabel = (value: number): string => {
  * Mengembalikan Number, kecuali jika kasus perbandingan dengan nol terjadi.
  */
 export const calculatePercentageChange = (currentValue: number, previousValue: number): number | string => {
-    // KASUS 1: Periode lalu NOL (atau Net Income negatif) dan Periode ini POSITIF
-    if (previousValue <= 0 && currentValue > 0) {
-        // Kita anggap ini sebagai "Pertumbuhan Kuat" atau "Tidak Terbandingkan"
-        return "Growth"; 
-    }
-    
-    // KASUS 2: Periode lalu positif, dan Periode ini NOL (atau negatif)
-    if (previousValue > 0 && currentValue <= 0) {
-        // Kita anggap ini sebagai penurunan -100% atau lebih
-        return -100; // Atau biarkan logika normal menangani angka besar negatif
-    }
-    
-    // KASUS NORMAL (Kedua nilai bukan nol)
-    if (previousValue === 0) {
-        return 0; // Jika keduanya nol, tidak ada perubahan
-    }
+  // KASUS 1: Periode lalu NOL (atau Net Income negatif) dan Periode ini POSITIF
+  if (previousValue <= 0 && currentValue > 0) {
+    // Kita anggap ini sebagai "Pertumbuhan Kuat" atau "Tidak Terbandingkan"
+    return "Growth";
+  }
 
-    const change = (currentValue - previousValue) / Math.abs(previousValue);
-    // Mengalikan 100 dan membulatkan ke 2 desimal
-    return Math.round(change * 10000) / 100; 
+  // KASUS 2: Periode lalu positif, dan Periode ini NOL (atau negatif)
+  if (previousValue > 0 && currentValue <= 0) {
+    // Kita anggap ini sebagai penurunan -100% atau lebih
+    return -100; // Atau biarkan logika normal menangani angka besar negatif
+  }
+
+  // KASUS NORMAL (Kedua nilai bukan nol)
+  if (previousValue === 0) {
+    return 0; // Jika keduanya nol, tidak ada perubahan
+  }
+
+  const change = (currentValue - previousValue) / Math.abs(previousValue);
+  // Mengalikan 100 dan membulatkan ke 2 desimal
+  return Math.round(change * 10000) / 100;
 };

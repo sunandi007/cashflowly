@@ -59,10 +59,7 @@ export default function UpcomingBillItem({
         }
     };
 
-    // Format amount in IDR
-    const formatIDR = (amount: number): string => {
-        return `Rp ${amount.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-    };
+
 
     const dateDisplay = formatDueDate(dueDate);
 
@@ -81,7 +78,7 @@ export default function UpcomingBillItem({
             <View style={styles.infoSection}>
                 <Text style={styles.billName}>{toTitleCase(categoryName)}</Text>
                 <Text style={styles.billSubtitle}>
-                    {dateDisplay} • {formatIDR(item.amount)}
+                    {dateDisplay} • {formatCurrency(item.amount)}
                 </Text>
             </View>
 

@@ -17,6 +17,7 @@ import WalletAddModal from "@/components/WalletModal";
 import { scale, verticalScale } from "@/utils/styling";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/types/navigation";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 // Wallet type colors mapping
 const WALLET_GRADIENTS: Record<string, string[]> = {
@@ -64,6 +65,7 @@ export default function WalletScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { wallets, totalBalance, addWallet, updateWallet, deleteWallet } =
     useWallets();
+  const { formatMoney } = useCurrency();
   const [showAdd, setShowAdd] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState<any>(null);
 
@@ -71,11 +73,6 @@ export default function WalletScreen() {
   const growthPercentage = useMemo(() => {
     return "+2.4%";
   }, []);
-
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return `Rp ${amount.toLocaleString("id-ID", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-  };
 
   const renderWalletCard = ({ item, index }: { item: any; index: number }) => {
     const walletType = getWalletType(item.name);
@@ -115,7 +112,7 @@ export default function WalletScreen() {
           {/* Card Balance */}
           <View style={styles.cardBalanceSection}>
             <Text style={styles.cardBalance}>
-              {formatCurrency(item.balance)}
+              {formatMoney(item.balance)}
             </Text>
           </View>
         </LinearGradient>
@@ -154,7 +151,7 @@ export default function WalletScreen() {
         <View style={styles.netWorthSection}>
           <Text style={styles.netWorthLabel}>Total Net Worth</Text>
           <Text style={styles.netWorthAmount}>
-            {formatCurrency(totalBalance)}
+            {formatMoney(totalBalance)}
           </Text>
           <View style={styles.growthBadge}>
             <Ionicons name="trending-up" size={scale(14)} color={colors.primary} />

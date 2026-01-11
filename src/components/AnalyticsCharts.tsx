@@ -5,6 +5,7 @@ import Typo from "@/components/Typo";
 import { colors } from "@/constant/theme";
 import { getTitle } from "@/constant/ChartsDummy";
 import { formatRupiahLabel } from "@/utils/finance";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 type FilterType = "weekly" | "monthly" | "yearly";
 
@@ -25,6 +26,7 @@ export default function AnalyticsCharts({
   loading,
   filter,
 }: AnalyticsChartsProps) {
+  const { symbol } = useCurrency();
   // ... (Logika Loading)
   if (loading) {
     return (
@@ -78,7 +80,7 @@ export default function AnalyticsCharts({
     { length: noOfSections + 1 },
     (_, i) => {
       const value = i * stepValue;
-      return formatRupiahLabel(value);
+      return formatRupiahLabel(value, symbol);
     }
   );
 
@@ -103,7 +105,7 @@ export default function AnalyticsCharts({
         xAxisThickness={0}
         yAxisThickness={0}
         yAxisTextStyle={{ color: colors.neutral400, fontSize: 10 }}
-        yAxisLabelPrefix="Rp"
+        yAxisLabelPrefix={symbol}
         noOfSections={noOfSections || 5}
         stepValue={stepValue || 20000}
         maxValue={maxValue * 1.1}

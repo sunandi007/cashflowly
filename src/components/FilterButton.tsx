@@ -1,6 +1,7 @@
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
-import { colors } from "@/constant/theme"; // Asumsi colors memiliki primary dan white
+import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { colors, radius } from "@/constant/theme";
+import { scale, verticalScale } from "@/utils/styling";
 
 type FilterButtonProps = {
   label: string;
@@ -14,47 +15,35 @@ export default function FilterButton({
   onPress,
 }: FilterButtonProps) {
   return (
-      <TouchableOpacity
-        style={[styles.tab, isActive && styles.activeTab]}
-        onPress={onPress}
-      >
-        <Text style={[styles.tabText, isActive && styles.activeTabText]}>
-          {label}
-        </Text>
-      </TouchableOpacity>
+    <TouchableOpacity
+      style={[styles.tabButton, isActive && styles.tabButtonActive]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+        {label}
+      </Text>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginHorizontal: 4,
-    minWidth: 80,
-    alignItems: "center",
-  },
-  active: {
-    backgroundColor: colors.white,
-  },
-  inactive: {
-    backgroundColor: colors.neutral600,
-  },
-  text: {
-    color: colors.neutral900,
-    fontWeight: "600",
-  },
-  tab: {
+  tabButton: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: verticalScale(12),
     alignItems: "center",
-    backgroundColor: colors.neutral500
+    borderRadius: radius._30,
+    backgroundColor: "transparent",
+  },
+  tabButtonActive: {
+    backgroundColor: colors.primary,
   },
   tabText: {
-    fontSize: 16,
+    fontSize: scale(14),
     fontWeight: "600",
+    color: colors.neutral400,
+  },
+  tabTextActive: {
     color: colors.neutral900,
   },
-  activeTab: { backgroundColor: colors.neutral200 },
-  activeTabText: { color: colors.neutral800, fontWeight: "bold" },
 });

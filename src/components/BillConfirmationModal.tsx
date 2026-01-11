@@ -17,6 +17,7 @@ import { toTitleCase } from '@/utils/text';
 import { scale, verticalScale } from '@/utils/styling';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface BillConfirmationModalProps {
     bill: any;
@@ -35,6 +36,7 @@ export default function BillConfirmationModal({
 }: BillConfirmationModalProps) {
     const [amountInput, setAmountInput] = useState('');
     const alert = useAlert();
+    const { formatMoney, symbol } = useCurrency();
 
     useEffect(() => {
         if (visible && bill) {
@@ -56,23 +58,15 @@ export default function BillConfirmationModal({
         onConfirm(numericAmount);
     };
 
-    // Format currency for display
-    const formatCurrency = (number: number) =>
-        new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0
-        }).format(number);
-
-    // Format to compact (e.g., "Rp 1jt")
+    // Format to compact (e.g., "Rp 1jt", "$ 1k")
     const formatCompact = (number: number) => {
         if (number >= 1000000) {
-            return `Rp ${(number / 1000000).toFixed(0)}jt`;
+            return `${symbol} ${(number / 1000000).toFixed(0)}jt`;
         }
         if (number >= 1000) {
-            return `Rp ${(number / 1000).toFixed(0)}rb`;
+            return `${symbol} ${(number / 1000).toFixed(0)}rb`;
         }
-        return `Rp ${number}`;
+        return `${symbol} ${number}`;
     };
 
     // Format date
@@ -151,7 +145,7 @@ export default function BillConfirmationModal({
                     <Text style={styles.inputLabel}>Jumlah Pembayaran Aktual</Text>
 
                     <View style={styles.amountInputContainer}>
-                        <Text style={styles.currencyPrefix}>Rp</Text>
+                        <Text style={styles.currencyPrefix}>{symbol}</Text>
                         <TextInput
                             style={styles.amountInput}
                             placeholder="0"
@@ -179,7 +173,7 @@ export default function BillConfirmationModal({
                         <Text style={styles.confirmButtonText}>
                             {isProcessing
                                 ? "Memproses..."
-                                : `Bayar ${formatCurrency(numericAmount)}`
+                                : `Bayar ${formatMoney(numericAmount)}`
                             }
                         </Text>
                     </TouchableOpacity>

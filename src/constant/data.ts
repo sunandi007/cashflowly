@@ -5,12 +5,12 @@ import { colors } from "./theme";
 export const accountOptionsGroup1: AccountOptionType[] = [
   {
     title: "Recurring Billing",
-    icon: "wallet",
+    icon: "logo-stackoverflow",
     bgColor: colors.primary + '30', // Purple
   },
   {
     title: "Manage Categories",
-    icon: "pricetag",
+    icon: "apps-outline",
     bgColor: colors.primary + '30', // Green
   },
   {

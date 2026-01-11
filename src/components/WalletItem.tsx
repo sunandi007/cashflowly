@@ -4,13 +4,16 @@ import Typo from "./Typo";
 import { colors, radius, spacingX, spacingY } from "@/constant/theme";
 import IconComponent from "./Icons";
 import { verticalScale } from "@/utils/styling";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function WalletItem({ wallet }: any) {
+  const { formatMoney } = useCurrency();
+
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.8}>
       <View style={styles.iconContainer}>
         <IconComponent
-          item={ "wallet-outline"  as any}
+          item={"wallet-outline" as any}
           size={verticalScale(26)}
           color={colors.white}
         />
@@ -20,7 +23,7 @@ export default function WalletItem({ wallet }: any) {
           {wallet.name}
         </Typo>
         <Typo size={14} color={colors.neutral400}>
-          Rp {wallet.balance.toLocaleString("id-ID")}
+          {formatMoney(wallet.balance)}
         </Typo>
       </View>
     </TouchableOpacity>

@@ -69,7 +69,7 @@ const ProfileScreen = () => {
       navigation.navigate("TagList" as never);
     } else if (item.title === "Edit Profile" || item.title === "Account Info") {
       setShowModal(true);
-    } else if (item.title === "Tagihan Berulang") {
+    } else if (item.title === "Recurring Billing") {
       navigation.navigate("BillsScreen" as never);
     } else if (item.title === "Data Management") {
       navigation.navigate("DataManagement" as never);

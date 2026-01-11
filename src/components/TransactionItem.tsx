@@ -7,6 +7,7 @@ import Typo from "@/components/Typo";
 import type { TransactionItemProps } from "@/types/model";
 import { toTitleCase } from "@/utils/text";
 import IconComponent from "./Icons";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 // Format date to display like "Today, 09:41 AM" or "Oct 24, 08:15 AM"
 const formatTransactionDate = (dateValue: any): string => {
@@ -56,17 +57,14 @@ const formatTransactionDate = (dateValue: any): string => {
   }
 };
 
-// Format currency for display
-const formatAmount = (amount: number, type: string): string => {
-  const formatted = Math.abs(amount).toLocaleString("id-ID", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
+// Format currency for display with currency context
+const formatAmount = (amount: number, type: string, formatMoney: (amt: number) => string): string => {
+  const formatted = formatMoney(Math.abs(amount));
 
   if (type === "income") {
-    return `+Rp ${formatted}`;
+    return `+${formatted}`;
   }
-  return `-Rp ${formatted}`;
+  return `-${formatted}`;
 };
 
 /**
@@ -79,6 +77,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   index,
   onEditPress,
 }) => {
+  const { formatMoney } = useCurrency();
   const isTransfer = item?.is_transfer === true;
   const isMergedTransfer = item?.type === "transfer";
 
@@ -124,7 +123,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
           {/* Jumlah */}
           <View style={styles.amountContainer}>
             <Typo size={16} fontWeight="600" color={colors.neutral300}>
-              Rp {Number(item?.amount).toLocaleString("id-ID", { minimumFractionDigits: 0 })}
+              {formatMoney(Number(item?.amount))}
             </Typo>
           </View>
         </TouchableOpacity>
@@ -184,7 +183,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             fontWeight="600"
             color={amountColor}
           >
-            {formatAmount(Number(item?.amount) || 0, item?.type || "expense")}
+            {formatAmount(Number(item?.amount) || 0, item?.type || "expense", formatMoney)}
           </Typo>
         </View>
       </TouchableOpacity>

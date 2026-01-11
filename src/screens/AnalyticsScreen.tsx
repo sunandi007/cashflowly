@@ -11,10 +11,12 @@ import Header from "@/components/Header";
 import CategoryPieChart from "@/components/CategoryPieChart";
 import { usePieChartAnalytics } from "@/hooks/usePieChartAnalytics";
 import { useKeyAnalyticsMetrics } from "@/hooks/useKeyAnalyticsMetrics";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 export default function DashboardAnalytics() {
   const [currentFilter, setCurrentFilter] = useState<FilterType>("weekly");
   const [loading] = useState(false);
+  const { formatMoney } = useCurrency();
 
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -59,13 +61,7 @@ export default function DashboardAnalytics() {
     "monthly"
   );
 
-  // Asumsi: Anda memiliki fungsi utilitas formatRupiah untuk tampilan yang rapi
-  // Jika belum ada, kita definisikan yang sederhana:
-  const formatRupiah = (number: number, isNegative: boolean = false) => {
-    const formatted = new Intl.NumberFormat("id-ID").format(Math.abs(number));
-    const sign = isNegative ? "– Rp " : "Rp "; // Menggunakan simbol minus yang benar
-    return sign + formatted;
-  };
+
 
   return (
     <View style={styles.container}>
@@ -105,7 +101,7 @@ export default function DashboardAnalytics() {
           <Typo size={24} fontWeight="800" color={comparisonColor}>
             {isLoadingCombined
               ? "..."
-              : formatRupiah(netIncome, netIncome < 0)}
+              : (netIncome < 0 ? "-" : "") + formatMoney(Math.abs(netIncome))}
           </Typo>
           {/* Teks Perbandingan */}
           <Typo size={12} color={comparisonColor}>
@@ -114,10 +110,10 @@ export default function DashboardAnalytics() {
           {/* Tambahan: Tampilkan Total Income dan Total Expense Absolut */}
           <View style={{ marginTop: 15, flexDirection: "row", gap: 20 }}>
             <Typo size={14} color={colors.primary}>
-              Income: {formatRupiah(keyMetrics?.totalIncome || 0)}
+              Income: {formatMoney(keyMetrics?.totalIncome || 0)}
             </Typo>
             <Typo size={14} color={colors.rose}>
-              Expense: {formatRupiah(keyMetrics?.totalExpense || 0)}
+              Expense: {formatMoney(keyMetrics?.totalExpense || 0)}
             </Typo>
           </View>
         </View>
@@ -139,8 +135,11 @@ const styles = StyleSheet.create({
   },
   filterBar: {
     flexDirection: "row",
-    justifyContent: "center",
-    paddingHorizontal: 12,
+    marginHorizontal: 20,
+    backgroundColor: colors.neutral800,
+    borderRadius: 30,
+    padding: 4,
+    marginBottom: 20,
   },
   scrollContent: {
     paddingBottom: 50, // Ruang bawah agar tidak terpotong
