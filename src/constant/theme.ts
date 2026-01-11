@@ -1,42 +1,164 @@
 import { scale, verticalScale } from "@/utils/styling";
 
-export const colors = {
-  // Background - Dark Forest Green
-  background: "#0C1A14",     // Latar belakang paling dasar (sangat gelap)
-  backgroundAlt: "#14261F",  // Permukaan sedikit lebih terang
+// 1. PALETTE (Warna Mentah)
+const palette = {
+  primary: "#23C16B",
+  primaryLight: "#35E086",
+  primaryDark: "#1A8B4D",
 
-  // Primary/Accent - Emerald Green
-  primary: "#23C16B",        // Hijau cerah pada tombol 'Dinner'
-  primaryLight: "#35E086",   // Hover/Highlight
-  primaryDark: "#1A8B4D",    // Tekan/Active
-  accentGreen: "#23C16B",    // Sama dengan primary (untuk konsistensi)
-
-  // Text colors
-  text: "#FFFFFF",           // Putih murni untuk angka saldo
-  textLight: "#A9B3AD",      // Abu-abu kehijauan untuk label (Category, Wallet)
-  textLighter: "#7C8A82",    // Deskripsi kecil
+  rose: "#FF4D4D",
+  roseLight: "#FB7185",
   white: "#FFFFFF",
   black: "#000000",
 
-  // Semantic colors
-  rose: "#FF4D4D",           // Tetap merah untuk indikator pengeluaran jika perlu
-  green: "#23C16B",
-  roseLight: "#FB7185",
+  // Dark Forest (Warna Lama Anda)
+  forest900: "#0C1A14",
+  forest800: "#14261F",
+  forest700: "#1A2E26",
+  forest600: "#475569",
+  forest500: "#64748b",
+  forest400: "#94a3b8",
+  forest300: "#d4d4d4",
+  forest200: "#e5e5e5",
+  forest100: "#E6E9E7",
+  forest50: "#F2F4F3",
 
-  // Neutral scale - Deep Forest/Olive Tones (Bukan Slate/Blue)
-  neutral50: "#F2F4F3",
-  neutral100: "#E6E9E7",
-  neutral200: "#e5e5e5",
-  neutral300: "#d4d4d4",
-  neutral350: "#CCCCCC",
-  neutral400: "#94a3b8",
-  neutral500: "#64748b",
-  neutral600: "#475569",
-  neutral700: "#1A2E26",     // Background Card (Food & Dining, Wallet)
-  neutral800: "#14261F",     // Input field/Note background
-  neutral900: "#0C1A14",     // Base background
+  forestText: "#FFFFFF",
+  forestTextLight: "#A9B3AD",
+  forestTextLighter: "#7C8A82",
+
+  // Light Mode (Warna Baru)
+  lightBg: "#FFFFFF",
+  lightCard: "#F3F4F6",
+  lightInput: "#E5E7EB",
+  lightText: "#111827",
+  lightTextSoft: "#4B5563",
 };
 
+// 2. THEMES (Logic Mapping)
+export const themes = {
+  dark: {
+    mode: 'dark',
+
+    // Background & Surfaces
+    background: palette.forest900,
+    backgroundAlt: palette.forest800,
+    card: palette.forest700,
+    input: palette.forest800,
+
+    // Text
+    text: palette.forestText,
+    textLight: palette.forestTextLight,
+    textLighter: palette.forestTextLighter,
+
+    // Borders
+    border: palette.forest800,
+
+    // Primary
+    primary: palette.primary,
+    primaryLight: palette.primaryLight,
+    primaryDark: palette.primaryDark,
+    accentGreen: palette.primary,
+
+    // Semantic Colors
+    rose: palette.rose,
+    roseLight: palette.roseLight,
+    green: palette.primary,
+
+    // Neutral Scale (Legacy Support)
+    neutral900: palette.forest900,
+    neutral800: palette.forest800,
+    neutral700: palette.forest700,
+    neutral600: palette.forest600,
+    neutral500: palette.forest500,
+    neutral400: palette.forest400,
+    neutral300: palette.forest300,
+    neutral200: palette.forest200,
+    neutral100: palette.forest100,
+    neutral50: palette.forest50,
+    neutral350: "#CCCCCC",
+
+    // Extended Palette
+    white: palette.white,
+    black: palette.black,
+
+    // Special Cards & Components
+    cardSecondary: palette.forest700,
+    cardTertiary: palette.forest700,
+
+    // Shadows & Overlays
+    shadow: "rgba(0, 0, 0, 0.3)",
+    shadowMedium: "rgba(0, 0, 0, 0.5)",
+    shadowStrong: "rgba(0, 0, 0, 0.7)",
+    overlay: "rgba(0, 0, 0, 0.6)",
+  },
+
+  light: {
+    mode: 'light',
+
+    // Background & Surfaces - Soft & Clean
+    background: "#F8F9FA",        // Very light gray background
+    backgroundAlt: "#FFFFFF",     // Pure white for cards
+    card: "#FFFFFF",              // White cards with shadow
+    input: "#F3F4F6",             // Light gray for inputs
+
+    // Text - Good contrast
+    text: "#1F2937",              // Dark gray for primary text
+    textLight: "#6B7280",         // Medium gray for secondary
+    textLighter: "#9CA3AF",       // Light gray for tertiary
+
+    // Borders & Dividers
+    border: "#E5E7EB",            // Very light border
+
+    // Primary - Keep the green vibrant
+    primary: "#23C16B",
+    primaryLight: "#35E086",
+    primaryDark: "#1A8B4D",
+    accentGreen: "#23C16B",
+
+    // Semantic Colors
+    rose: "#FF4D4D",
+    roseLight: "#FB7185",
+    green: "#23C16B",
+
+    // Neutral Scale (Light Mode Specific)
+    neutral900: "#F8F9FA",        // Lightest (background)
+    neutral800: "#FFFFFF",        // White (cards)
+    neutral700: "#F3F4F6",        // Light gray (inputs/secondary bg)
+    neutral600: "#E5E7EB",        // Borders
+    neutral500: "#D1D5DB",        // Disabled states
+    neutral400: "#9CA3AF",        // Tertiary text
+    neutral300: "#6B7280",        // Secondary text
+    neutral200: "#4B5563",        // Active text
+    neutral100: "#374151",        // Strong text
+    neutral50: "#1F2937",         // Darkest (primary text)
+    neutral350: "#D1D5DB",        // Special disabled
+
+    // Extended Palette for Light Mode
+    white: "#FFFFFF",
+    black: "#000000",
+
+    // Special Cards & Components (Soft colors)
+    cardSecondary: "#F0FDF4",     // Very light green tint
+    cardTertiary: "#EFF6FF",      // Very light blue tint
+
+    // Shadows & Overlays
+    shadow: "rgba(0, 0, 0, 0.05)",
+    shadowMedium: "rgba(0, 0, 0, 0.1)",
+    shadowStrong: "rgba(0, 0, 0, 0.15)",
+    overlay: "rgba(0, 0, 0, 0.3)",
+  },
+};
+
+// ==========================================================
+// 👇 SOLUSI ERROR ANDA ADA DI SINI
+// ==========================================================
+// Kita export 'colors' sebagai alias ke tema 'dark' secara default.
+// Ini membuat `import { colors }` di file lama Anda tetap jalan.
+export const colors = themes.dark;
+
+
+// 3. SPACING & RADIUS
 export const spacingX = {
   _3: scale(3),
   _5: scale(5),

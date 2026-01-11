@@ -6,6 +6,8 @@ import RootNavigator from "@/navigation/RootNavigation";
 import { colors } from "@/constant/theme";
 import { AlertProvider } from "@/contexts/AlertContext";
 import { SnackbarProvider } from "@/contexts/SnackbarContext";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import * as Linking from 'expo-linking';
 
 const queryClient = new QueryClient();
@@ -27,23 +29,36 @@ const linking = {
   },
 };
 
+// Separate component to use theme context
+function AppContent() {
+  const { colors } = useTheme();
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: colors.background }}
+        edges={["top", "bottom"]}
+      >
+        <NavigationContainer linking={linking}>
+          <RootNavigator />
+        </NavigationContainer>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AlertProvider>
-        <SnackbarProvider>
-          <SafeAreaProvider>
-            <SafeAreaView
-              style={{ flex: 1, backgroundColor: colors.neutral900 }}
-              edges={["top", "bottom"]}
-            >
-              <NavigationContainer linking={linking}>
-                <RootNavigator />
-              </NavigationContainer>
-            </SafeAreaView>
-          </SafeAreaProvider>
-        </SnackbarProvider>
-      </AlertProvider>
+      <ThemeProvider>
+        <CurrencyProvider>
+          <AlertProvider>
+            <SnackbarProvider>
+              <AppContent />
+            </SnackbarProvider>
+          </AlertProvider>
+        </CurrencyProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

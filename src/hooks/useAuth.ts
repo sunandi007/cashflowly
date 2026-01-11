@@ -123,7 +123,7 @@ export function useAuth() {
   return {
     session,
     isReady,
-    loading, // <-- Sekarang sudah diekspor
+    loading,
     signOut,
     signInWithGoogle,
     forgotPassword,

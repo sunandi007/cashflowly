@@ -8,23 +8,64 @@ import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import BackButton from '@/components/BackButton';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { Ionicons } from '@expo/vector-icons';
-import { useProfile } from '@/hooks/useProfile';
-import BaseDropdown from '@/components/Dropdown';
 import { scale } from '@/utils/styling';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useCurrency, CURRENCIES, CurrencyCode } from '@/contexts/CurrencyContext';
+import OptionSelectorModal, { Option } from '@/components/OptionSelectorModal';
+
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
-const CURRENCIES = [
-    { label: 'Rupiah (IDR)', value: 'IDR' },
-    { label: 'US Dollar (USD)', value: 'USD' },
-    { label: 'Euro (EUR)', value: 'EUR' },
+// Theme Options
+const THEME_OPTIONS: Option[] = [
+    {
+        value: 'dark',
+        label: 'Dark Mode',
+        description: 'Tema gelap untuk mata yang nyaman',
+        icon: 'moon'
+    },
+    {
+        value: 'light',
+        label: 'Light Mode',
+        description: 'Tema terang dan cerah',
+        icon: 'sunny'
+    },
+    {
+        value: 'system',
+        label: 'System Default',
+        description: 'Ikuti pengaturan sistem',
+        icon: 'phone-portrait'
+    },
 ];
 
-const THEMES = [
-    { label: 'Dark', value: 'dark' },
-    { label: 'Light', value: 'light' },
-    { label: 'Auto', value: 'auto' },
+// Currency Options  
+const CURRENCY_OPTIONS: Option[] = [
+    {
+        value: 'IDR',
+        label: 'Indonesian Rupiah',
+        description: 'Rp - Indonesia',
+        icon: 'cash'
+    },
+    {
+        value: 'USD',
+        label: 'US Dollar',
+        description: '$ - United States',
+        icon: 'cash'
+    },
+    {
+        value: 'EUR',
+        label: 'Euro',
+        description: '€ - European Union',
+        icon: 'cash'
+    },
+    {
+        value: 'SGD',
+        label: 'Singapore Dollar',
+        description: 'S$ - Singapore',
+        icon: 'cash'
+    },
 ];
+
 
 interface SettingItemProps {
     icon: string;
@@ -88,22 +129,34 @@ const SettingItem: React.FC<SettingItemProps> = ({
 
 export default function SettingsScreen() {
     const navigation = useNavigation<Navigation>();
-    const { profile, updateCurrency, isUpdatingCurrency } = useProfile();
-    const currentCode = profile?.currency_code || 'IDR';
 
-    const [selectedCurrency, setSelectedCurrency] = useState(currentCode);
-    const [selectedTheme, setSelectedTheme] = useState('dark');
+    // Contexts
+    const { mode: themeMode, setMode: setThemeMode } = useTheme();
+    const { currency, setCurrency } = useCurrency();
+
+    // Modal States
+    const [showThemeModal, setShowThemeModal] = useState(false);
+    const [showCurrencyModal, setShowCurrencyModal] = useState(false);
     const [biometricEnabled, setBiometricEnabled] = useState(false);
 
-    useEffect(() => {
-        setSelectedCurrency(currentCode);
-    }, [currentCode]);
+    // Handlers
+    const handleThemeChange = (newTheme: string) => {
+        setThemeMode(newTheme as 'light' | 'dark' | 'system');
+    };
 
-    const handleCurrencyChange = async (newCurrency: string) => {
-        setSelectedCurrency(newCurrency);
-        if (newCurrency !== currentCode) {
-            await updateCurrency(newCurrency);
-        }
+    const handleCurrencyChange = (newCurrency: string) => {
+        setCurrency(newCurrency as CurrencyCode);
+    };
+
+    // Display Values
+    const getThemeLabel = () => {
+        const option = THEME_OPTIONS.find(opt => opt.value === themeMode);
+        return option?.label || 'Dark Mode';
+    };
+
+    const getCurrencyLabel = () => {
+        const curr = CURRENCIES[currency];
+        return `${curr.code} - ${curr.symbol}`;
     };
 
     return (
@@ -129,7 +182,11 @@ export default function SettingsScreen() {
                         </Typo>
                         <View style={styles.sectionContent}>
                             {/* Theme */}
-                            <View style={styles.settingItem}>
+                            <TouchableOpacity
+                                style={styles.settingItem}
+                                onPress={() => setShowThemeModal(true)}
+                                activeOpacity={0.7}
+                            >
                                 <View style={styles.settingLeft}>
                                     <View style={[styles.iconWrapper, { backgroundColor: colors.primary + '30' }]}>
                                         <Ionicons name="moon" size={20} color={colors.white} />
@@ -142,14 +199,18 @@ export default function SettingsScreen() {
                                 </View>
                                 <View style={styles.settingRight}>
                                     <Typo size={14} color={colors.neutral400} style={{ marginRight: 8 }}>
-                                        Dark
+                                        {getThemeLabel()}
                                     </Typo>
                                     <Ionicons name="chevron-forward" size={20} color={colors.neutral500} />
                                 </View>
-                            </View>
+                            </TouchableOpacity>
 
                             {/* Currency */}
-                            <View style={styles.settingItem}>
+                            <TouchableOpacity
+                                style={styles.settingItem}
+                                onPress={() => setShowCurrencyModal(true)}
+                                activeOpacity={0.7}
+                            >
                                 <View style={styles.settingLeft}>
                                     <View style={[styles.iconWrapper, { backgroundColor: colors.primary + '30' }]}>
                                         <Ionicons name="cash" size={20} color={colors.white} />
@@ -162,11 +223,11 @@ export default function SettingsScreen() {
                                 </View>
                                 <View style={styles.settingRight}>
                                     <Typo size={14} color={colors.neutral400} style={{ marginRight: 8 }}>
-                                        {selectedCurrency === 'IDR' ? 'IDR - Rp' : selectedCurrency}
+                                        {getCurrencyLabel()}
                                     </Typo>
                                     <Ionicons name="chevron-forward" size={20} color={colors.neutral500} />
                                 </View>
-                            </View>
+                            </TouchableOpacity>
                         </View>
                     </View>
 
@@ -239,6 +300,25 @@ export default function SettingsScreen() {
                         </View>
                     </View>
                 </ScrollView>
+
+                {/* Modals */}
+                <OptionSelectorModal
+                    visible={showThemeModal}
+                    onClose={() => setShowThemeModal(false)}
+                    title="Select Theme"
+                    options={THEME_OPTIONS}
+                    selectedValue={themeMode}
+                    onSelect={handleThemeChange}
+                />
+
+                <OptionSelectorModal
+                    visible={showCurrencyModal}
+                    onClose={() => setShowCurrencyModal(false)}
+                    title="Select Currency"
+                    options={CURRENCY_OPTIONS}
+                    selectedValue={currency}
+                    onSelect={handleCurrencyChange}
+                />
             </View>
         </ScreenWrapper>
     );

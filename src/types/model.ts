@@ -86,6 +86,8 @@ export type ProfileType = {
   fullName: string; // full_name
   avatarUrl?: string; // avatar_url
   createdAt?: string; // created_at
+  theme: 'light' | 'dark' | 'system';
+  currency: 'IDR' | 'USD' | 'EUR' | 'SGD';
 };
 
 export type UserType = {
