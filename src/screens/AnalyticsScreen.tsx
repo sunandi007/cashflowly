@@ -12,11 +12,13 @@ import CategoryPieChart from "@/components/CategoryPieChart";
 import { usePieChartAnalytics } from "@/hooks/usePieChartAnalytics";
 import { useKeyAnalyticsMetrics } from "@/hooks/useKeyAnalyticsMetrics";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function DashboardAnalytics() {
   const [currentFilter, setCurrentFilter] = useState<FilterType>("weekly");
   const [loading] = useState(false);
   const { formatMoney } = useCurrency();
+  const { t } = useLanguage();
 
   const { session } = useAuth();
   const userId = session?.user?.id;
@@ -40,7 +42,7 @@ export default function DashboardAnalytics() {
   let comparisonColor = colors.neutral400; // Warna default // KASUS 1: Nilai adalah String ('Growth')
 
   if (typeof comparisonValue === "string") {
-    comparisonText = `↑ Pertumbuhan Kuat dari periode lalu`;
+    comparisonText = `↑ ${t('analytics.strongGrowth')}`;
     comparisonColor = colors.primary;
   }
   // KASUS 2: Nilai adalah Number (Persentase Normal)
@@ -48,7 +50,7 @@ export default function DashboardAnalytics() {
     // Di sini kita sudah yakin comparisonValue adalah number
     const absValue = Math.abs(comparisonValue);
     const direction = comparisonValue >= 0 ? "↑" : "↓";
-    comparisonText = `${direction} ${absValue}% dari periode lalu`;
+    comparisonText = `${direction} ${absValue}% ${t('analytics.fromPreviousPeriod')}`;
     comparisonColor = comparisonValue >= 0 ? colors.primary : colors.rose;
   }
   // Siapkan data untuk komponen chart
@@ -66,7 +68,7 @@ export default function DashboardAnalytics() {
   return (
     <View style={styles.container}>
       <Header
-        title="Dashboard Analytics"
+        title={t('analytics.title')}
         style={{ marginVertical: spacingY._10 }}
       ></Header>
 
@@ -95,7 +97,7 @@ export default function DashboardAnalytics() {
 
         <View style={styles.keyMetrics}>
           <Typo size={16} fontWeight="600" color={colors.neutral400}>
-            Net Income Periode Ini ({currentFilter.toUpperCase()}):{" "}
+            {t('analytics.netIncomeThisPeriod', { period: currentFilter.toUpperCase() })}:{" "}
           </Typo>
           {/* Nilai Net Income */}
           <Typo size={24} fontWeight="800" color={comparisonColor}>
@@ -110,10 +112,10 @@ export default function DashboardAnalytics() {
           {/* Tambahan: Tampilkan Total Income dan Total Expense Absolut */}
           <View style={{ marginTop: 15, flexDirection: "row", gap: 20 }}>
             <Typo size={14} color={colors.primary}>
-              Income: {formatMoney(keyMetrics?.totalIncome || 0)}
+              {t('dashboard.income')}: {formatMoney(keyMetrics?.totalIncome || 0)}
             </Typo>
             <Typo size={14} color={colors.rose}>
-              Expense: {formatMoney(keyMetrics?.totalExpense || 0)}
+              {t('dashboard.expense')}: {formatMoney(keyMetrics?.totalExpense || 0)}
             </Typo>
           </View>
         </View>

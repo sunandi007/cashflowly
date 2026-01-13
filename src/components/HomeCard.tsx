@@ -9,11 +9,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useWallets } from "@/hooks/useWallets";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const HomeCard = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;
   const { formatMoney } = useCurrency(); // Get formatMoney from context
+  const { t } = useLanguage();
 
   // 1. Ambil data WALLET untuk Total Balance
   const { wallets } = useWallets();
@@ -52,7 +54,7 @@ const HomeCard = () => {
   if (isLoading) {
     return (
       <View style={[styles.card, styles.loadingPlaceholder]}>
-        <Typo color={colors.neutral500}>Loading data...</Typo>
+        <Typo color={colors.neutral500}>{t('common.loading')}</Typo>
       </View>
     );
   }
@@ -88,7 +90,7 @@ const HomeCard = () => {
       <View style={styles.topSection}>
         <View>
           <Typo size={14} color={colors.neutral400} style={styles.balanceLabel}>
-            Total Balance
+            {t('dashboard.totalBalance')}
           </Typo>
           <Typo size={32} fontWeight="bold" color={colors.white}>
             {formatMoney(totalBalance)}
@@ -117,7 +119,7 @@ const HomeCard = () => {
             />
           </View>
           <View>
-            <Typo size={12} color={colors.neutral400}>Income</Typo>
+            <Typo size={12} color={colors.neutral400}>{t('dashboard.income')}</Typo>
             <Typo size={14} fontWeight="600" color={colors.primary}>
               +{formatCompact(income)}
             </Typo>
@@ -134,7 +136,7 @@ const HomeCard = () => {
             />
           </View>
           <View>
-            <Typo size={12} color={colors.neutral400}>Expense</Typo>
+            <Typo size={12} color={colors.neutral400}>{t('dashboard.expense')}</Typo>
             <Typo size={14} fontWeight="600" color={colors.white}>
               -{formatCompact(expense)}
             </Typo>

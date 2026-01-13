@@ -11,6 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { scale } from '@/utils/styling';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useCurrency, CURRENCIES, CurrencyCode } from '@/contexts/CurrencyContext';
+import { useLanguage, LANGUAGES, LanguageCode } from '@/contexts/LanguageContext';
+import { useNotification } from '@/hooks/useNotification';
 import OptionSelectorModal, { Option } from '@/components/OptionSelectorModal';
 
 
@@ -63,6 +65,22 @@ const CURRENCY_OPTIONS: Option[] = [
         label: 'Singapore Dollar',
         description: 'S$ - Singapore',
         icon: 'cash'
+    },
+];
+
+// Language Options
+const LANGUAGE_OPTIONS: Option[] = [
+    {
+        value: 'id',
+        label: 'Bahasa Indonesia',
+        description: '🇮🇩 Indonesian',
+        icon: 'language'
+    },
+    {
+        value: 'en',
+        label: 'English',
+        description: '🇬🇧 English',
+        icon: 'language'
     },
 ];
 
@@ -133,10 +151,13 @@ export default function SettingsScreen() {
     // Contexts
     const { mode: themeMode, setMode: setThemeMode } = useTheme();
     const { currency, setCurrency } = useCurrency();
+    const { language, setLanguage } = useLanguage();
+    const { hasPermission } = useNotification();
 
     // Modal States
     const [showThemeModal, setShowThemeModal] = useState(false);
     const [showCurrencyModal, setShowCurrencyModal] = useState(false);
+    const [showLanguageModal, setShowLanguageModal] = useState(false);
     const [biometricEnabled, setBiometricEnabled] = useState(false);
 
     // Handlers
@@ -148,6 +169,10 @@ export default function SettingsScreen() {
         setCurrency(newCurrency as CurrencyCode);
     };
 
+    const handleLanguageChange = (newLanguage: string) => {
+        setLanguage(newLanguage as LanguageCode);
+    };
+
     // Display Values
     const getThemeLabel = () => {
         const option = THEME_OPTIONS.find(opt => opt.value === themeMode);
@@ -157,6 +182,11 @@ export default function SettingsScreen() {
     const getCurrencyLabel = () => {
         const curr = CURRENCIES[currency];
         return `${curr.code} - ${curr.symbol}`;
+    };
+
+    const getLanguageLabel = () => {
+        const lang = LANGUAGES[language];
+        return lang.nativeName;
     };
 
     return (
@@ -228,6 +258,30 @@ export default function SettingsScreen() {
                                     <Ionicons name="chevron-forward" size={20} color={colors.neutral500} />
                                 </View>
                             </TouchableOpacity>
+
+                            {/* Language */}
+                            <TouchableOpacity
+                                style={styles.settingItem}
+                                onPress={() => setShowLanguageModal(true)}
+                                activeOpacity={0.7}
+                            >
+                                <View style={styles.settingLeft}>
+                                    <View style={[styles.iconWrapper, { backgroundColor: colors.primary + '30' }]}>
+                                        <Ionicons name="language" size={20} color={colors.white} />
+                                    </View>
+                                    <View style={styles.settingTextContainer}>
+                                        <Typo size={15} color={colors.white} fontWeight="500">
+                                            Language
+                                        </Typo>
+                                    </View>
+                                </View>
+                                <View style={styles.settingRight}>
+                                    <Typo size={14} color={colors.neutral400} style={{ marginRight: 8 }}>
+                                        {getLanguageLabel()}
+                                    </Typo>
+                                    <Ionicons name="chevron-forward" size={20} color={colors.neutral500} />
+                                </View>
+                            </TouchableOpacity>
                         </View>
                     </View>
 
@@ -282,9 +336,8 @@ export default function SettingsScreen() {
                                 iconColor={colors.white}
                                 iconBg={colors.primary}
                                 title="Notification Settings"
-                                onPress={() => {
-                                    // TODO: Navigate to notification settings
-                                }}
+                                subtitle={hasPermission ? 'Enabled' : 'Tap to enable'}
+                                onPress={() => navigation.navigate('NotificationSettings' as never)}
                             />
 
                             {/* Privacy Policy */}
@@ -318,6 +371,15 @@ export default function SettingsScreen() {
                     options={CURRENCY_OPTIONS}
                     selectedValue={currency}
                     onSelect={handleCurrencyChange}
+                />
+
+                <OptionSelectorModal
+                    visible={showLanguageModal}
+                    onClose={() => setShowLanguageModal(false)}
+                    title="Select Language"
+                    options={LANGUAGE_OPTIONS}
+                    selectedValue={language}
+                    onSelect={handleLanguageChange}
                 />
             </View>
         </ScreenWrapper>

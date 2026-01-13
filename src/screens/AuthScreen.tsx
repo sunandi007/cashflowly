@@ -19,12 +19,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@/hooks/useAuth";
 import { useAlert } from "@/hooks/useAlert";
 import { useSnackbar } from "@/hooks/useSnackbar";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type AuthMode = "login" | "register";
 
 export default function AuthScreen() {
   const queryClient = useQueryClient();
+  const { t } = useLanguage();
 
   const navigation = useNavigation<Navigation>();
   const route = useRoute();
@@ -49,7 +51,7 @@ export default function AuthScreen() {
       // Sesi akan diperbarui secara otomatis oleh listener di RootNavigation,
       // jadi tidak perlu setLoading(false) di sini.
     } catch (error: any) {
-      snack.error("Login Gagal", error.message);
+      snack.error(t('auth.errors.loginFailed'), error.message);
       setLoading(false);
     }
   };
@@ -58,8 +60,8 @@ export default function AuthScreen() {
     // Validation: Check if email or password is empty
     if (!email.trim() || !password.trim()) {
       snack.error(
-        "Validasi Gagal",
-        "Email dan password harus diisi"
+        t('auth.errors.validationFailed'),
+        t('auth.errors.emailPasswordRequired')
       );
       return;
     }
@@ -68,8 +70,8 @@ export default function AuthScreen() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
       snack.error(
-        "Format Email Salah",
-        "Masukkan alamat email yang valid"
+        t('auth.errors.invalidEmailFormat'),
+        t('auth.errors.invalidEmailMessage')
       );
       return;
     }
@@ -77,8 +79,8 @@ export default function AuthScreen() {
     // Validation: Check if password has minimum 6 characters
     if (password.length < 6) {
       snack.error(
-        "Password Terlalu Pendek",
-        "Password minimal 6 karakter"
+        t('auth.errors.passwordTooShort'),
+        t('auth.errors.passwordMinLength')
       );
       return;
     }
@@ -88,8 +90,8 @@ export default function AuthScreen() {
       const emailExists = await checkEmailExists(email.trim());
       if (emailExists) {
         snack.error(
-          "Email Sudah Terdaftar",
-          "Email ini sudah digunakan. Silakan login atau gunakan email lain."
+          t('auth.errors.emailAlreadyExists'),
+          t('auth.errors.emailAlreadyExistsMessage')
         );
         return;
       }
@@ -111,14 +113,17 @@ export default function AuthScreen() {
           }
         });
         if (error) throw error;
-        snack.success("Registrasi sukses 🎉", "Cek email untuk verifikasi.");
+        snack.success(t('auth.success.registerSuccess'), t('auth.success.checkEmail'));
         setLoading(true);
       }
     } catch (error: any) {
       if (!isLogin && error.message) {
-        snack.error("Registrasi gagal", error.message);
+        snack.error(t('auth.errors.registerFailed'), error.message);
       } else {
-        snack.error(isLogin ? "Login gagal" : "Registrasi gagal", error.message);
+        snack.error(
+          isLogin ? t('auth.errors.loginFailed') : t('auth.errors.registerFailed'),
+          error.message
+        );
       }
     } finally {
       setLoading(false);
@@ -133,25 +138,26 @@ export default function AuthScreen() {
         {/* Heading */}
         <View style={{ gap: 5, marginTop: spacingX._20 }}>
           <Typo size={30} fontWeight={"800"}>
-            {isLogin ? "Hey," : "Let's"}
+            {isLogin ? t('auth.heading.loginLine1') : t('auth.heading.registerLine1')}
           </Typo>
           <Typo size={30} fontWeight={"800"}>
-            {isLogin ? "Welcome Back" : "Get Started"}
+            {isLogin ? t('auth.heading.loginLine2') : t('auth.heading.registerLine2')}
           </Typo>
         </View>
 
         {/* Form */}
         <View style={styles.form}>
           <Typo size={16} fontWeight={"500"} color={colors.textLight}>
-            {isLogin
-              ? "Login now to track all your expenses and income"
-              : "Create an account to track all your expenses and income"}
+            {isLogin ? t('auth.subtitle.login') : t('auth.subtitle.register')}
           </Typo>
 
-          <Input placeholder="Enter your Email" onChangeText={setEmail} />
+          <Input
+            placeholder={t('auth.placeholder.email')}
+            onChangeText={setEmail}
+          />
           <View style={styles.passwordContainer}>
             <Input
-              placeholder="Enter your Password"
+              placeholder={t('auth.placeholder.password')}
               // Jika visible true, secureTextEntry false (teks terlihat), dan sebaliknya
               secureTextEntry={!isPasswordVisible}
               onChangeText={setPassword}
@@ -170,19 +176,19 @@ export default function AuthScreen() {
 
           <Pressable onPress={() => navigation.navigate("ForgotPassword" as never)}>
             <Typo size={14} color={colors.text} style={{ alignSelf: "flex-end" }}>
-              Forgot Password?
+              {t('auth.forgotPassword')}
             </Typo>
           </Pressable>
 
           <Button loading={loading} onPress={handleSubmit}>
             <Typo fontWeight={"700"} color={colors.black} size={21}>
-              {isLogin ? "Login" : "Sign Up"}
+              {isLogin ? t('auth.login') : t('auth.signUp')}
             </Typo>
           </Button>
 
           {/* <View style={styles.dividerContainer}>
             <View style={styles.divider} />
-            <Typo color={colors.neutral400}>ATAU</Typo>
+            <Typo color={colors.neutral400}>{t('auth.or')}</Typo>
             <View style={styles.divider} />
           </View> */}
 
@@ -193,7 +199,7 @@ export default function AuthScreen() {
           >
             <Ionicons name="logo-google" size={24} color={colors.white} />
             <Typo style={styles.googleButtonText} fontWeight="600">
-              Lanjutkan dengan Google
+              {t('auth.continueWithGoogle')}
             </Typo>
           </TouchableOpacity> */}
         </View>
@@ -201,7 +207,7 @@ export default function AuthScreen() {
         {/* Footer */}
         <View style={styles.footer}>
           <Typo size={15}>
-            {isLogin ? "Don't have an account?" : "Already have an account?"}
+            {isLogin ? t('auth.dontHaveAccount') : t('auth.alreadyHaveAccount')}
           </Typo>
           <Pressable
             onPress={() =>
@@ -211,7 +217,7 @@ export default function AuthScreen() {
             }
           >
             <Typo size={15} fontWeight={"700"} color={colors.primary}>
-              {isLogin ? "Sign Up" : "Login"}
+              {isLogin ? t('auth.signUp') : t('auth.login')}
             </Typo>
           </Pressable>
         </View>

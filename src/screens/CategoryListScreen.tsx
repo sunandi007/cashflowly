@@ -18,6 +18,7 @@ import { toTitleCase } from "@/utils/text";
 import { scale, verticalScale } from "@/utils/styling";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Category {
   id: string;
@@ -58,6 +59,7 @@ export default function CategoryListScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const alert = useAlert();
+  const { t } = useLanguage();
 
   const { data: categories = [], isLoading } = useCategories(userId);
   const { deleteCategory } = useCategoryMutations(userId);
@@ -110,20 +112,20 @@ export default function CategoryListScreen() {
 
   const handleDelete = (category: Category) => {
     alert(
-      "Konfirmasi Hapus",
-      `Yakin ingin menghapus kategori '${category.name}'? Ini mungkin memengaruhi transaksi yang sudah ada.`,
+      t('category.deleteConfirmTitle'),
+      t('category.deleteConfirmMessage', { name: category.name }),
       [
-        { text: "Batal", style: "cancel" },
+        { text: t('common.cancel'), style: "cancel" },
         {
-          text: "Hapus",
+          text: t('common.delete'),
           onPress: async () => {
             try {
               await deleteCategory(category.id);
-              alert("Sukses", "Kategori berhasil dihapus.", undefined, { type: 'success' });
+              alert(t('common.success'), t('category.deleted'), undefined, { type: 'success' });
             } catch (error: any) {
               alert(
-                "Gagal",
-                "Gagal menghapus kategori. Pastikan tidak ada transaksi yang terkait.",
+                t('common.error'),
+                t('category.deleteFailed'),
                 undefined,
                 { type: 'error' }
               );
@@ -203,7 +205,7 @@ export default function CategoryListScreen() {
         </TouchableOpacity>
 
         <Typo size={18} fontWeight="700" color={colors.white}>
-          Manage Categories
+          {t('category.manageCategories')}
         </Typo>
 
         <TouchableOpacity
@@ -211,7 +213,7 @@ export default function CategoryListScreen() {
           activeOpacity={0.7}
         >
           <Typo size={16} fontWeight="600" color={colors.primary}>
-            Done
+            {t('common.done')}
           </Typo>
         </TouchableOpacity>
       </View>
@@ -231,7 +233,7 @@ export default function CategoryListScreen() {
             fontWeight="600"
             color={activeTab === "expense" ? colors.neutral900 : colors.neutral400}
           >
-            Expense
+            {t('transaction.expense')}
           </Typo>
         </TouchableOpacity>
         <TouchableOpacity
@@ -247,7 +249,7 @@ export default function CategoryListScreen() {
             fontWeight="600"
             color={activeTab === "income" ? colors.neutral900 : colors.neutral400}
           >
-            Income
+            {t('transaction.income')}
           </Typo>
         </TouchableOpacity>
       </View>
@@ -261,7 +263,7 @@ export default function CategoryListScreen() {
             color={colors.neutral400}
             size={14}
           >
-            Memuat kategori...
+            {t('common.loading')}
           </Typo>
         </View>
       ) : filteredCategories.length === 0 ? (
@@ -270,10 +272,10 @@ export default function CategoryListScreen() {
             <Ionicons name="folder-open-outline" size={scale(48)} color={colors.neutral600} />
           </View>
           <Typo color={colors.neutral400} size={16} fontWeight="600" style={styles.emptyTitle}>
-            Belum Ada Kategori
+            {t('category.noCategories')}
           </Typo>
           <Typo color={colors.neutral500} size={14} style={styles.emptySubtitle}>
-            Tekan tombol + untuk menambahkan kategori baru
+            {t('category.tapToAdd')}
           </Typo>
         </View>
       ) : (

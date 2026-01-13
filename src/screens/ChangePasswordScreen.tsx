@@ -13,12 +13,16 @@ import Input from "@/components/Input";
 import Typo from "@/components/Typo";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/services/supabaseClient";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 export default function ChangePasswordScreen() {
     const navigation = useNavigation<Navigation>();
     const { loading } = useAuth();
+    const { t } = useLanguage();
+    const snackbar = useSnackbar();
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,22 +34,22 @@ export default function ChangePasswordScreen() {
     const handleSubmit = async () => {
         // Validasi
         if (!currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) {
-            Alert.alert("Password Diperlukan", "Silakan isi semua field password.");
+            snackbar.error(t('changePassword.errors.allFieldsRequired'), t('changePassword.errors.fillAllFields'));
             return;
         }
 
         if (newPassword.length < 6) {
-            Alert.alert("Password Terlalu Pendek", "Password baru harus minimal 6 karakter.");
+            snackbar.error(t('changePassword.errors.passwordTooShort'), t('changePassword.errors.minSixCharacters'));
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            Alert.alert("Password Tidak Cocok", "Password baru dan konfirmasi password harus sama.");
+            snackbar.error(t('changePassword.errors.passwordMismatch'), t('changePassword.errors.passwordsMustMatch'));
             return;
         }
 
         if (currentPassword === newPassword) {
-            Alert.alert("Password Sama", "Password baru tidak boleh sama dengan password lama.");
+            snackbar.error(t('changePassword.errors.samePassword'), t('changePassword.errors.newPasswordDifferent'));
             return;
         }
 
@@ -67,7 +71,7 @@ export default function ChangePasswordScreen() {
             });
 
             if (signInError) {
-                throw new Error("Password lama tidak valid");
+                throw new Error(t('changePassword.errors.invalidOldPassword'));
             }
 
             // Jika verifikasi berhasil, update password
@@ -77,19 +81,11 @@ export default function ChangePasswordScreen() {
 
             if (updateError) throw updateError;
 
-            Alert.alert(
-                "Berhasil! 🎉",
-                "Password Anda telah berhasil diubah.",
-                [
-                    {
-                        text: "OK",
-                        onPress: () => navigation.goBack(),
-                    },
-                ]
-            );
+            snackbar.success(t('changePassword.success.title'), t('changePassword.success.message'));
+            navigation.goBack();
         } catch (error: any) {
             console.error("Change Password Error:", error.message);
-            Alert.alert("Gagal Mengubah Password", error.message);
+            snackbar.error(t('changePassword.errors.failedToChange'), error.message);
         } finally {
             setIsLoading(false);
         }
@@ -103,10 +99,7 @@ export default function ChangePasswordScreen() {
                 {/* Heading */}
                 <View style={{ gap: 5, marginTop: spacingX._20 }}>
                     <Typo size={30} fontWeight={"800"}>
-                        Ubah Password
-                    </Typo>
-                    <Typo size={30} fontWeight={"800"}>
-                        Anda
+                        {t('changePassword.title')}
                     </Typo>
                 </View>
 
@@ -117,17 +110,17 @@ export default function ChangePasswordScreen() {
                     {/* Form */}
                     <View style={styles.form}>
                         <Typo size={16} fontWeight={"500"} color={colors.textLight}>
-                            Masukkan password lama dan password baru Anda
+                            {t('changePassword.subtitle')}
                         </Typo>
 
                         {/* Current Password */}
                         <View style={styles.inputGroup}>
                             <Typo size={14} fontWeight={"600"} color={colors.neutral300}>
-                                Password Lama
+                                {t('changePassword.currentPassword')}
                             </Typo>
                             <View style={styles.passwordContainer}>
                                 <Input
-                                    placeholder="Masukkan password lama"
+                                    placeholder={t('changePassword.placeholders.currentPassword')}
                                     secureTextEntry={!isCurrentPasswordVisible}
                                     value={currentPassword}
                                     onChangeText={setCurrentPassword}
@@ -148,11 +141,11 @@ export default function ChangePasswordScreen() {
                         {/* New Password */}
                         <View style={styles.inputGroup}>
                             <Typo size={14} fontWeight={"600"} color={colors.neutral300}>
-                                Password Baru
+                                {t('changePassword.newPassword')}
                             </Typo>
                             <View style={styles.passwordContainer}>
                                 <Input
-                                    placeholder="Masukkan password baru"
+                                    placeholder={t('changePassword.placeholders.newPassword')}
                                     secureTextEntry={!isNewPasswordVisible}
                                     value={newPassword}
                                     onChangeText={setNewPassword}
@@ -173,11 +166,11 @@ export default function ChangePasswordScreen() {
                         {/* Confirm Password */}
                         <View style={styles.inputGroup}>
                             <Typo size={14} fontWeight={"600"} color={colors.neutral300}>
-                                Konfirmasi Password Baru
+                                {t('changePassword.confirmPassword')}
                             </Typo>
                             <View style={styles.passwordContainer}>
                                 <Input
-                                    placeholder="Konfirmasi password baru"
+                                    placeholder={t('changePassword.placeholders.confirmPassword')}
                                     secureTextEntry={!isConfirmPasswordVisible}
                                     value={confirmPassword}
                                     onChangeText={setConfirmPassword}
@@ -198,7 +191,7 @@ export default function ChangePasswordScreen() {
                         {/* Password Requirements */}
                         <View style={styles.requirementsContainer}>
                             <Typo size={13} fontWeight={"600"} color={colors.neutral400}>
-                                Persyaratan Password:
+                                {t('changePassword.requirements.title')}
                             </Typo>
                             <View style={styles.requirementItem}>
                                 <Ionicons
@@ -207,7 +200,7 @@ export default function ChangePasswordScreen() {
                                     color={newPassword.length >= 6 ? colors.primary : colors.neutral500}
                                 />
                                 <Typo size={12} color={colors.neutral400}>
-                                    Minimal 6 karakter
+                                    {t('changePassword.requirements.minLength')}
                                 </Typo>
                             </View>
                             <View style={styles.requirementItem}>
@@ -217,7 +210,7 @@ export default function ChangePasswordScreen() {
                                     color={newPassword === confirmPassword && newPassword.length > 0 ? colors.primary : colors.neutral500}
                                 />
                                 <Typo size={12} color={colors.neutral400}>
-                                    Password dan konfirmasi cocok
+                                    {t('changePassword.requirements.mustMatch')}
                                 </Typo>
                             </View>
                             <View style={styles.requirementItem}>
@@ -227,14 +220,14 @@ export default function ChangePasswordScreen() {
                                     color={colors.neutral500}
                                 />
                                 <Typo size={12} color={colors.neutral400}>
-                                    Gunakan kombinasi huruf dan angka untuk keamanan lebih baik
+                                    {t('changePassword.requirements.useCombo')}
                                 </Typo>
                             </View>
                         </View>
 
                         <Button loading={isLoading} onPress={handleSubmit}>
                             <Typo fontWeight={"700"} color={colors.black} size={21}>
-                                Ubah Password
+                                {t('changePassword.button')}
                             </Typo>
                         </Button>
                     </View>

@@ -24,6 +24,7 @@ import { scale, verticalScale } from "@/utils/styling";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FILTER_OPTIONS = [
   { label: 'All Bills', value: 'all' },
@@ -35,6 +36,7 @@ export default function BillsScreen() {
   const navigation = useNavigation<any>();
   const { data: bills = [], isLoading } = useUpcomingBills();
   const { formatMoney } = useCurrency();
+  const { t } = useLanguage();
 
   const { deleteTransaction } = useTransactionMutations();
   const { processManualBillPayment, isProcessing } = useBillPayment();
@@ -93,7 +95,7 @@ export default function BillsScreen() {
 
   const handleConfirmPayment = async (updatedAmount: number) => {
     if (!billToPay || !mainWalletId) {
-      snack.error("Data pembayaran atau Wallet Utama tidak tersedia.");
+      snack.error(t('bills.errors.noPaymentData'));
       return;
     }
     const payload = {
@@ -108,17 +110,17 @@ export default function BillsScreen() {
 
     try {
       await processManualBillPayment(payload);
-      snack.success(`Bill ${billToPay.categories?.name || "payment"} has been processed!`);
+      snack.success(t('bills.paymentProcessed', { name: billToPay.categories?.name || t('bills.payment') }));
       setBillToPay(null);
     } catch (error: any) {
-      snack.error(error.message || "An unexpected error occurred.");
+      snack.error(error.message || t('common.error'));
       setBillToPay(null);
     }
   };
 
   const handleInitialPayClick = (item: any) => {
     if (!mainWalletId) {
-      snack.error("Please create a Main Wallet first.");
+      snack.error(t('bills.errors.createWalletFirst'));
       return;
     }
     setBillToPay(item);
@@ -132,18 +134,18 @@ export default function BillsScreen() {
 
   const handleDeletePress = (item: any) => {
     alert(
-      "Stop Recurring Bill",
-      `Are you sure you want to stop "${item.categories?.name || item.note}" recurring bill?`,
+      t('bills.stopRecurringBill'),
+      t('bills.confirmStop', { name: item.categories?.name || item.note }),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel'), style: "cancel" },
         {
-          text: "Stop",
+          text: t('bills.stop'),
           onPress: async () => {
             try {
               await deleteTransaction.mutateAsync(item.id);
-              snack.success("Recurring bill has been stopped.");
+              snack.success(t('bills.billStopped'));
             } catch (error: any) {
-              snack.error("Failed to stop recurring bill.");
+              snack.error(t('bills.errors.stopFailed'));
             }
           },
         },
@@ -170,7 +172,7 @@ export default function BillsScreen() {
       <View style={styles.header}>
         <View>
           {/* <Text style={styles.welcomeText}>Welcome back,</Text> */}
-          <Text style={styles.headerTitle}>Recurring Bills</Text>
+          <Text style={styles.headerTitle}>{t('bills.title')}</Text>
         </View>
         {/* <TouchableOpacity style={styles.filterIconButton}>
           <Ionicons name="options-outline" size={scale(22)} color={colors.white} />
@@ -179,10 +181,10 @@ export default function BillsScreen() {
 
       {/* Total Due Card */}
       <View style={styles.totalDueCard}>
-        <Text style={styles.totalDueLabel}>TOTAL DUE THIS MONTH</Text>
+        <Text style={styles.totalDueLabel}>{t('bills.totalDueThisMonth')}</Text>
         <Text style={styles.totalDueAmount}>{formatMoney(totalDueThisMonth)}</Text>
         <Text style={styles.totalDueSubtitle}>
-          You have {billsDueIn7Days} bills due in the next 7 days.
+          {t('bills.billsDueInDays', { count: billsDueIn7Days })}
         </Text>
       </View>
 
@@ -211,13 +213,13 @@ export default function BillsScreen() {
       </ScrollView>
 
       {/* Upcoming Section Label */}
-      <Text style={styles.sectionLabel}>UPCOMING</Text>
+      <Text style={styles.sectionLabel}>{t('bills.upcoming').toUpperCase()}</Text>
 
       {/* Bills List */}
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Ionicons name="reload-outline" size={scale(32)} color={colors.neutral500} />
-          <Text style={styles.loadingText}>Loading bills...</Text>
+          <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       ) : (
         <FlatList
@@ -231,9 +233,9 @@ export default function BillsScreen() {
               <View style={styles.emptyIcon}>
                 <Ionicons name="receipt-outline" size={scale(48)} color={colors.neutral600} />
               </View>
-              <Text style={styles.emptyTitle}>No recurring bills</Text>
+              <Text style={styles.emptyTitle}>{t('bills.noBills')}</Text>
               <Text style={styles.emptySubtitle}>
-                Add your first recurring bill to get started
+                {t('bills.addFirstBill')}
               </Text>
             </View>
           )}

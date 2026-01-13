@@ -18,6 +18,7 @@ import { scale, verticalScale } from "@/utils/styling";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/types/navigation";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Wallet type colors mapping
 const WALLET_GRADIENTS: Record<string, string[]> = {
@@ -66,6 +67,7 @@ export default function WalletScreen() {
   const { wallets, totalBalance, addWallet, updateWallet, deleteWallet } =
     useWallets();
   const { formatMoney } = useCurrency();
+  const { t } = useLanguage();
   const [showAdd, setShowAdd] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState<any>(null);
 
@@ -131,7 +133,7 @@ export default function WalletScreen() {
           <Ionicons name="chevron-back" size={scale(24)} color={colors.white} />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>My Wallets</Text>
+        <Text style={styles.headerTitle}>{t('wallet.title')}</Text>
 
         <TouchableOpacity style={styles.headerButton}>
           <Ionicons name="add-circle-outline"
@@ -149,13 +151,13 @@ export default function WalletScreen() {
       >
         {/* Total Net Worth Section */}
         <View style={styles.netWorthSection}>
-          <Text style={styles.netWorthLabel}>Total Net Worth</Text>
+          <Text style={styles.netWorthLabel}>{t('wallet.totalNetWorth')}</Text>
           <Text style={styles.netWorthAmount}>
             {formatMoney(totalBalance)}
           </Text>
           <View style={styles.growthBadge}>
             <Ionicons name="trending-up" size={scale(14)} color={colors.primary} />
-            <Text style={styles.growthText}>{growthPercentage} this month</Text>
+            <Text style={styles.growthText}>{growthPercentage} {t('wallet.thisMonth')}</Text>
           </View>
         </View>
 

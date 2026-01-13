@@ -14,6 +14,7 @@ import { useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Quick Action Button Data
 const QUICK_ACTIONS = [
@@ -23,18 +24,19 @@ const QUICK_ACTIONS = [
   { id: "more", icon: "grid", label: "More", color: "#F59E0B" },
 ];
 
-// Get greeting based on time
-const getGreeting = () => {
+// Get greeting key based on time
+const getGreetingKey = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good Morning";
-  if (hour < 17) return "Good Afternoon";
-  return "Good Evening";
+  if (hour < 12) return "dashboard.greeting.morning";
+  if (hour < 17) return "dashboard.greeting.afternoon";
+  return "dashboard.greeting.evening";
 };
 
 export default function DashboardScreen() {
   const { session } = useAuth();
   const userId = session?.user?.id;
   const { profile, userEmail } = useProfile();
+  const { t } = useLanguage();
 
   const navigation = useNavigation<any>();
   const [showSearchModal, setShowSearchModal] = useState(false);
@@ -105,7 +107,7 @@ export default function DashboardScreen() {
             {/* Greeting */}
             <View style={styles.greetingContainer}>
               <Typo size={14} color={colors.neutral400}>
-                {getGreeting()},
+                {t(getGreetingKey())},
               </Typo>
               <Typo size={18} fontWeight="600" color={colors.white}>
                 {firstName} 👋
@@ -162,13 +164,13 @@ export default function DashboardScreen() {
           ListHeaderComponent={
             <View style={styles.sectionHeader}>
               <Typo size={18} fontWeight="600" color={colors.white}>
-                Recent Transactions
+                {t('dashboard.recentTransactions')}
               </Typo>
               <TouchableOpacity
                 onPress={() => navigation.navigate("SearchScreen" as never)}
               >
                 <Typo size={14} fontWeight="500" color={colors.primary}>
-                  View All
+                  {t('dashboard.viewAll')}
                 </Typo>
               </TouchableOpacity>
             </View>
@@ -177,8 +179,8 @@ export default function DashboardScreen() {
             <TransactionList
               data={[item]}
               loading={isLoading}
-              emptyListMessage="No transactions yet"
-              title="Recent Transactions"
+              emptyListMessage={t('dashboard.noTransactions')}
+              title={t('dashboard.recentTransactions')}
               onEditPress={handleEditPress}
               openSearch={() => setShowSearchModal(true)}
               isLableSearch={index === 0}
@@ -194,10 +196,10 @@ export default function DashboardScreen() {
                 />
               </View>
               <Typo size={15} color={colors.neutral400}>
-                No transactions yet
+                {t('dashboard.noTransactions')}
               </Typo>
               <Typo size={13} color={colors.neutral500} style={styles.emptySubtext}>
-                Tap + to add your first transaction
+                {t('dashboard.tapToAdd')}
               </Typo>
             </View>
           }

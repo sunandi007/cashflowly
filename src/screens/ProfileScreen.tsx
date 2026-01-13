@@ -22,6 +22,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Application from 'expo-application';
 import { useAlert } from "@/hooks/useAlert";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const APP_VERSION = Application.nativeApplicationVersion;
 const BUILD_NUMBER = Application.nativeBuildVersion;
@@ -34,6 +35,7 @@ const ProfileScreen = () => {
   const { profile, loading, refetch, updateProfile, userEmail } = useProfile();
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
   const alert = useAlert();
+  const { t } = useLanguage();
 
   const handleLogOut = async () => {
     await supabase.auth.signOut();
@@ -41,16 +43,16 @@ const ProfileScreen = () => {
 
   const showLogoutAlert = () => {
     alert(
-      "Confirm Logout",
-      "Are you sure you want to logout?",
+      t('profile.confirmLogout'),
+      t('profile.confirmLogoutMessage'),
       [
         {
-          text: "Cancel",
+          text: t('common.cancel'),
           style: "cancel",
           onPress: () => console.log("Cancel logout"),
         },
         {
-          text: "Logout",
+          text: t('auth.logout'),
           onPress: () => handleLogOut(),
         },
       ],
@@ -133,7 +135,7 @@ const ProfileScreen = () => {
             </TouchableOpacity>
 
             <Typo size={18} fontWeight="700" color={colors.white}>
-              Profile & Settings
+              {t('profile.title')}
             </Typo>
 
             <TouchableOpacity
@@ -141,7 +143,7 @@ const ProfileScreen = () => {
               activeOpacity={0.7}
             >
               <Typo size={16} fontWeight="600" color={colors.primary}>
-                Edit
+                {t('common.edit')}
               </Typo>
             </TouchableOpacity>
           </View>
@@ -176,7 +178,7 @@ const ProfileScreen = () => {
               {/* Name & Email */}
               <View style={styles.nameContainer}>
                 <Typo size={24} fontWeight="700" color={colors.white}>
-                  {profile?.full_name || "User"}
+                  {profile?.full_name || t('profile.defaultUser')}
                 </Typo>
                 <Typo size={14} color={colors.neutral400} style={styles.emailText}>
                   {userEmail}
@@ -210,13 +212,13 @@ const ProfileScreen = () => {
             >
               <Ionicons name="log-out-outline" size={scale(22)} color={colors.neutral900} />
               <Typo size={16} fontWeight="700" color={colors.neutral900}>
-                Log Out
+                {t('auth.logout')}
               </Typo>
             </TouchableOpacity>
 
             {/* Version Info */}
             <Typo size={13} color={colors.neutral500} style={styles.versionText}>
-              Version {APP_VERSION} (Build {BUILD_NUMBER})
+              {t('profile.version')} {APP_VERSION} ({t('profile.build')} {BUILD_NUMBER})
             </Typo>
           </ScrollView>
         </View>

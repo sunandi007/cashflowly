@@ -88,6 +88,7 @@ export type ProfileType = {
   createdAt?: string; // created_at
   theme: 'light' | 'dark' | 'system';
   currency: 'IDR' | 'USD' | 'EUR' | 'SGD';
+  language: 'id' | 'en'; // Language preference (ISO 639-1)
 };
 
 export type UserType = {

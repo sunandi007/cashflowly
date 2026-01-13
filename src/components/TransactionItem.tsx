@@ -8,9 +8,10 @@ import type { TransactionItemProps } from "@/types/model";
 import { toTitleCase } from "@/utils/text";
 import IconComponent from "./Icons";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Format date to display like "Today, 09:41 AM" or "Oct 24, 08:15 AM"
-const formatTransactionDate = (dateValue: any): string => {
+const formatTransactionDate = (dateValue: any, t: (key: string) => string): string => {
   try {
     let date: Date;
 
@@ -38,12 +39,12 @@ const formatTransactionDate = (dateValue: any): string => {
 
     // Check if today
     if (date.toDateString() === now.toDateString()) {
-      return `Today, ${timeStr}`;
+      return `${t('common.today')}, ${timeStr}`;
     }
 
     // Check if yesterday
     if (date.toDateString() === yesterday.toDateString()) {
-      return `Yesterday, ${timeStr}`;
+      return `${t('common.yesterday')}, ${timeStr}`;
     }
 
     // Otherwise show date
@@ -78,6 +79,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
   onEditPress,
 }) => {
   const { formatMoney } = useCurrency();
+  const { t } = useLanguage();
   const isTransfer = item?.is_transfer === true;
   const isMergedTransfer = item?.type === "transfer";
 
@@ -109,7 +111,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
               color={colors.white}
               textProps={{ numberOfLines: 1 }}
             >
-              Transfer
+              {t('transaction.transfer')}
             </Typo>
             <Typo
               size={13}
@@ -165,14 +167,14 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             color={colors.white}
             textProps={{ numberOfLines: 1 }}
           >
-            {item?.note || toTitleCase(item?.categories?.name as any) || "Transaction"}
+            {item?.note || toTitleCase(item?.categories?.name as any) || t('transaction.defaultLabel')}
           </Typo>
           <Typo
             size={13}
             color={colors.neutral400}
             textProps={{ numberOfLines: 1 }}
           >
-            {formatTransactionDate(item?.date)}
+            {formatTransactionDate(item?.date, t)}
           </Typo>
         </View>
 

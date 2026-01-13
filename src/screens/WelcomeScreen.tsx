@@ -9,11 +9,13 @@ import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "@/types/navigation";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 export default function WelcomeScreen() {
   const navigation = useNavigation<Navigation>();
+  const { t } = useLanguage();
 
   return (
     <ScreenWrapper>
@@ -24,7 +26,7 @@ export default function WelcomeScreen() {
             style={styles.loginButton}
             onPress={() => navigation.navigate("Auth", { mode: "login" })}
           >
-            <Typo fontWeight={"500"}>Sign In</Typo>
+            <Typo fontWeight={"500"}>{t('welcome.signIn')}</Typo>
           </TouchableOpacity>
           <Animated.Image
             entering={FadeIn.duration(1000)}
@@ -40,8 +42,8 @@ export default function WelcomeScreen() {
             entering={FadeInDown.duration(1000).springify().damping(12)}
             style={{ alignItems: "center" }}
           >
-            <Typo size={30}>Alwais take control</Typo>
-            <Typo size={30}>of Your finance</Typo>
+            <Typo size={30}>{t('welcome.heading.line1')}</Typo>
+            <Typo size={30}>{t('welcome.heading.line2')}</Typo>
           </Animated.View>
           <Animated.View
             entering={FadeInDown.duration(1000)
@@ -51,10 +53,10 @@ export default function WelcomeScreen() {
             style={{ alignItems: "center", gap: 2 }}
           >
             <Typo size={17} color={colors.textLight}>
-              Finance must be arranged to set a better
+              {t('welcome.subtitle.line1')}
             </Typo>
             <Typo size={17} color={colors.textLight}>
-              lifestyle in future
+              {t('welcome.subtitle.line2')}
             </Typo>
           </Animated.View>
           <Animated.View
@@ -69,7 +71,7 @@ export default function WelcomeScreen() {
               style={styles.buttonContainer}
             >
               <Typo size={22} color={colors.neutral900} fontWeight={"600"}>
-                Get Started
+                {t('welcome.getStarted')}
               </Typo>
             </Button>
           </Animated.View>

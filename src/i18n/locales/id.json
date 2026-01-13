@@ -1,0 +1,312 @@
+{
+    "app": {
+        "name": "CashFlowly",
+        "tagline": "Kelola Keuangan dengan Mudah"
+    },
+    "common": {
+        "welcome": "Selamat Datang",
+        "save": "Simpan",
+        "cancel": "Batal",
+        "delete": "Hapus",
+        "edit": "Edit",
+        "add": "Tambah",
+        "search": "Cari",
+        "filter": "Filter",
+        "loading": "Memuat...",
+        "error": "Terjadi kesalahan",
+        "success": "Berhasil",
+        "confirm": "Konfirmasi",
+        "yes": "Ya",
+        "no": "Tidak",
+        "back": "Kembali",
+        "next": "Lanjut",
+        "done": "Selesai",
+        "today": "Hari Ini",
+        "yesterday": "Kemarin",
+        "close": "Tutup"
+    },
+    "auth": {
+        "login": "Masuk",
+        "logout": "Keluar",
+        "register": "Daftar",
+        "signUp": "Daftar",
+        "email": "Email",
+        "password": "Kata Sandi",
+        "forgotPassword": "Lupa Kata Sandi?",
+        "dontHaveAccount": "Belum punya akun?",
+        "alreadyHaveAccount": "Sudah punya akun?",
+        "signInWithGoogle": "Masuk dengan Google",
+        "continueWithGoogle": "Lanjutkan dengan Google",
+        "or": "ATAU",
+        "heading": {
+            "loginLine1": "Hey,",
+            "loginLine2": "Selamat Datang",
+            "registerLine1": "Mari",
+            "registerLine2": "Mulai"
+        },
+        "subtitle": {
+            "login": "Login sekarang untuk melacak semua pengeluaran dan pemasukan Anda",
+            "register": "Buat akun untuk melacak semua pengeluaran dan pemasukan Anda"
+        },
+        "placeholder": {
+            "email": "Masukkan Email Anda",
+            "password": "Masukkan Kata Sandi Anda"
+        },
+        "errors": {
+            "loginFailed": "Login Gagal",
+            "registerFailed": "Registrasi gagal",
+            "validationFailed": "Validasi Gagal",
+            "emailPasswordRequired": "Email dan password harus diisi",
+            "invalidEmailFormat": "Format Email Salah",
+            "invalidEmailMessage": "Masukkan alamat email yang valid",
+            "passwordTooShort": "Password Terlalu Pendek",
+            "passwordMinLength": "Password minimal 6 karakter",
+            "emailAlreadyExists": "Email Sudah Terdaftar",
+            "emailAlreadyExistsMessage": "Email ini sudah digunakan. Silakan login atau gunakan email lain."
+        },
+        "success": {
+            "registerSuccess": "Registrasi sukses 🎉",
+            "checkEmail": "Cek email untuk verifikasi."
+        }
+    },
+    "welcome": {
+        "signIn": "Sign In",
+        "heading": {
+            "line1": "Selalu kontrol",
+            "line2": "Keuangan Anda"
+        },
+        "subtitle": {
+            "line1": "Keuangan harus diatur untuk mengatur",
+            "line2": "gaya hidup yang lebih baik di masa depan"
+        },
+        "getStarted": "Mulai Sekarang"
+    },
+    "forgotPassword": {
+        "heading": {
+            "line1": "Lupa Password?",
+            "line2": "Jangan Khawatir"
+        },
+        "subtitle": "Masukkan email Anda dan kami akan mengirim link untuk reset password",
+        "placeholder": "Masukkan Email Anda",
+        "button": "Kirim Link Reset",
+        "rememberPassword": "Ingat password Anda?",
+        "backToLogin": "Kembali ke Login",
+        "errors": {
+            "emailRequired": "Email Diperlukan",
+            "emailRequiredMessage": "Silakan masukkan alamat email Anda."
+        },
+        "success": {
+            "emailSent": "Email Terkirim! 📧",
+            "emailSentMessage": "Kami telah mengirim link reset password ke email Anda. Silakan cek inbox atau folder spam.",
+            "ok": "OK"
+        }
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "greeting": {
+            "morning": "Selamat Pagi",
+            "afternoon": "Selamat Siang",
+            "evening": "Selamat Malam",
+            "night": "Selamat Malam"
+        },
+        "totalBalance": "Total Saldo",
+        "income": "Pemasukan",
+        "expense": "Pengeluaran",
+        "recentTransactions": "Transaksi Terbaru",
+        "viewAll": "Lihat Semua",
+        "noTransactions": "Belum ada transaksi",
+        "tapToAdd": "Ketuk + untuk menambah transaksi pertama Anda"
+    },
+    "transaction": {
+        "title": "Transaksi",
+        "addTransaction": "Tambah Transaksi",
+        "editTransaction": "Edit Transaksi",
+        "type": "Tipe",
+        "amount": "Jumlah",
+        "category": "Kategori",
+        "wallet": "Dompet",
+        "date": "Tanggal",
+        "note": "Catatan",
+        "attachment": "Lampiran",
+        "income": "Pemasukan",
+        "expense": "Pengeluaran",
+        "transfer": "Transfer",
+        "selectCategory": "Pilih Kategori",
+        "selectWallet": "Pilih Dompet",
+        "selectDate": "Pilih Tanggal",
+        "addNote": "Tambah Catatan",
+        "deleteConfirm": "Apakah Anda yakin ingin menghapus transaksi ini?",
+        "saved": "Transaksi berhasil disimpan",
+        "deleted": "Transaksi berhasil dihapus",
+        "defaultLabel": "Transaksi"
+    },
+    "wallet": {
+        "title": "Dompet Saya",
+        "addWallet": "Tambah Dompet",
+        "editWallet": "Edit Dompet",
+        "name": "Nama Dompet",
+        "balance": "Saldo",
+        "deleteConfirm": "Apakah Anda yakin ingin menghapus dompet ini?",
+        "saved": "Dompet berhasil disimpan",
+        "deleted": "Dompet berhasil dihapus",
+        "totalNetWorth": "Total Kekayaan Bersih",
+        "thisMonth": "bulan ini"
+    },
+    "category": {
+        "title": "Kategori",
+        "addCategory": "Tambah Kategori",
+        "editCategory": "Edit Kategori",
+        "name": "Nama Kategori",
+        "type": "Tipe",
+        "icon": "Ikon",
+        "color": "Warna",
+        "deleteConfirm": "Apakah Anda yakin ingin menghapus kategori ini?",
+        "saved": "Kategori berhasil disimpan",
+        "deleted": "Kategori berhasil dihapus",
+        "manageCategories": "Kelola Kategori",
+        "deleteConfirmTitle": "Konfirmasi Hapus",
+        "deleteConfirmMessage": "Yakin ingin menghapus kategori '{{name}}'? Ini mungkin memengaruhi transaksi yang sudah ada.",
+        "deleteFailed": "Gagal menghapus kategori. Pastikan tidak ada transaksi yang terkait.",
+        "noCategories": "Belum Ada Kategori",
+        "tapToAdd": "Tekan tombol + untuk menambahkan kategori baru"
+    },
+    "analytics": {
+        "title": "Analitik",
+        "overview": "Ringkasan",
+        "byCategory": "Per Kategori",
+        "byPeriod": "Per Periode",
+        "thisMonth": "Bulan Ini",
+        "lastMonth": "Bulan Lalu",
+        "thisYear": "Tahun Ini",
+        "custom": "Kustom",
+        "strongGrowth": "Pertumbuhan Kuat dari periode lalu",
+        "fromPreviousPeriod": "dari periode lalu",
+        "netIncomeThisPeriod": "Net Income Periode Ini ({{period}})"
+    },
+    "bills": {
+        "title": "Tagihan Berulang",
+        "addBill": "Tambah Tagihan",
+        "editBill": "Edit Tagihan",
+        "upcoming": "Akan Datang",
+        "paid": "Sudah Dibayar",
+        "overdue": "Terlambat",
+        "recurring": "Berulang",
+        "frequency": "Frekuensi",
+        "daily": "Harian",
+        "weekly": "Mingguan",
+        "monthly": "Bulanan",
+        "yearly": "Tahunan",
+        "dueDate": "Jatuh Tempo",
+        "markAsPaid": "Tandai Sudah Dibayar",
+        "stop": "Hentikan",
+        "stopRecurringBill": "Hentikan Tagihan Berulang",
+        "confirmStop": "Apakah Anda yakin ingin menghentikan tagihan \"{{name}}\"?",
+        "billStopped": "Tagihan berulang berhasil dihentikan",
+        "paymentProcessed": "Pembayaran {{name}} berhasil diproses!",
+        "payment": "pembayaran",
+        "totalDueThisMonth": "TOTAL JATUH TEMPO BULAN INI",
+        "billsDueInDays": "Anda memiliki {{count}} tagihan dalam 7 hari ke depan",
+        "noBills": "Belum ada tagihan berulang",
+        "addFirstBill": "Tambahkan tagihan berulang pertama Anda",
+        "errors": {
+            "noPaymentData": "Data pembayaran atau Wallet Utama tidak tersedia",
+            "createWalletFirst": "Silakan buat Main Wallet terlebih dahulu",
+            "stopFailed": "Gagal menghentikan tagihan berulang"
+        }
+    },
+    "settings": {
+        "title": "Pengaturan",
+        "profile": "Profil",
+        "appearance": "Tampilan",
+        "theme": "Tema",
+        "language": "Bahasa",
+        "currency": "Mata Uang",
+        "light": "Terang",
+        "dark": "Gelap",
+        "system": "Sistem",
+        "notifications": "Notifikasi",
+        "security": "Keamanan",
+        "changePassword": "Ubah Kata Sandi",
+        "dataManagement": "Manajemen Data",
+        "exportData": "Ekspor Data",
+        "importData": "Impor Data",
+        "about": "Tentang",
+        "version": "Versi",
+        "rateApp": "Beri Rating",
+        "contactUs": "Hubungi Kami"
+    },
+    "profile": {
+        "title": "Profil",
+        "editProfile": "Edit Profil",
+        "fullName": "Nama Lengkap",
+        "email": "Email",
+        "avatar": "Foto Profil",
+        "changeAvatar": "Ubah Foto",
+        "saved": "Profil berhasil diperbarui",
+        "defaultUser": "Pengguna",
+        "version": "Versi",
+        "build": "Build",
+        "confirmLogout": "Konfirmasi Keluar",
+        "confirmLogoutMessage": "Apakah Anda yakin ingin keluar?"
+    },
+    "errors": {
+        "networkError": "Tidak dapat terhubung ke server",
+        "invalidEmail": "Email tidak valid",
+        "invalidPassword": "Kata sandi minimal 6 karakter",
+        "passwordMismatch": "Kata sandi tidak cocok",
+        "requiredField": "Field ini wajib diisi",
+        "invalidAmount": "Jumlah tidak valid",
+        "unexpectedError": "Terjadi kesalahan tak terduga"
+    },
+    "validation": {
+        "required": "{{field}} wajib diisi",
+        "minLength": "{{field}} minimal {{count}} karakter",
+        "maxLength": "{{field}} maksimal {{count}} karakter",
+        "invalidEmail": "Format email tidak valid",
+        "invalidNumber": "{{field}} harus berupa angka"
+    },
+    "tags": {
+        "title": "Kelola Tag",
+        "myTags": "TAG SAYA",
+        "addTag": "Tambah Tag",
+        "editTag": "Edit Tag",
+        "noTags": "Tidak ada tag. Tambahkan satu untuk memulai!",
+        "transactionCount": "{{count}} transaksi",
+        "noTransactions": "0 transaksi"
+    },
+    "changePassword": {
+        "title": "Ubah Password",
+        "subtitle": "Masukkan password lama dan password baru Anda",
+        "currentPassword": "Password Lama",
+        "newPassword": "Password Baru",
+        "confirmPassword": "Konfirmasi Password Baru",
+        "button": "Ubah Password",
+        "placeholders": {
+            "currentPassword": "Masukkan password lama",
+            "newPassword": "Masukkan password baru",
+            "confirmPassword": "Konfirmasi password baru"
+        },
+        "requirements": {
+            "title": "Persyaratan Password:",
+            "minLength": "Minimal 6 karakter",
+            "mustMatch": "Password dan konfirmasi cocok",
+            "useCombo": "Gunakan kombinasi huruf dan angka untuk keamanan lebih baik"
+        },
+        "errors": {
+            "allFieldsRequired": "Password Diperlukan",
+            "fillAllFields": "Silakan isi semua field password.",
+            "passwordTooShort": "Password Terlalu Pendek",
+            "minSixCharacters": "Password baru harus minimal 6 karakter.",
+            "passwordMismatch": "Password Tidak Cocok",
+            "passwordsMustMatch": "Password baru dan konfirmasi password harus sama.",
+            "samePassword": "Password Sama",
+            "newPasswordDifferent": "Password baru tidak boleh sama dengan password lama.",
+            "invalidOldPassword": "Password lama tidak valid",
+            "failedToChange": "Gagal Mengubah Password"
+        },
+        "success": {
+            "title": "Berhasil! 🎉",
+            "message": "Password Anda telah berhasil diubah."
+        }
+    }
+}

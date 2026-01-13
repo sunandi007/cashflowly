@@ -11,28 +11,33 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Typo from "@/components/Typo";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 export default function ForgotPasswordScreen() {
     const navigation = useNavigation<Navigation>();
     const { forgotPassword, loading } = useAuth();
+    const { t } = useLanguage();
     const [email, setEmail] = useState("");
 
     const handleSubmit = async () => {
         if (!email.trim()) {
-            Alert.alert("Email Diperlukan", "Silakan masukkan alamat email Anda.");
+            Alert.alert(
+                t('forgotPassword.errors.emailRequired'),
+                t('forgotPassword.errors.emailRequiredMessage')
+            );
             return;
         }
 
         const result = await forgotPassword(email);
         if (result.success) {
             Alert.alert(
-                "Email Terkirim! 📧",
-                "Kami telah mengirim link reset password ke email Anda. Silakan cek inbox atau folder spam.",
+                t('forgotPassword.success.emailSent'),
+                t('forgotPassword.success.emailSentMessage'),
                 [
                     {
-                        text: "OK",
+                        text: t('forgotPassword.success.ok'),
                         onPress: () => navigation.goBack(),
                     },
                 ]
@@ -48,21 +53,21 @@ export default function ForgotPasswordScreen() {
                 {/* Heading */}
                 <View style={{ gap: 5, marginTop: spacingX._20 }}>
                     <Typo size={30} fontWeight={"800"}>
-                        Lupa Password?
+                        {t('forgotPassword.heading.line1')}
                     </Typo>
                     <Typo size={30} fontWeight={"800"}>
-                        Jangan Khawatir
+                        {t('forgotPassword.heading.line2')}
                     </Typo>
                 </View>
 
                 {/* Form */}
                 <View style={styles.form}>
                     <Typo size={16} fontWeight={"500"} color={colors.textLight}>
-                        Masukkan email Anda dan kami akan mengirim link untuk reset password
+                        {t('forgotPassword.subtitle')}
                     </Typo>
 
                     <Input
-                        placeholder="Masukkan Email Anda"
+                        placeholder={t('forgotPassword.placeholder')}
                         value={email}
                         onChangeText={setEmail}
                         keyboardType="email-address"
@@ -71,7 +76,7 @@ export default function ForgotPasswordScreen() {
 
                     <Button loading={loading} onPress={handleSubmit}>
                         <Typo fontWeight={"700"} color={colors.black} size={21}>
-                            Kirim Link Reset
+                            {t('forgotPassword.button')}
                         </Typo>
                     </Button>
                 </View>
@@ -79,7 +84,7 @@ export default function ForgotPasswordScreen() {
                 {/* Info */}
                 <View style={styles.info}>
                     <Typo size={14} color={colors.neutral400} style={{ textAlign: "center" }}>
-                        Ingat password Anda?{" "}
+                        {t('forgotPassword.rememberPassword')}{" "}
                     </Typo>
                     <Pressable
                         onPress={() => navigation.goBack()}
@@ -89,7 +94,7 @@ export default function ForgotPasswordScreen() {
                             fontWeight={"700"}
                             color={colors.primary}
                         >
-                            Kembali ke Login
+                            {t('forgotPassword.backToLogin')}
                         </Typo>
                     </Pressable>
                 </View>

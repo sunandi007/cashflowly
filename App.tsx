@@ -8,7 +8,10 @@ import { AlertProvider } from "@/contexts/AlertContext";
 import { SnackbarProvider } from "@/contexts/SnackbarContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import * as Linking from 'expo-linking';
+import '@/i18n'; // Initialize i18n
 
 const queryClient = new QueryClient();
 
@@ -51,13 +54,17 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <CurrencyProvider>
-          <AlertProvider>
-            <SnackbarProvider>
-              <AppContent />
-            </SnackbarProvider>
-          </AlertProvider>
-        </CurrencyProvider>
+        <LanguageProvider>
+          <CurrencyProvider>
+            <AlertProvider>
+              <SnackbarProvider>
+                <NotificationProvider>
+                  <AppContent />
+                </NotificationProvider>
+              </SnackbarProvider>
+            </AlertProvider>
+          </CurrencyProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

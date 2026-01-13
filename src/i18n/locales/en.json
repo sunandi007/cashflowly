@@ -1,0 +1,312 @@
+{
+    "app": {
+        "name": "CashFlowly",
+        "tagline": "Manage Your Finances Easily"
+    },
+    "common": {
+        "welcome": "Welcome",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "add": "Add",
+        "search": "Search",
+        "filter": "Filter",
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "success": "Success",
+        "confirm": "Confirm",
+        "yes": "Yes",
+        "no": "No",
+        "back": "Back",
+        "next": "Next",
+        "done": "Done",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "close": "Close"
+    },
+    "auth": {
+        "login": "Login",
+        "logout": "Logout",
+        "register": "Register",
+        "signUp": "Sign Up",
+        "email": "Email",
+        "password": "Password",
+        "forgotPassword": "Forgot Password?",
+        "dontHaveAccount": "Don't have an account?",
+        "alreadyHaveAccount": "Already have an account?",
+        "signInWithGoogle": "Sign in with Google",
+        "continueWithGoogle": "Continue with Google",
+        "or": "OR",
+        "heading": {
+            "loginLine1": "Hey,",
+            "loginLine2": "Welcome Back",
+            "registerLine1": "Let's",
+            "registerLine2": "Get Started"
+        },
+        "subtitle": {
+            "login": "Login now to track all your expenses and income",
+            "register": "Create an account to track all your expenses and income"
+        },
+        "placeholder": {
+            "email": "Enter your Email",
+            "password": "Enter your Password"
+        },
+        "errors": {
+            "loginFailed": "Login Failed",
+            "registerFailed": "Registration failed",
+            "validationFailed": "Validation Failed",
+            "emailPasswordRequired": "Email and password are required",
+            "invalidEmailFormat": "Invalid Email Format",
+            "invalidEmailMessage": "Please enter a valid email address",
+            "passwordTooShort": "Password Too Short",
+            "passwordMinLength": "Password must be at least 6 characters",
+            "emailAlreadyExists": "Email Already Registered",
+            "emailAlreadyExistsMessage": "This email is already in use. Please login or use a different email."
+        },
+        "success": {
+            "registerSuccess": "Registration successful 🎉",
+            "checkEmail": "Check your email for verification."
+        }
+    },
+    "welcome": {
+        "signIn": "Sign In",
+        "heading": {
+            "line1": "Always take control",
+            "line2": "of Your finance"
+        },
+        "subtitle": {
+            "line1": "Finance must be arranged to set a better",
+            "line2": "lifestyle in future"
+        },
+        "getStarted": "Get Started"
+    },
+    "forgotPassword": {
+        "heading": {
+            "line1": "Forgot Password?",
+            "line2": "Don't Worry"
+        },
+        "subtitle": "Enter your email and we will send you a reset link",
+        "placeholder": "Enter your Email",
+        "button": "Send Reset Link",
+        "rememberPassword": "Remember your password?",
+        "backToLogin": "Back to Login",
+        "errors": {
+            "emailRequired": "Email Required",
+            "emailRequiredMessage": "Please enter your email address."
+        },
+        "success": {
+            "emailSent": "Email Sent! 📧",
+            "emailSentMessage": "We have sent a password reset link to your email. Please check your inbox or spam folder.",
+            "ok": "OK"
+        }
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "greeting": {
+            "morning": "Good Morning",
+            "afternoon": "Good Afternoon",
+            "evening": "Good Evening",
+            "night": "Good Night"
+        },
+        "totalBalance": "Total Balance",
+        "income": "Income",
+        "expense": "Expense",
+        "recentTransactions": "Recent Transactions",
+        "viewAll": "View All",
+        "noTransactions": "No transactions yet",
+        "tapToAdd": "Tap + to add your first transaction"
+    },
+    "transaction": {
+        "title": "Transaction",
+        "addTransaction": "Add Transaction",
+        "editTransaction": "Edit Transaction",
+        "type": "Type",
+        "amount": "Amount",
+        "category": "Category",
+        "wallet": "Wallet",
+        "date": "Date",
+        "note": "Note",
+        "attachment": "Attachment",
+        "income": "Income",
+        "expense": "Expense",
+        "transfer": "Transfer",
+        "selectCategory": "Select Category",
+        "selectWallet": "Select Wallet",
+        "selectDate": "Select Date",
+        "addNote": "Add Note",
+        "deleteConfirm": "Are you sure you want to delete this transaction?",
+        "saved": "Transaction saved successfully",
+        "deleted": "Transaction deleted successfully",
+        "defaultLabel": "Transaction"
+    },
+    "wallet": {
+        "title": "My Wallets",
+        "addWallet": "Add Wallet",
+        "editWallet": "Edit Wallet",
+        "name": "Wallet Name",
+        "balance": "Balance",
+        "deleteConfirm": "Are you sure you want to delete this wallet?",
+        "saved": "Wallet saved successfully",
+        "deleted": "Wallet deleted successfully",
+        "totalNetWorth": "Total Net Worth",
+        "thisMonth": "this month"
+    },
+    "category": {
+        "title": "Category",
+        "addCategory": "Add Category",
+        "editCategory": "Edit Category",
+        "name": "Category Name",
+        "type": "Type",
+        "icon": "Icon",
+        "color": "Color",
+        "deleteConfirm": "Are you sure you want to delete this category?",
+        "saved": "Category saved successfully",
+        "deleted": "Category deleted successfully",
+        "manageCategories": "Manage Categories",
+        "deleteConfirmTitle": "Confirm Delete",
+        "deleteConfirmMessage": "Are you sure you want to delete category '{{name}}'? This may affect existing transactions.",
+        "deleteFailed": "Failed to delete category. Make sure there are no related transactions.",
+        "noCategories": "No Categories Yet",
+        "tapToAdd": "Tap the + button to add a new category"
+    },
+    "analytics": {
+        "title": "Analytics",
+        "overview": "Overview",
+        "byCategory": "By Category",
+        "byPeriod": "By Period",
+        "thisMonth": "This Month",
+        "lastMonth": "Last Month",
+        "thisYear": "This Year",
+        "custom": "Custom",
+        "strongGrowth": "Strong Growth from previous period",
+        "fromPreviousPeriod": "from previous period",
+        "netIncomeThisPeriod": "Net Income This Period ({{period}})"
+    },
+    "bills": {
+        "title": "Recurring Bills",
+        "addBill": "Add Bill",
+        "editBill": "Edit Bill",
+        "upcoming": "Upcoming",
+        "paid": "Paid",
+        "overdue": "Overdue",
+        "recurring": "Recurring",
+        "frequency": "Frequency",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "dueDate": "Due Date",
+        "markAsPaid": "Mark as Paid",
+        "stop": "Stop",
+        "stopRecurringBill": "Stop Recurring Bill",
+        "confirmStop": "Are you sure you want to stop \"{{name}}\" recurring bill?",
+        "billStopped": "Recurring bill has been stopped",
+        "paymentProcessed": "Bill {{name}} has been processed!",
+        "payment": "payment",
+        "totalDueThisMonth": "TOTAL DUE THIS MONTH",
+        "billsDueInDays": "You have {{count}} bills due in the next 7 days",
+        "noBills": "No recurring bills",
+        "addFirstBill": "Add your first recurring bill to get started",
+        "errors": {
+            "noPaymentData": "Payment data or Main Wallet not available",
+            "createWalletFirst": "Please create a Main Wallet first",
+            "stopFailed": "Failed to stop recurring bill"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "profile": "Profile",
+        "appearance": "Appearance",
+        "theme": "Theme",
+        "language": "Language",
+        "currency": "Currency",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System",
+        "notifications": "Notifications",
+        "security": "Security",
+        "changePassword": "Change Password",
+        "dataManagement": "Data Management",
+        "exportData": "Export Data",
+        "importData": "Import Data",
+        "about": "About",
+        "version": "Version",
+        "rateApp": "Rate App",
+        "contactUs": "Contact Us"
+    },
+    "profile": {
+        "title": "Profile",
+        "editProfile": "Edit Profile",
+        "fullName": "Full Name",
+        "email": "Email",
+        "avatar": "Profile Picture",
+        "changeAvatar": "Change Picture",
+        "saved": "Profile updated successfully",
+        "defaultUser": "User",
+        "version": "Version",
+        "build": "Build",
+        "confirmLogout": "Confirm Logout",
+        "confirmLogoutMessage": "Are you sure you want to logout?"
+    },
+    "errors": {
+        "networkError": "Unable to connect to server",
+        "invalidEmail": "Invalid email",
+        "invalidPassword": "Password must be at least 6 characters",
+        "passwordMismatch": "Passwords do not match",
+        "requiredField": "This field is required",
+        "invalidAmount": "Invalid amount",
+        "unexpectedError": "An unexpected error occurred"
+    },
+    "validation": {
+        "required": "{{field}} is required",
+        "minLength": "{{field}} must be at least {{count}} characters",
+        "maxLength": "{{field}} maximum {{count}} characters",
+        "invalidEmail": "Invalid email format",
+        "invalidNumber": "{{field}} must be a number"
+    },
+    "tags": {
+        "title": "Manage Tags",
+        "myTags": "MY TAGS",
+        "addTag": "Add Tag",
+        "editTag": "Edit Tag",
+        "noTags": "No tags found. Add one to get started!",
+        "transactionCount": "{{count}} transactions",
+        "noTransactions": "0 transactions"
+    },
+    "changePassword": {
+        "title": "Change Password",
+        "subtitle": "Enter your old password and new password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "button": "Change Password",
+        "placeholders": {
+            "currentPassword": "Enter current password",
+            "newPassword": "Enter new password",
+            "confirmPassword": "Confirm new password"
+        },
+        "requirements": {
+            "title": "Password Requirements:",
+            "minLength": "Minimum 6 characters",
+            "mustMatch": "Password and confirmation match",
+            "useCombo": "Use combination of letters and numbers for better security"
+        },
+        "errors": {
+            "allFieldsRequired": "Password Required",
+            "fillAllFields": "Please fill in all password fields.",
+            "passwordTooShort": "Password Too Short",
+            "minSixCharacters": "New password must be at least 6 characters.",
+            "passwordMismatch": "Passwords Don't Match",
+            "passwordsMustMatch": "New password and confirmation password must be the same.",
+            "samePassword": "Same Password",
+            "newPasswordDifferent": "New password must be different from old password.",
+            "invalidOldPassword": "Invalid old password",
+            "failedToChange": "Failed to Change Password"
+        },
+        "success": {
+            "title": "Success! 🎉",
+            "message": "Your password has been changed successfully."
+        }
+    }
+}

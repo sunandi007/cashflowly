@@ -16,10 +16,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useTags } from "@/hooks/useTags";
 import TagModal from "@/components/TagModal";
 import { TagType } from "@/types/model";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function TagListScreen() {
     const navigation = useNavigation();
     const { tags, isLoading, addTag, updateTag, deleteTag } = useTags();
+    const { t } = useLanguage();
 
     const [showModal, setShowModal] = useState(false);
     const [selectedTag, setSelectedTag] = useState<TagType | null>(null);
@@ -46,7 +48,7 @@ export default function TagListScreen() {
                             {item.name}
                         </Typo>
                         <Typo size={12} color={colors.neutral500} style={{ marginTop: 2 }}>
-                            {item.usage_count ? `${item.usage_count} transactions` : '0 transactions'}
+                            {item.usage_count ? t('tags.transactionCount', { count: item.usage_count }) : t('tags.noTransactions')}
                         </Typo>
                     </View>
                 </View>
@@ -73,7 +75,7 @@ export default function TagListScreen() {
         <ScreenWrapper style={styles.container}>
             {/* Header */}
             <Header
-                title="Manage Tags"
+                title={t('tags.title')}
                 leftIcon={
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name="arrow-back" size={24} color={colors.white} />
@@ -83,7 +85,7 @@ export default function TagListScreen() {
 
             <View style={styles.content}>
                 <Typo size={13} color={colors.neutral400} style={styles.sectionLabel}>
-                    MY TAGS
+                    {t('tags.myTags')}
                 </Typo>
 
                 {isLoading ? (
@@ -101,7 +103,7 @@ export default function TagListScreen() {
                             <View style={styles.emptyContainer}>
                                 <Ionicons name="pricetags-outline" size={48} color={colors.neutral700} />
                                 <Typo size={14} color={colors.neutral500} style={{ marginTop: 10 }}>
-                                    No tags found. Add one to get started!
+                                    {t('tags.noTags')}
                                 </Typo>
                             </View>
                         }
