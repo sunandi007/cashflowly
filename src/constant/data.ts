@@ -33,12 +33,6 @@ export const accountOptionsGroup2: AccountOptionType[] = [
     bgColor: colors.primary + '30',
   },
   {
-    title: "Notifications",
-    icon: "notifications",
-    bgColor: colors.primary + '30', // Amber
-    badge: 2,
-  },
-  {
     title: "Help & Support",
     icon: "help-circle",
     bgColor: colors.primary + '30', // Pink
