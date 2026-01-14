@@ -1,6 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import { scale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/Typo";
@@ -90,44 +91,55 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         entering={FadeInDown.delay(index * 80).springify().damping(35)}
       >
         <TouchableOpacity
-          style={styles.row}
+          style={{ marginBottom: spacingY._10 }}
           onPress={() => onEditPress?.(item)}
           activeOpacity={0.7}
         >
-          {/* 🔄 Icon Transfer */}
-          <View style={[styles.icon, { backgroundColor: colors.neutral700 }]}>
-            <IconComponent
-              item={{ icon: "swap-horizontal-outline" } as any}
-              size={verticalScale(22)}
-              color={colors.primary}
-            />
-          </View>
+          <LinearGradient
+            colors={[
+              '#1A3A2E',  // Dark forest green (top)
+              '#14261F',  // Medium dark (middle)
+              '#0C1A14',  // Darkest (bottom)
+            ]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.card}
+          >
+            {/* 🔄 Icon Transfer */}
+            <View style={[styles.icon, { backgroundColor: colors.neutral700 }]}>
+              <IconComponent
+                item={{ icon: "swap-horizontal-outline" } as any}
+                size={verticalScale(22)}
+                color={colors.primary}
+              />
+            </View>
 
-          {/* Deskripsi */}
-          <View style={styles.categoryDes}>
-            <Typo
-              size={16}
-              fontWeight="600"
-              color={colors.white}
-              textProps={{ numberOfLines: 1 }}
-            >
-              {t('transaction.transfer')}
-            </Typo>
-            <Typo
-              size={13}
-              color={colors.neutral400}
-              textProps={{ numberOfLines: 1 }}
-            >
-              {item.from_wallet || "Wallet"} → {item.to_wallet || "Wallet"}
-            </Typo>
-          </View>
+            {/* Deskripsi */}
+            <View style={styles.categoryDes}>
+              <Typo
+                size={16}
+                fontWeight="600"
+                color={colors.white}
+                textProps={{ numberOfLines: 1 }}
+              >
+                {t('transaction.transfer')}
+              </Typo>
+              <Typo
+                size={13}
+                color={colors.neutral400}
+                textProps={{ numberOfLines: 1 }}
+              >
+                {item.from_wallet || "Wallet"} → {item.to_wallet || "Wallet"}
+              </Typo>
+            </View>
 
-          {/* Jumlah */}
-          <View style={styles.amountContainer}>
-            <Typo size={16} fontWeight="600" color={colors.neutral300}>
-              {formatMoney(Number(item?.amount))}
-            </Typo>
-          </View>
+            {/* Jumlah */}
+            <View style={styles.amountContainer}>
+              <Typo size={16} fontWeight="600" color={colors.neutral300}>
+                {formatMoney(Number(item?.amount))}
+              </Typo>
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
       </Animated.View>
     );
@@ -141,53 +153,64 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
       entering={FadeInDown.delay(index * 90).springify().damping(40)}
     >
       <TouchableOpacity
-        style={styles.row}
+        style={{ marginBottom: spacingY._10 }}
         onPress={() => onEditPress?.(item)}
         activeOpacity={0.7}
       >
-        {/* Icon */}
-        <View
-          style={[
-            styles.icon,
-            { backgroundColor: item?.categories?.bgColor + '80' || colors.neutral700 },
+        <LinearGradient
+          colors={[
+            '#1A3A2E',  // Dark forest green (top)
+            '#14261F',  // Medium dark (middle)
+            '#0C1A14',  // Darkest (bottom)
           ]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.card}
         >
-          <IconComponent
-            item={item?.categories as any}
-            size={verticalScale(22)}
-            color={colors.white}
-          />
-        </View>
+          {/* Icon */}
+          <View
+            style={[
+              styles.icon,
+              { backgroundColor: item?.categories?.bgColor + '80' || colors.neutral700 },
+            ]}
+          >
+            <IconComponent
+              item={item?.categories as any}
+              size={verticalScale(22)}
+              color={colors.white}
+            />
+          </View>
 
-        {/* Deskripsi */}
-        <View style={styles.categoryDes}>
-          <Typo
-            size={16}
-            fontWeight="600"
-            color={colors.white}
-            textProps={{ numberOfLines: 1 }}
-          >
-            {item?.note || toTitleCase(item?.categories?.name as any) || t('transaction.defaultLabel')}
-          </Typo>
-          <Typo
-            size={13}
-            color={colors.neutral400}
-            textProps={{ numberOfLines: 1 }}
-          >
-            {formatTransactionDate(item?.date, t)}
-          </Typo>
-        </View>
+          {/* Deskripsi */}
+          <View style={styles.categoryDes}>
+            <Typo
+              size={16}
+              fontWeight="600"
+              color={colors.white}
+              textProps={{ numberOfLines: 1 }}
+            >
+              {item?.note || toTitleCase(item?.categories?.name as any) || t('transaction.defaultLabel')}
+            </Typo>
+            <Typo
+              size={13}
+              color={colors.neutral400}
+              textProps={{ numberOfLines: 1 }}
+            >
+              {formatTransactionDate(item?.date, t)}
+            </Typo>
+          </View>
 
-        {/* Jumlah */}
-        <View style={styles.amountContainer}>
-          <Typo
-            size={16}
-            fontWeight="600"
-            color={amountColor}
-          >
-            {formatAmount(Number(item?.amount) || 0, item?.type || "expense", formatMoney)}
-          </Typo>
-        </View>
+          {/* Jumlah */}
+          <View style={styles.amountContainer}>
+            <Typo
+              size={16}
+              fontWeight="600"
+              color={amountColor}
+            >
+              {formatAmount(Number(item?.amount) || 0, item?.type || "expense", formatMoney)}
+            </Typo>
+          </View>
+        </LinearGradient>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -196,11 +219,15 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
 export default TransactionItem;
 
 const styles = StyleSheet.create({
-  row: {
+  card: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: verticalScale(14),
+    paddingHorizontal: scale(12),
     gap: spacingX._15,
+    borderRadius: radius._20,
+    // borderWidth: 1,
+    // borderColor: colors.neutral700,
   },
   icon: {
     width: scale(48),
