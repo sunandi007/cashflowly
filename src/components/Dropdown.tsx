@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, ViewStyle, TextStyle, View, Text } from "react-native";
+import { StyleSheet, ViewStyle, TextStyle, View, Text, ImageStyle } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { colors } from "@/constant/theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -24,6 +24,7 @@ interface BaseDropdownProps {
   containerStyle?: ViewStyle;
   itemContainerStyle?: ViewStyle;
   disabled?: boolean;
+  iconStyle?: ImageStyle;
 }
 
 const BaseDropdown: React.FC<BaseDropdownProps> = ({
@@ -37,6 +38,7 @@ const BaseDropdown: React.FC<BaseDropdownProps> = ({
   selectedTextStyle,
   containerStyle,
   disabled = false,
+  iconStyle,
 }) => {
   const renderItem = (item: DropdownOption) => {
     const isSelected = item.value === value;
@@ -69,7 +71,7 @@ const BaseDropdown: React.FC<BaseDropdownProps> = ({
       // activeColor removed in favor of custom renderItem styling
       activeColor={colors.neutral900}
       itemContainerStyle={{ backgroundColor: colors.neutral900 }}
-      iconStyle={styles.dropdownIcon}
+      iconStyle={[styles.dropdownIcon, iconStyle]}
       data={data}
       maxHeight={maxHeight}
       labelField="label"

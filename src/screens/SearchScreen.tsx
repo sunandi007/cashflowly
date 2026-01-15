@@ -12,11 +12,13 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useCategories } from "@/hooks/useCategories";
+import { useWallets } from "@/hooks/useWallets";
 import Typo from "@/components/Typo";
 import { colors, spacingY, spacingX, radius } from "@/constant/theme";
 import TransactionList from "@/components/TransactionList";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useFilteredTransactions } from "@/hooks/useFilteredTransactions";
+import FilterDropdown from "@/components/FilterDropdown";
 import { useAuth } from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -28,9 +30,10 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { scale, verticalScale } from "@/utils/styling";
 
 const PERIOD_OPTIONS = [
+    { label: 'All Time', value: 'all_time', icon: 'list' },
     { label: 'This Month', value: 'this_month', icon: 'calendar' },
     { label: 'Last Month', value: 'last_month', icon: 'time-outline' },
-    { label: 'Custom', value: 'custom', icon: 'calendar-outline' }
+    { label: 'Custom', value: 'custom', icon: 'calendar-outline' },
 ];
 
 export default function SearchScreen() {
@@ -39,9 +42,10 @@ export default function SearchScreen() {
     const userId = session?.user?.id;
 
     const { data: categories = [] } = useCategories(userId);
+    const { wallets } = useWallets();
     const { data: allTransactions = [], isLoading } = useTransactions(userId, 'all');
 
-    const [activePeriod, setActivePeriod] = useState('this_month');
+    const [activePeriod, setActivePeriod] = useState('all_time');
     const [customStartDate, setCustomStartDate] = useState(startOfMonth(new Date()));
     const [customEndDate, setCustomEndDate] = useState(endOfMonth(new Date()));
 
@@ -92,6 +96,8 @@ export default function SearchScreen() {
         setSearch,
         category,
         toggleCategory,
+        walletId,
+        setWalletId,
     } = useFilteredTransactions(timeFilteredTransactions);
 
     const handleTransactionPress = (item: any) => {
@@ -151,80 +157,74 @@ export default function SearchScreen() {
                 )}
             </View>
 
-            {/* Period Filter Chips */}
-            <View style={styles.chipsSection}>
+            {/* Filters Section (Swipeable Row) */}
+            <View style={styles.filtersWrapper}>
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.chipsRow}
+                    contentContainerStyle={styles.filtersContent}
                 >
-                    {PERIOD_OPTIONS.map((opt) => {
-                        const isActive = activePeriod === opt.value;
-                        return (
-                            <TouchableOpacity
-                                key={opt.value}
-                                style={[styles.chip, isActive && styles.chipActive]}
-                                onPress={() => setActivePeriod(opt.value)}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons
-                                    name={opt.icon as any}
-                                    size={scale(16)}
-                                    color={isActive ? colors.neutral900 : colors.neutral300}
-                                />
-                                <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
-                                    {opt.label}
-                                </Text>
-                            </TouchableOpacity>
-                        );
-                    })}
-                </ScrollView>
-            </View>
-
-            {/* Category Filter Chips */}
-            <View style={styles.chipsSection}>
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.chipsRow}
-                >
-                    {/* All Categories */}
-                    <TouchableOpacity
-                        style={[styles.chip, !category && styles.chipActive]}
-                        onPress={() => toggleCategory(null)}
-                        activeOpacity={0.7}
-                    >
-                        <Ionicons
-                            name="apps"
-                            size={scale(16)}
-                            color={!category ? colors.neutral900 : colors.neutral300}
+                    {/* Period Filter */}
+                    <View style={styles.filterItem}>
+                        <FilterDropdown
+                            data={PERIOD_OPTIONS}
+                            value={activePeriod}
+                            onChange={setActivePeriod}
+                            placeholder="Period"
+                            dropdownStyle={[
+                                styles.roundedDropdown,
+                                activePeriod === 'all_time' && styles.inactiveDropdown
+                            ]}
+                            iconStyle={activePeriod !== 'all_time' ? styles.iconDropdownStyle : styles.inactiveIconStyle}
+                            selectedTextStyle={activePeriod === 'all_time' ? styles.inactiveTextStyle : undefined}
                         />
-                        <Text style={[styles.chipText, !category && styles.chipTextActive]}>
-                            All Categories
-                        </Text>
-                    </TouchableOpacity>
+                    </View>
 
-                    {/* Category Options */}
-                    {categories.slice(0, 6).map((cat) => {
-                        const isActive = category === cat.id;
-                        return (
-                            <TouchableOpacity
-                                key={cat.id}
-                                style={[styles.chip, isActive && styles.chipActive]}
-                                onPress={() => toggleCategory(cat.id as any)}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons
-                                    name={getCategoryIcon(cat.name || '') as any}
-                                    size={scale(16)}
-                                    color={isActive ? colors.neutral900 : colors.neutral300}
-                                />
-                                <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
-                                    {cat.name}
-                                </Text>
-                            </TouchableOpacity>
-                        );
-                    })}
+                    {/* Wallet Filter */}
+                    <View style={styles.filterItem}>
+                        <FilterDropdown
+                            data={[
+                                { label: 'All Wallets', value: 'all', icon: 'wallet' },
+                                ...wallets.map((w: any) => ({
+                                    label: w.name,
+                                    value: w.id,
+                                    icon: w.icon || 'wallet-outline'
+                                }))
+                            ]}
+                            value={walletId || 'all'}
+                            onChange={(val) => setWalletId(val === 'all' ? null : val)}
+                            placeholder="Wallet"
+                            dropdownStyle={[
+                                styles.roundedDropdown,
+                                (!walletId || walletId === 'all') && styles.inactiveDropdown
+                            ]}
+                            iconStyle={walletId && walletId !== 'all' ? styles.iconDropdownStyle : styles.inactiveIconStyle}
+                            selectedTextStyle={(!walletId || walletId === 'all') ? styles.inactiveTextStyle : undefined}
+                        />
+                    </View>
+
+                    {/* Category Filter */}
+                    <View style={styles.filterItem}>
+                        <FilterDropdown
+                            data={[
+                                { label: 'All Categories', value: 'all', icon: 'apps' },
+                                ...categories.map((cat: any) => ({
+                                    label: cat.name,
+                                    value: cat.id,
+                                    icon: getCategoryIcon(cat.name)
+                                }))
+                            ]}
+                            value={category || 'all'}
+                            onChange={(val) => toggleCategory(val === 'all' ? null : val)}
+                            placeholder="Category"
+                            dropdownStyle={[
+                                styles.roundedDropdown,
+                                (!category || category === 'all') && styles.inactiveDropdown
+                            ]}
+                            iconStyle={category && category !== 'all' ? styles.iconDropdownStyle : styles.inactiveIconStyle}
+                            selectedTextStyle={(!category || category === 'all') ? styles.inactiveTextStyle : undefined}
+                        />
+                    </View>
                 </ScrollView>
             </View>
 
@@ -374,37 +374,37 @@ const styles = StyleSheet.create({
         paddingVertical: 0,
     },
 
-    // Chips Section
-    chipsSection: {
+    // Filters
+    filtersWrapper: {
         marginTop: verticalScale(16),
     },
-    chipsRow: {
-        flexDirection: "row",
-        gap: scale(10),
-        paddingRight: scale(20),
+    filtersContent: {
+        flexDirection: 'row',
+        gap: scale(12),
+        paddingRight: scale(20), // padding end for scroll
     },
-    chip: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: scale(8),
-        backgroundColor: colors.neutral800,
-        paddingVertical: verticalScale(12),
-        paddingHorizontal: scale(16),
-        borderRadius: scale(24),
+    filterItem: {
+        width: scale(140), // Fixed width for comfortable scroll items
     },
-    chipActive: {
+    roundedDropdown: {
+        borderRadius: radius._30, // Make it fully rounded (pill shape)
+        height: verticalScale(40),
         backgroundColor: colors.primary,
     },
-    chipText: {
-        fontSize: scale(14),
-        fontWeight: "500",
-        color: colors.neutral300,
+    iconDropdownStyle: {
+        tintColor: colors.white,
     },
-    chipTextActive: {
-        color: colors.neutral900,
-        fontWeight: "600",
+    inactiveDropdown: {
+        backgroundColor: colors.neutral800,
+        borderWidth: 1,
+        borderColor: colors.neutral700,
     },
-
+    inactiveIconStyle: {
+        tintColor: colors.neutral400,
+    },
+    inactiveTextStyle: {
+        color: colors.neutral400,
+    },
     // Custom Range Card
     customRangeCard: {
         marginTop: verticalScale(20),
@@ -462,7 +462,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginTop: verticalScale(28),
         marginBottom: verticalScale(16),
     },
     resultsTitle: {

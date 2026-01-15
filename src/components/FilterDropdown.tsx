@@ -1,16 +1,19 @@
 // src/components/FilterDropdown.tsx
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import BaseDropdown from "@/components/Dropdown";
+import BaseDropdown, { DropdownOption } from "@/components/Dropdown";
 import Typo from "@/components/Typo";
 import { colors, spacingY } from "@/constant/theme";
 
 type FilterDropdownProps = {
   label?: string;
-  data: { label: string; value: string }[];
+  data: DropdownOption[];
   value: string | null;
   onChange: (val: string) => void;
   placeholder?: string;
+  dropdownStyle?: any;
+  iconStyle?: any;
+  selectedTextStyle?: any;
 };
 
 export default function FilterDropdown({
@@ -19,6 +22,9 @@ export default function FilterDropdown({
   value,
   onChange,
   placeholder = "Select...",
+  dropdownStyle,
+  iconStyle,
+  selectedTextStyle,
 }: FilterDropdownProps) {
   return (
     <View style={styles.container}>
@@ -33,6 +39,9 @@ export default function FilterDropdown({
         value={value}
         placeholder={placeholder}
         onChange={(item) => onChange(item.value as string)}
+        style={dropdownStyle}
+        iconStyle={iconStyle}
+        selectedTextStyle={selectedTextStyle}
       />
     </View>
   );

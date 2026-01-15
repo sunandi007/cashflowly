@@ -9,6 +9,7 @@ type DateRange = { start?: Date; end?: Date };
 export function useFilteredTransactions(transactions: TransactionType[]) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
+  const [walletId, setWalletId] = useState<string | null>(null);
   const [type, setType] = useState<TransactionFilterType>("all");
   const [dateRange, setDateRange] = useState<DateRange>({});
 
@@ -35,6 +36,12 @@ export function useFilteredTransactions(transactions: TransactionType[]) {
         (typeof txCatId === "string" &&
           txCatId.toLowerCase() === category.toLowerCase());
 
+      // --- WALLET ---
+      const matchesWallet =
+        !walletId ||
+        tx.wallet_id === walletId ||
+        tx.related_wallet_id === walletId;
+
       // --- TYPE ---
       const matchesType =
         type === "all" || tx.type?.toLowerCase() === type.toLowerCase();
@@ -46,13 +53,15 @@ export function useFilteredTransactions(transactions: TransactionType[]) {
         (new Date(tx.date) >= dateRange.start &&
           new Date(tx.date) <= dateRange.end);
 
-      return matchesSearch && matchesCategory && matchesType && matchesDate;
+      return matchesSearch && matchesCategory && matchesWallet && matchesType && matchesDate;
     });
-  }, [transactions, search, category, type, dateRange]);
+  }, [transactions, search, category, walletId, type, dateRange]);
 
   const resetFilters = () => {
     setSearch("");
+    setSearch("");
     setCategory(null);
+    setWalletId(null);
     setType("all");
     setDateRange({});
   };
@@ -65,10 +74,12 @@ export function useFilteredTransactions(transactions: TransactionType[]) {
     filteredTransactions,
     search,
     category,
+    walletId,
     type,
     dateRange,
     setSearch,
     setCategory,
+    setWalletId,
     setType,
     setDateRange,
     toggleCategory,
