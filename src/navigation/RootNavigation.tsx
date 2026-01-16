@@ -26,6 +26,7 @@ import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
 import HelpSupportScreen from "@/screens/HelpSupportScreen";
 
 import EmailSupportScreen from "@/screens/EmailSupportScreen";
+import PrivacyPolicyScreen from "@/screens/PrivacyPolicyScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,6 +64,7 @@ export default function RootNavigation() {
           <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
           <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
           <Stack.Screen name="EmailSupport" component={EmailSupportScreen} />
+          <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
         </>
       ) : (
         <>

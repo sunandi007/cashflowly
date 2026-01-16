@@ -225,7 +225,7 @@
         "dark": "Gelap",
         "system": "Sistem",
         "notifications": "Notifikasi",
-        "security": "Keamanan",
+        "security": "KEAMANAN",
         "changePassword": "Ubah Kata Sandi",
         "dataManagement": "Manajemen Data",
         "exportData": "Ekspor Data",
@@ -451,5 +451,44 @@
         "validationError": "Kesalahan Validasi",
         "fieldsRequired": "Subjek dan pesan wajib diisi",
         "submissionFailed": "Pengiriman Gagal"
+    },
+    "privacyPolicy": {
+        "title": "Kebijakan Privasi",
+        "lastUpdated": "Terakhir Diperbarui: 1 Januari 2025",
+        "intro": "Di CashFlowly, kami menghargai privasi Anda dan berkomitmen untuk melindungi data pribadi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda saat Anda menggunakan aplikasi seluler kami.",
+        "sections": [
+            {
+                "title": "1. Informasi yang Kami Kumpulkan",
+                "content": "Kami mengumpulkan data untuk fungsi utama aplikasi: \n\n(a) Data Pribadi: Nama, email, dan foto profil (avatar) untuk identitas akun.\n(b) Data Keuangan: Riwayat transaksi, kategori, dan data dompet (wallet) yang Anda input secara sukarela.\n(c) Data Teknis: Token notifikasi (Expo Push Token) untuk fitur pengingat, dan data perangkat untuk keperluan debugging.\n(d) Data Dukungan: Isi pesan dan file lampiran yang Anda unggah saat menghubungi layanan pelanggan."
+            },
+            {
+                "title": "2. Penggunaan Informasi",
+                "content": "Data Anda digunakan untuk:\n• Menyimpan dan menyinkronkan catatan keuangan antar perangkat secara real-time.\n• Mengirimkan Notifikasi Lokal (Pengingat Harian) dan Push Notification terkait akun.\n• Memproses tiket bantuan dan meninjau lampiran masalah yang Anda kirim.\n• Menyesuaikan tampilan aplikasi berdasarkan preferensi Bahasa dan Tema Anda."
+            },
+            {
+                "title": "3. Penyimpanan & Keamanan Data",
+                "content": "Kami menggunakan Supabase sebagai penyedia layanan backend yang aman. Data Anda dilindungi dengan enkripsi SSL/TLS saat transit. Kami menerapkan Row Level Security (RLS) pada database kami, yang memastikan data transaksi dan tiket bantuan Anda hanya dapat diakses oleh akun Anda sendiri."
+            },
+            {
+                "title": "4. Layanan Pihak Ketiga",
+                "content": "Untuk operasional aplikasi, kami bekerja sama dengan layanan tepercaya:\n• Supabase: Untuk database, autentikasi, dan penyimpanan file.\n• Expo: Untuk infrastruktur notifikasi.\nKami tidak menjual data pribadi Anda kepada pihak ketiga untuk tujuan pemasaran."
+            },
+            {
+                "title": "5. Izin Perangkat",
+                "content": "Aplikasi mungkin meminta akses ke:\n• Galeri/Penyimpanan: Untuk mengunggah avatar atau lampiran tiket bantuan.\n• Notifikasi: Untuk menampilkan pengingat harian yang Anda jadwalkan."
+            },
+            {
+                "title": "6. Hak & Kontrol Anda",
+                "content": "Anda memiliki kendali penuh. Anda dapat mengubah profil, mereset data, atau menghapus akun Anda secara permanen melalui menu Pengaturan > Keamanan > Hapus Akun. Penghapusan akun akan menghapus seluruh data transaksi Anda dari server kami."
+            },
+            {
+                "title": "7. Perubahan Kebijakan",
+                "content": "Kami dapat memperbarui kebijakan ini seiring penambahan fitur baru. Perubahan signifikan akan diinformasikan melalui notifikasi aplikasi."
+            },
+            {
+                "title": "8. Hubungi Kami",
+                "content": "Jika memiliki pertanyaan terkait privasi, silakan hubungi kami melalui fitur 'Bantuan & Dukungan' di aplikasi atau email ke support@cashflowly.app."
+            }
+        ]
     }
 }

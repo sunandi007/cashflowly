@@ -367,7 +367,7 @@ export default function SettingsScreen() {
                                 iconBg={colors.primary}
                                 title={t('settings.privacyPolicy')}
                                 onPress={() => {
-                                    // TODO: Navigate to privacy policy
+                                    navigation.navigate('PrivacyPolicy' as never);
                                 }}
                             />
                         </View>
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: spacingY._15,
-        paddingHorizontal: 0,
+        paddingHorizontal: spacingX._15,
     },
     scrollContent: {
         paddingHorizontal: spacingX._20,

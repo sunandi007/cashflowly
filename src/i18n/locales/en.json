@@ -225,7 +225,6 @@
         "dark": "Dark",
         "system": "System",
         "notifications": "Notifications",
-        "security": "Security",
         "changePassword": "Change Password",
         "dataManagement": "Data Management",
         "exportData": "Export Data",
@@ -235,6 +234,7 @@
         "rateApp": "Rate App",
         "contactUs": "Contact Us",
         "general": "GENERAL",
+        "security": "SECURITY",
         "account": "ACCOUNT",
         "biometric": "Biometric Authentication",
         "securityAndPassword": "Security & Password",
@@ -451,5 +451,44 @@
         "validationError": "Validation Error",
         "fieldsRequired": "Subject and message are required",
         "submissionFailed": "Submission Failed"
+    },
+    "privacyPolicy": {
+        "title": "Privacy Policy",
+        "lastUpdated": "Last Updated: January 1, 2025",
+        "intro": "At CashFlowly, we value your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.",
+        "sections": [
+            {
+                "title": "1. Information We Collect",
+                "content": "We collect data essential for app functionality:\n\n(a) Personal Data: Name, email, and profile photo (avatar) for account identity.\n(b) Financial Data: Transaction history, categories, and wallet data you voluntarily input.\n(c) Technical Data: Notification tokens (Expo Push Token) for reminders, and device data for debugging.\n(d) Support Data: Message content and file attachments uploaded when contacting customer support."
+            },
+            {
+                "title": "2. How We Use Your Information",
+                "content": "Your data is used to:\n• Store and sync financial records across devices in real-time.\n• Send Local Notifications (Daily Reminders) and Push Notifications regarding your account.\n• Process support tickets and review issue attachments.\n• Customize the app appearance based on your Language and Theme preferences."
+            },
+            {
+                "title": "3. Data Storage & Security",
+                "content": "We use Supabase as our secure backend provider. Your data is protected with SSL/TLS encryption during transit. We implement Row Level Security (RLS) on our database, ensuring your transactions and support tickets are accessible only by your own account."
+            },
+            {
+                "title": "4. Third-Party Services",
+                "content": "For app operations, we use trusted services:\n• Supabase: For database, authentication, and file storage.\n• Expo: For notification infrastructure.\nWe do not sell your personal data to third parties for marketing purposes."
+            },
+            {
+                "title": "5. Device Permissions",
+                "content": "The app may request access to:\n• Gallery/Storage: To upload avatars or support ticket attachments.\n• Notifications: To display the daily reminders you scheduled."
+            },
+            {
+                "title": "6. Your Rights & Control",
+                "content": "You have full control. You can update your profile, reset data, or permanently delete your account via Settings > Security > Delete Account. Account deletion will erase all your transaction data from our servers."
+            },
+            {
+                "title": "7. Policy Changes",
+                "content": "We may update this policy as we add new features. Significant changes will be communicated via app notifications."
+            },
+            {
+                "title": "8. Contact Us",
+                "content": "If you have privacy-related questions, please contact us via the 'Help & Support' feature in the app or email support@cashflowly.app."
+            }
+        ]
     }
 }

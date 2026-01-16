@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     header: {
         marginBottom: verticalScale(24),
         paddingHorizontal: 0,
-        paddingVertical: 0,
+        paddingVertical: spacingY._15,
         minHeight: 0,
         marginHorizontal: spacingX._15,
     },
