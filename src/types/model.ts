@@ -144,6 +144,7 @@ export type TransactionType = {
   categoryId?: string; // category_id
   category_id?: string; // backward compat
   wallet_id?: string;
+  tag_id?: string;
   attachmentUrl?: string;
   createdAt?: string;
   updatedAt?: string;

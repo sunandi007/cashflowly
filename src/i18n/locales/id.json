@@ -264,7 +264,7 @@
         "build": "Build",
         "confirmLogout": "Konfirmasi Keluar",
         "confirmLogoutMessage": "Apakah Anda yakin ingin keluar?",
-        "proMember": "ANGGOTA PRO",
+        "proMember": "PRO",
         "menu": {
             "accountInfo": "Info Akun",
             "recurringBilling": "Tagihan Berulang",

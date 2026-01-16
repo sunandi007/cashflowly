@@ -10,6 +10,7 @@ export function useFilteredTransactions(transactions: TransactionType[]) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [walletId, setWalletId] = useState<string | null>(null);
+  const [tagId, setTagId] = useState<string | null>(null);
   const [type, setType] = useState<TransactionFilterType>("all");
   const [dateRange, setDateRange] = useState<DateRange>({});
 
@@ -42,6 +43,11 @@ export function useFilteredTransactions(transactions: TransactionType[]) {
         tx.wallet_id === walletId ||
         tx.related_wallet_id === walletId;
 
+      // --- TAG ---
+      const matchesTag =
+        !tagId ||
+        tx.tag_id === tagId;
+
       // --- TYPE ---
       const matchesType =
         type === "all" || tx.type?.toLowerCase() === type.toLowerCase();
@@ -53,15 +59,16 @@ export function useFilteredTransactions(transactions: TransactionType[]) {
         (new Date(tx.date) >= dateRange.start &&
           new Date(tx.date) <= dateRange.end);
 
-      return matchesSearch && matchesCategory && matchesWallet && matchesType && matchesDate;
+      return matchesSearch && matchesCategory && matchesWallet && matchesTag && matchesType && matchesDate;
     });
-  }, [transactions, search, category, walletId, type, dateRange]);
+  }, [transactions, search, category, walletId, tagId, type, dateRange]);
 
   const resetFilters = () => {
     setSearch("");
     setSearch("");
     setCategory(null);
     setWalletId(null);
+    setTagId(null);
     setType("all");
     setDateRange({});
   };
@@ -70,19 +77,26 @@ export function useFilteredTransactions(transactions: TransactionType[]) {
     setCategory((prev) => (prev === catId ? null : catId));
   };
 
+  const toggleTag = (tId: string | null) => {
+    setTagId((prev) => (prev === tId ? null : tId));
+  };
+
   return {
     filteredTransactions,
     search,
     category,
     walletId,
+    tagId,
     type,
     dateRange,
     setSearch,
     setCategory,
     setWalletId,
+    setTagId,
     setType,
     setDateRange,
     toggleCategory,
+    toggleTag,
     resetFilters,
   };
 }

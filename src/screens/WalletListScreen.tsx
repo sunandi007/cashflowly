@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
   // Header
   header: {
     marginHorizontal: spacingX._15,
+    marginTop: verticalScale(10),
     paddingHorizontal: 0,
     paddingTop: verticalScale(10),
     paddingBottom: verticalScale(20),

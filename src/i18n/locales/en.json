@@ -264,7 +264,7 @@
         "build": "Build",
         "confirmLogout": "Confirm Logout",
         "confirmLogoutMessage": "Are you sure you want to logout?",
-        "proMember": "PRO MEMBER",
+        "proMember": "PRO",
         "menu": {
             "accountInfo": "Account Info",
             "recurringBilling": "Recurring Billing",
