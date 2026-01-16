@@ -352,5 +352,104 @@
         "previewTitle": "📝 Jangan Lupa Catat Pengeluaran!",
         "previewBody": "Sudah catat pengeluaran hari ini?",
         "previewMeta": "19:00 • Setiap hari"
+    },
+    "faq": {
+        "categories": {
+            "account": "Akun & Profil",
+            "transaction": "Transaksi & Keuangan",
+            "app_settings": "Pengaturan Aplikasi",
+            "security": "Keamanan"
+        },
+        "items": [
+            {
+                "id": "q1",
+                "category": "app_settings",
+                "question": "Bagaimana cara mengganti Bahasa?",
+                "answer": "Masuk ke menu Pengaturan, pilih 'Bahasa' (Language), lalu pilih Bahasa Indonesia atau English. Aplikasi akan langsung berubah."
+            },
+            {
+                "id": "q2",
+                "category": "app_settings",
+                "question": "Bagaimana cara mengaktifkan Dark Mode?",
+                "answer": "Buka Pengaturan > Tampilan. Anda bisa memilih 'Light', 'Dark', atau 'System' untuk mengikuti pengaturan HP Anda."
+            },
+            {
+                "id": "q3",
+                "category": "transaction",
+                "question": "Bagaimana cara mencatat pemasukan/pengeluaran?",
+                "answer": "Tekan tombol (+) di halaman utama, pilih tipe transaksi (Income/Expense), masukkan nominal, pilih kategori, dan tekan Simpan."
+            },
+            {
+                "id": "q4",
+                "category": "transaction",
+                "question": "Bisakah saya mengubah mata uang?",
+                "answer": "Ya, Anda bisa mengubah mata uang (IDR, USD, dll) melalui menu Pengaturan > Mata Uang."
+            },
+            {
+                "id": "q5",
+                "category": "transaction",
+                "question": "Apa itu fitur Transfer?",
+                "answer": "Fitur Transfer digunakan untuk memindahkan saldo antar dompet (Wallet) Anda, misalnya dari 'Dompet Tunai' ke 'Rekening Bank' agar pencatatan tetap akurat."
+            },
+            {
+                "id": "q6",
+                "category": "app_settings",
+                "question": "Bagaimana cara menyalakan pengingat harian?",
+                "answer": "Aktifkan 'Daily Reminder' di menu Pengaturan. Anda bisa mengatur jam berapa aplikasi akan mengingatkan Anda untuk mencatat transaksi."
+            },
+            {
+                "id": "q7",
+                "category": "security",
+                "question": "Saya lupa password, bagaimana cara resetnya?",
+                "answer": "Di halaman Login, klik 'Lupa Password'. Masukkan email Anda, dan kami akan mengirimkan link untuk membuat password baru."
+            },
+            {
+                "id": "q8",
+                "category": "account",
+                "question": "Apakah data saya hilang jika ganti HP?",
+                "answer": "Tidak. Data Anda tersimpan aman di cloud (Supabase). Cukup login dengan email yang sama di HP baru, dan semua data akan kembali."
+            },
+            {
+                "id": "q9",
+                "category": "account",
+                "question": "Bagaimana cara menghapus akun?",
+                "answer": "Perhatian: Ini permanen. Buka Pengaturan > Keamanan > Hapus Akun. Semua data transaksi Anda akan dihapus selamanya."
+            }
+        ]
+    },
+    "helpSupport": {
+        "title": "Pusat Bantuan",
+        "searchPlaceholder": "Apa yang bisa kami bantu?",
+        "faqTitle": "Pertanyaan Umum",
+        "contactTitle": "HUBUNGI KAMI",
+        "emailSupport": "Email Support",
+        "emailSubtitle": "Balasan < 24 jam",
+        "liveChat": "Live Chat",
+        "chatSubtitle": "Respon Instan",
+        "footer": "CashFlowly Support v3.0.1 • 2024",
+        "all": "Semua"
+    },
+    "emailSupport": {
+        "title": "Email Support",
+        "from": "Dari",
+        "subject": "Subjek",
+        "subjectPlaceholder": "Masukkan subjek pesan anda",
+        "message": "Apa yang bisa kami bantu?",
+        "messagePlaceholder": "Jelaskan masalah anda secara detail...",
+        "attach": "Lampirkan Screenshot",
+        "attachDesc": "Opsional: Maks ukuran file 5MB",
+        "upload": "Unggah",
+        "send": "Kirim Pesan",
+        "success": "Pesan Terkirim",
+        "successMessage": "Kami telah menerima pesan anda dan akan segera menghubungi anda.",
+        "error": "Gagal Mengirim",
+        "errorMessage": "Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.",
+        "uploadFailed": "Gagal Mengunggah",
+        "fileSizeLimit": "Ukuran file melebihi batas 5MB",
+        "authError": "Kesalahan Otentikasi",
+        "authRequired": "Anda harus login untuk mengirim tiket",
+        "validationError": "Kesalahan Validasi",
+        "fieldsRequired": "Subjek dan pesan wajib diisi",
+        "submissionFailed": "Pengiriman Gagal"
     }
 }

@@ -96,6 +96,8 @@ const ProfileScreen = () => {
       navigation.navigate("BillsScreen" as never);
     } else if (item.title === "Data Management") {
       navigation.navigate("DataManagement" as never);
+    } else if (item.title === "Help & Support") {
+      navigation.navigate("HelpSupport" as never);
     }
   };
 

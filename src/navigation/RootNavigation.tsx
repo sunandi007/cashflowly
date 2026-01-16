@@ -23,6 +23,9 @@ import ResetPasswordScreen from "@/screens/ResetPasswordScreen";
 import ChangePasswordScreen from "@/screens/ChangePasswordScreen";
 import SettingsScreen from "@/screens/SettingsScreen";
 import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
+import HelpSupportScreen from "@/screens/HelpSupportScreen";
+
+import EmailSupportScreen from "@/screens/EmailSupportScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,6 +61,8 @@ export default function RootNavigation() {
           <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
           <Stack.Screen name="Settings" component={SettingsScreen} />
           <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+          <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+          <Stack.Screen name="EmailSupport" component={EmailSupportScreen} />
         </>
       ) : (
         <>

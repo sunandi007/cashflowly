@@ -352,5 +352,104 @@
         "previewTitle": "📝 Don't Forget to Log Expenses!",
         "previewBody": "Have you logged your expenses today?",
         "previewMeta": "19:00 • Every day"
+    },
+    "faq": {
+        "categories": {
+            "account": "Account & Profile",
+            "transaction": "Transactions & Finance",
+            "app_settings": "App Settings",
+            "security": "Security"
+        },
+        "items": [
+            {
+                "id": "q1",
+                "category": "app_settings",
+                "question": "How do I change the language?",
+                "answer": "Go to Settings, select 'Language', and choose between Indonesian or English. The app will update immediately."
+            },
+            {
+                "id": "q2",
+                "category": "app_settings",
+                "question": "How to enable Dark Mode?",
+                "answer": "Open Settings > Appearance. You can choose 'Light', 'Dark', or 'System' to match your device settings."
+            },
+            {
+                "id": "q3",
+                "category": "transaction",
+                "question": "How do I record income/expense?",
+                "answer": "Tap the (+) button on the home screen, select transaction type, enter amount, choose category, and tap Save."
+            },
+            {
+                "id": "q4",
+                "category": "transaction",
+                "question": "Can I change the currency?",
+                "answer": "Yes, you can change the currency (IDR, USD, etc.) via Settings > Currency."
+            },
+            {
+                "id": "q5",
+                "category": "transaction",
+                "question": "What is the Transfer feature?",
+                "answer": "Transfer is used to move balance between your Wallets, e.g., from 'Cash' to 'Bank Account', ensuring accurate records."
+            },
+            {
+                "id": "q6",
+                "category": "app_settings",
+                "question": "How to enable daily reminders?",
+                "answer": "Enable 'Daily Reminder' in Settings. You can set a specific time for the app to remind you to record transactions."
+            },
+            {
+                "id": "q7",
+                "category": "security",
+                "question": "I forgot my password, how to reset?",
+                "answer": "On the Login screen, click 'Forgot Password'. Enter your email, and we will send a link to create a new password."
+            },
+            {
+                "id": "q8",
+                "category": "account",
+                "question": "Will I lose data if I change phone?",
+                "answer": "No. Your data is securely stored in the cloud. Just login with the same email on your new device, and your data will sync."
+            },
+            {
+                "id": "q9",
+                "category": "account",
+                "question": "How to delete my account?",
+                "answer": "Warning: This is permanent. Go to Settings > Security > Delete Account. All your transaction data will be erased forever."
+            }
+        ]
+    },
+    "helpSupport": {
+        "title": "Help Center",
+        "searchPlaceholder": "How can we help you?",
+        "faqTitle": "Frequently Asked Questions",
+        "contactTitle": "CONTACT US",
+        "emailSupport": "Email Support",
+        "emailSubtitle": "Reply < 24 hours",
+        "liveChat": "Live Chat",
+        "chatSubtitle": "Instant Response",
+        "footer": "CashFlowly Support v3.0.1 • 2024",
+        "all": "All"
+    },
+    "emailSupport": {
+        "title": "Email Support",
+        "from": "From",
+        "subject": "Subject",
+        "subjectPlaceholder": "Enter the subject of your inquiry",
+        "message": "How can we help?",
+        "messagePlaceholder": "Describe your issue in detail...",
+        "attach": "Attach Screenshot",
+        "attachDesc": "Optional: Max file size 5MB",
+        "upload": "Upload",
+        "send": "Send Message",
+        "success": "Message Sent",
+        "successMessage": "We have received your message and will get back to you shortly.",
+        "error": "Failed to Send",
+        "errorMessage": "An error occurred while sending your message. Please try again.",
+        "uploadFailed": "Upload Failed",
+        "fileSizeLimit": "File size exceeds 5MB limit",
+        "authError": "Authentication Error",
+        "authRequired": "You must be logged in to submit a ticket",
+        "validationError": "Validation Error",
+        "fieldsRequired": "Subject and message are required",
+        "submissionFailed": "Submission Failed"
     }
 }
