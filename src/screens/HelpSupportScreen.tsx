@@ -154,13 +154,13 @@ const HelpSupportScreen = () => {
                             <Typo size={12} color={colors.neutral400} style={{ marginTop: 4 }}>{t('helpSupport.emailSubtitle')}</Typo>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.contactCard}>
+                        {/* <TouchableOpacity style={styles.contactCard}>
                             <View style={[styles.iconCircleIcon, { backgroundColor: 'rgba(35, 193, 107, 0.1)' }]}>
                                 <Ionicons name="chatbubble-ellipses" size={24} color={colors.primary} />
                             </View>
                             <Typo size={14} fontWeight="600" style={{ marginTop: 12 }}>{t('helpSupport.liveChat')}</Typo>
                             <Typo size={12} color={colors.neutral400} style={{ marginTop: 4 }}>{t('helpSupport.chatSubtitle')}</Typo>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
 
                     <View style={styles.footer}>

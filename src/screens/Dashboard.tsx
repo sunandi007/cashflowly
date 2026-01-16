@@ -212,7 +212,7 @@ export default function DashboardScreen() {
         />
 
         {/* FAB */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.fab}
           onPress={handleAddPress}
           activeOpacity={0.8}
@@ -222,7 +222,7 @@ export default function DashboardScreen() {
             size={scale(28)}
             color={colors.neutral900}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </ScreenWrapper>
   );

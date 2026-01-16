@@ -86,12 +86,16 @@ function MainTabs() {
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: colors.neutral900,
-          borderTopColor: colors.neutral700,
-          alignItems: "center",
+          borderTopColor: colors.neutral800,
           borderTopWidth: 1,
-          height: 55,
-          paddingTop: 7,
-          elevation: 10,
+          height: 70,
+          paddingBottom: 10,
+          paddingTop: 10,
+          elevation: 0,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
         },
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap = "home-outline";
@@ -103,6 +107,9 @@ function MainTabs() {
             case "Analitics":
               iconName = focused ? "bar-chart" : "bar-chart-outline";
               break;
+            case "AddTransaction":
+              iconName = "add";
+              break;
             case "Wallet":
               iconName = focused ? "wallet" : "wallet-outline";
               break;
@@ -111,11 +118,35 @@ function MainTabs() {
               break;
           }
 
+          // Special styling for center add button
+          if (route.name === "AddTransaction") {
+            return (
+              <View
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 30,
+                  backgroundColor: colors.primary,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: 30,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 8,
+                }}
+              >
+                <Ionicons name={iconName} size={32} color={colors.white} />
+              </View>
+            );
+          }
+
           return (
             <Ionicons
               name={iconName}
-              size={28}
-              color={focused ? colors.primary : colors.neutral400}
+              size={26}
+              color={focused ? colors.primary : colors.neutral500}
             />
           );
         },
@@ -123,8 +154,19 @@ function MainTabs() {
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Analitics" component={DashboardAnalyticsScreen} />
+      <Tab.Screen
+        name="AddTransaction"
+        component={TransactionScreen}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate('TransactionScreen');
+          },
+        })}
+      />
       <Tab.Screen name="Wallet" component={WalletScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
+

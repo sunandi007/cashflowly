@@ -997,8 +997,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     paddingHorizontal: spacingX._20,
+    paddingVertical: spacingY._10,
     gap: scale(12),
-    paddingTop: spacingY._15,
     marginBottom: spacingY._5,
   },
   deleteButton: {
