@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Typo from "@/components/Typo";
+import Header from "@/components/Header";
 import { Ionicons } from "@expo/vector-icons";
 import { useWallets } from "@/hooks/useWallets";
 import { colors, spacingX, spacingY, radius } from "@/constant/theme";
@@ -125,25 +126,20 @@ export default function WalletScreen() {
   return (
     <ScreenWrapper style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.headerButton}
-        >
-          <Ionicons name="chevron-back" size={scale(24)} color={colors.white} />
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>{t('wallet.title')}</Text>
-
-        <TouchableOpacity style={styles.headerButton}>
-          <Ionicons name="add-circle-outline"
+      <Header
+        title={t('wallet.title')}
+        rightComponent={
+          <TouchableOpacity
             onPress={() => {
               setSelectedWallet(null);
               setShowAdd(true);
             }}
-            size={scale(28)} color={colors.white} />
-        </TouchableOpacity>
-      </View>
+          >
+            <Ionicons name="add-circle-outline" size={scale(28)} color={colors.white} />
+          </TouchableOpacity>
+        }
+        style={styles.header}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -191,24 +187,12 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: spacingX._20,
+    marginHorizontal: spacingX._15,
+    paddingHorizontal: 0,
     paddingTop: verticalScale(10),
     paddingBottom: verticalScale(20),
   },
-  headerButton: {
-    width: scale(40),
-    height: scale(40),
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    fontSize: scale(18),
-    fontWeight: "700",
-    color: colors.white,
-  },
+  // headerButton, headerTitle removed
 
   // Scroll Content
   scrollContent: {

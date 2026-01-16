@@ -128,7 +128,11 @@ const DataManagementScreen = () => {
     return (
         <ScreenWrapper>
             <View style={styles.container}>
-                <Header title="Data Management" style={{ marginBottom: spacingY._20 }} />
+                <Header
+                    title="Data Management"
+                    showBack
+                    style={{ paddingHorizontal: 0, marginBottom: spacingY._20 }}
+                />
 
                 <ScrollView
                     contentContainerStyle={styles.scrollContent}

@@ -39,9 +39,23 @@ export type TypoProps = {
 
 export type HeaderProps = {
   title?: string;
+  titleSize?: number;
+  subtitle?: string;
   style?: StyleProp<ViewStyle>;
-  leftIcon?: ReactNode;
-  rightIcon?: ReactNode;
+  leftIcon?: ReactNode; // Legacy, kept for backward compat if needed, but prefer leftComponent
+  rightIcon?: ReactNode; // Legacy
+
+  // New standardized props
+  showBack?: boolean;
+  showClose?: boolean;
+  onBack?: () => void;
+  onClose?: () => void;
+
+  leftComponent?: ReactNode;
+  rightComponent?: ReactNode;
+  centerComponent?: ReactNode;
+
+  children?: ReactNode; // Allow custom content if needed
 };
 
 export type BackButtonProps = {

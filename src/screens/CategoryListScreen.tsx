@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Typo from "@/components/Typo";
+import Header from "@/components/Header";
 import { useAlert } from "@/hooks/useAlert";
 import { colors, spacingX, radius } from "@/constant/theme";
 import { useAuth } from "@/hooks/useAuth";
@@ -195,28 +196,21 @@ export default function CategoryListScreen() {
   return (
     <View style={[styles.container]}>
       {/* Custom Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="arrow-back" size={scale(24)} color={colors.white} />
-        </TouchableOpacity>
-
-        <Typo size={18} fontWeight="700" color={colors.white}>
-          {t('category.manageCategories')}
-        </Typo>
-
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-        >
-          <Typo size={16} fontWeight="600" color={colors.primary}>
-            {t('common.done')}
-          </Typo>
-        </TouchableOpacity>
-      </View>
+      <Header
+        title={t('category.manageCategories')}
+        showBack
+        rightComponent={
+          <TouchableOpacity
+            onPress={() => {
+              setEditingCategory(null);
+              setIsModalVisible(true);
+            }}
+          >
+            <Ionicons name="add-circle-outline" size={scale(28)} color={colors.white} />
+          </TouchableOpacity>
+        }
+        style={styles.header}
+      />
 
       {/* Tab Selector */}
       <View style={styles.tabContainer}>
@@ -321,17 +315,10 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacingX._20,
-    paddingVertical: verticalScale(10),
-  },
-  backButton: {
-    width: scale(40),
-    height: scale(40),
-    alignItems: "flex-start",
-    justifyContent: "center",
+    marginHorizontal: spacingX._15,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    marginBottom: verticalScale(10),
   },
 
   // Tab Selector
@@ -400,9 +387,9 @@ const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     right: spacingX._20,
-    width: scale(56),
-    height: scale(56),
-    borderRadius: scale(28),
+    width: scale(40),
+    height: scale(40),
+    borderRadius: scale(20),
     backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",

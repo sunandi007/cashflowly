@@ -462,11 +462,7 @@ export default function TransactionScreen() {
       >
         <Header
           title={type === 'transfer' ? "Transfer Funds" : (isEditing ? "Edit Transaction" : "New Transaction")}
-          leftIcon={
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Ionicons name="arrow-back" size={24} color={colors.white} />
-            </TouchableOpacity>
-          }
+          showBack
         />
 
         <ScrollView contentContainerStyle={styles.content}>
@@ -809,18 +805,25 @@ export default function TransactionScreen() {
 
         {/* Footer Button Positioned at Bottom */}
         <View style={styles.footer}>
+          {isEditing && (
+            // <TouchableOpacity onPress={showDeleteAlert} style={{ alignSelf: 'center', marginTop: 15 }}>
+            //   <Typo color={colors.rose} fontWeight="600">Delete Transaction</Typo>
+            // </TouchableOpacity>
+            <Button onPress={showDeleteAlert} style={styles.deleteButton}>
+              <IconComponent
+                item={{ icon: "trash" } as any}
+                size={verticalScale(20)}
+                color={colors.neutral100}
+              />
+            </Button>
+          )}
+
           <Button onPress={handleSave} style={[styles.mainButton, type === 'transfer' ? { backgroundColor: colors.accentGreen } : {}]}>
             <Typo size={16} fontWeight="700" color={colors.background}>
               {type === 'transfer' ? "Transfer Now" : (isEditing ? "Save Changes" : "Save Transaction")}
             </Typo>
             <Ionicons name="arrow-forward" size={20} color={colors.background} style={{ marginLeft: 8 }} />
           </Button>
-
-          {isEditing && (
-            <TouchableOpacity onPress={showDeleteAlert} style={{ alignSelf: 'center', marginTop: 15 }}>
-              <Typo color={colors.rose} fontWeight="600">Delete Transaction</Typo>
-            </TouchableOpacity>
-          )}
         </View>
 
       </KeyboardAvoidingView>
@@ -990,16 +993,30 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0, right: 0,
     backgroundColor: colors.background,
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 30, // Safe area
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    paddingHorizontal: spacingX._20,
+    gap: scale(12),
+    paddingTop: spacingY._15,
+    marginBottom: spacingY._5,
   },
-  mainButton: {
-    backgroundColor: colors.accentGreen,
+  deleteButton: {
+    paddingHorizontal: spacingX._15,
+    backgroundColor: colors.rose,
     borderRadius: 30,
-    height: 56,
+    height: 47,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
-  }
+  },
+  mainButton: {
+    flex: 1,
+    backgroundColor: colors.accentGreen,
+    borderRadius: 30,
+    height: 47,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
 });

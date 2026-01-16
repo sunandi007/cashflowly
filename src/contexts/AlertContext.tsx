@@ -20,7 +20,8 @@ interface AlertContextType {
         title: string,
         message: string,
         buttons?: AlertButton[],
-        options?: AlertOptions
+        options?: AlertOptions,
+        icon?: boolean
     ) => void;
     hideAlert: () => void;
 }
@@ -41,6 +42,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
         cancelText: 'Cancel',
         onConfirm: undefined as (() => void) | undefined,
         onClose: undefined as (() => void) | undefined,
+        icon: true,
     });
 
     // Use ref to track if there's a pending alert
@@ -53,7 +55,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
             if (pendingAlertRef.current) {
                 const pending = pendingAlertRef.current;
                 pendingAlertRef.current = null;
-                showAlert(pending.title, pending.message, pending.buttons, pending.options);
+                showAlert(pending.title, pending.message, pending.buttons, pending.options, pending.icon);
             }
         }, 300); // Wait for animation to complete
     }, []);
@@ -63,11 +65,12 @@ export function AlertProvider({ children }: AlertProviderProps) {
             title: string,
             message: string,
             buttons?: AlertButton[],
-            options?: AlertOptions
+            options?: AlertOptions,
+            icon?: boolean
         ) => {
             // If an alert is already visible, queue this one
             if (visible) {
-                pendingAlertRef.current = { title, message, buttons, options };
+                pendingAlertRef.current = { title, message, buttons, options, icon };
                 return;
             }
 
@@ -139,6 +142,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
                 cancelText,
                 onConfirm,
                 onClose,
+                icon: icon !== undefined ? icon : true,
             });
 
             setVisible(true);
@@ -158,6 +162,7 @@ export function AlertProvider({ children }: AlertProviderProps) {
                 cancelText={alertConfig.cancelText}
                 onConfirm={alertConfig.onConfirm}
                 onClose={alertConfig.onClose}
+                icon={alertConfig.icon}
             />
         </AlertContext.Provider>
     );

@@ -95,20 +95,14 @@ export default function WalletAddModal({
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.modal}>
+          {/* Handle Bar */}
+          <View style={styles.handleBar} />
           {/* Header */}
           <Header
-            title="Add New Wallet"
-            style={{
-              alignItems: "center",
-              flexDirection: "row",
-              justifyContent: "center",
-              marginBottom: spacingY._10,
-            }}
-            rightIcon={
-              <TouchableOpacity onPress={onClose}>
-                <Typo style={styles.closeText}>✕</Typo>
-              </TouchableOpacity>
-            }
+            title={isEditing ? "Edit Wallet" : "Add New Wallet"}
+            showClose
+            onClose={onClose}
+            style={styles.header}
           />
 
           {/* Input */}
@@ -160,7 +154,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral900,
     borderTopLeftRadius: radius._20,
     borderTopRightRadius: radius._20,
-    padding: spacingY._25,
+    padding: spacingY._20,
+  },
+  header: {
+    marginBottom: verticalScale(20),
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    minHeight: 0,
+    paddingBottom: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.neutral800,
+  },
+  handleBar: {
+    width: 40, height: 4, backgroundColor: colors.neutral700,
+    borderRadius: 2, alignSelf: 'center', marginTop: -4, marginBottom: 10
   },
   imageWrapper: {
     alignSelf: "center",
@@ -188,21 +195,29 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     top: "40%",
   },
-  closeText: { fontSize: 20, color: "#888" },
   saveButton: {
     flex: 1,
-    // marginTop: spacingY._20,
-    // backgroundColor: colors.primary,
+    backgroundColor: colors.accentGreen,
+    borderRadius: 30,
+    height: 47,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   deleteButton: {
     paddingHorizontal: spacingX._15,
     backgroundColor: colors.rose,
+    borderRadius: 30,
+    height: 47,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   footer: {
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
-    paddingHorizontal: spacingX._20,
+    paddingHorizontal: spacingX._7,
     gap: scale(12),
     paddingTop: spacingY._15,
     marginBottom: spacingY._5,

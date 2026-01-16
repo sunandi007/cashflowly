@@ -76,10 +76,15 @@ export default function TagListScreen() {
             {/* Header */}
             <Header
                 title={t('tags.title')}
-                leftIcon={
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color={colors.white} />
+                showBack
+                rightComponent={
+                    <TouchableOpacity
+                        onPress={() => {
+                            handleCreate();
+                        }}>
+                        <Ionicons name="add-circle-outline" size={scale(28)} color={colors.white} />
                     </TouchableOpacity>
+
                 }
             />
 
@@ -110,15 +115,6 @@ export default function TagListScreen() {
                     />
                 )}
             </View>
-
-            {/* FAB */}
-            <TouchableOpacity
-                style={styles.fab}
-                onPress={handleCreate}
-                activeOpacity={0.8}
-            >
-                <Ionicons name="add" size={30} color={colors.neutral900} />
-            </TouchableOpacity>
 
             {/* Modal */}
             <TagModal

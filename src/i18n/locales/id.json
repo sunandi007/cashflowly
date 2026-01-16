@@ -233,7 +233,23 @@
         "about": "Tentang",
         "version": "Versi",
         "rateApp": "Beri Rating",
-        "contactUs": "Hubungi Kami"
+        "contactUs": "Hubungi Kami",
+        "general": "UMUM",
+        "account": "AKUN",
+        "biometric": "Otentikasi Biometrik",
+        "securityAndPassword": "Keamanan & Kata Sandi",
+        "enabled": "Aktif",
+        "tapToEnable": "Ketuk untuk mengaktifkan",
+        "selectTheme": "Pilih Tema",
+        "selectCurrency": "Pilih Mata Uang",
+        "selectLanguage": "Pilih Bahasa",
+        "darkMode": "Mode Gelap",
+        "lightMode": "Mode Terang",
+        "systemDefault": "Default Sistem",
+        "darkModeDesc": "Tema gelap untuk mata yang nyaman",
+        "lightModeDesc": "Tema terang dan cerah",
+        "systemDefaultDesc": "Ikuti pengaturan sistem",
+        "privacyPolicy": "Kebijakan Privasi"
     },
     "profile": {
         "title": "Profil",
@@ -247,7 +263,18 @@
         "version": "Versi",
         "build": "Build",
         "confirmLogout": "Konfirmasi Keluar",
-        "confirmLogoutMessage": "Apakah Anda yakin ingin keluar?"
+        "confirmLogoutMessage": "Apakah Anda yakin ingin keluar?",
+        "proMember": "ANGGOTA PRO",
+        "menu": {
+            "accountInfo": "Info Akun",
+            "recurringBilling": "Tagihan Berulang",
+            "settings": "Pengaturan",
+            "security": "Keamanan & Kata Sandi",
+            "helpSupport": "Bantuan & Dukungan",
+            "manageCategories": "Kelola Kategori",
+            "manageTags": "Kelola Tag",
+            "dataManagement": "Manajemen Data"
+        }
     },
     "errors": {
         "networkError": "Tidak dapat terhubung ke server",
@@ -308,5 +335,22 @@
             "title": "Berhasil! 🎉",
             "message": "Password Anda telah berhasil diubah."
         }
+    },
+    "notifications": {
+        "title": "Pengaturan Notifikasi",
+        "simpleReminder": "Pengingat Harian Sederhana",
+        "simpleReminderDesc": "Anda akan menerima notifikasi harian pada pukul 19:00 setiap hari untuk mengingatkan Anda mencatat pengeluaran. Cukup aktifkan dan Anda siap!",
+        "enableDaily": "Aktifkan Pengingat Harian",
+        "dailyTime": "Setiap hari pukul 19:00",
+        "permissionRequired": "Izin Notifikasi Diperlukan",
+        "permissionDesc": "Aktifkan notifikasi untuk menerima pengingat pengeluaran harian. Nyalakan tombol di atas untuk memberikan izin.",
+        "testSent": "Notifikasi tes terkirim!",
+        "enabled": "Pengingat harian diaktifkan",
+        "disabled": "Pengingat harian dinonaktifkan",
+        "permissionDenied": "Izin ditolak. Silakan aktifkan di pengaturan perangkat.",
+        "enableFirst": "Silakan aktifkan notifikasi terlebih dahulu",
+        "previewTitle": "📝 Jangan Lupa Catat Pengeluaran!",
+        "previewBody": "Sudah catat pengeluaran hari ini?",
+        "previewMeta": "19:00 • Setiap hari"
     }
 }

@@ -7,7 +7,7 @@ import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import { Ionicons } from "@expo/vector-icons";
 
 import ScreenWrapper from "@/components/ScreenWrapper";
-import BackButton from "@/components/BackButton";
+import Header from "@/components/Header";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Typo from "@/components/Typo";
@@ -94,14 +94,12 @@ export default function ChangePasswordScreen() {
     return (
         <ScreenWrapper>
             <View style={styles.container}>
-                <BackButton iconSize={28} />
-
-                {/* Heading */}
-                <View style={{ gap: 5, marginTop: spacingX._20 }}>
-                    <Typo size={30} fontWeight={"800"}>
-                        {t('changePassword.title')}
-                    </Typo>
-                </View>
+                {/* Header */}
+                <Header
+                    title={t('changePassword.title')}
+                    showBack
+                    style={styles.header}
+                />
 
                 <ScrollView
                     showsVerticalScrollIndicator={false}
@@ -241,6 +239,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: spacingX._20,
+    },
+    header: {
+        marginBottom: spacingY._15,
+        paddingHorizontal: 0,
+        paddingVertical: 0,
     },
     scrollContent: {
         paddingBottom: spacingY._30,

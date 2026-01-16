@@ -17,7 +17,7 @@ const Typo = ({
     fontWeight,
   };
 
-  return <Text style={[textStyle, style]}>{children}</Text>;
+  return <Text style={[textStyle, style]} {...textProps}>{children}</Text>;
 };
 
 export default Typo;

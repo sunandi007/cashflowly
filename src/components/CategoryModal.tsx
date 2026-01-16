@@ -103,6 +103,7 @@ export default function CategoryModal({ visible, onClose, initialData }: Categor
         <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
             <View style={styles.overlay}>
                 <View style={styles.modal}>
+                    <View style={styles.handleBar} />
                     <Header
                         title={isEditing ? "Edit Kategori" : "Tambah Kategori Baru"}
                         rightIcon={
@@ -168,6 +169,10 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 24,
         padding: spacingX._20,
         minHeight: 450,
+    },
+    handleBar: {
+        width: 40, height: 4, backgroundColor: colors.neutral700,
+        borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20
     },
     formContainer: {
         marginTop: spacingY._15,

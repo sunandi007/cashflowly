@@ -111,14 +111,10 @@ export default function WalletDetailScreen() {
         <ScreenWrapper style={styles.container}>
             <Header
                 title="Wallet Details"
-                leftIcon={
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Ionicons name="arrow-back" size={24} color={colors.white} />
-                    </TouchableOpacity>
-                }
-                rightIcon={
+                showBack
+                rightComponent={
                     <TouchableOpacity>
-                        <Ionicons name="ellipsis-vertical" size={24} color={colors.white} />
+                        <Ionicons name="create-outline" size={scale(28)} color={colors.white} onPress={handleEditWallet} />
                     </TouchableOpacity>
                 }
             />
@@ -134,11 +130,6 @@ export default function WalletDetailScreen() {
                 <Typo size={36} fontWeight="700" color={colors.white} style={{ marginVertical: 5 }}>
                     {formatCurrency(wallet?.balance || 0)}
                 </Typo>
-
-                <TouchableOpacity style={styles.editButton} onPress={handleEditWallet}>
-                    <Ionicons name="pencil" size={14} color={colors.white} />
-                    <Typo size={14} fontWeight="600" color={colors.white}>Edit Wallet</Typo>
-                </TouchableOpacity>
             </View>
 
             {/* Stats Overview */}

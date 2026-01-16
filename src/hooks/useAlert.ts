@@ -49,9 +49,10 @@ export function useAlert() {
         title: string,
         message: string,
         buttons?: AlertButton[],
-        options?: AlertOptions
+        options?: AlertOptions,
+        icon?: boolean
     ) => {
-        context.showAlert(title, message, buttons, options);
+        context.showAlert(title, message, buttons, options, icon);
     };
 
     return alert;

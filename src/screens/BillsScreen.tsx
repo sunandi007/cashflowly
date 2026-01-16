@@ -22,6 +22,7 @@ import BillDetailModal from "@/components/BillDetailModal";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale } from "@/utils/styling";
 import ScreenWrapper from "@/components/ScreenWrapper";
+import Header from "@/components/Header";
 import { useSnackbar } from "@/hooks/useSnackbar";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -169,15 +170,10 @@ export default function BillsScreen() {
   return (
     <ScreenWrapper style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View>
-          {/* <Text style={styles.welcomeText}>Welcome back,</Text> */}
-          <Text style={styles.headerTitle}>{t('bills.title')}</Text>
-        </View>
-        {/* <TouchableOpacity style={styles.filterIconButton}>
-          <Ionicons name="options-outline" size={scale(22)} color={colors.white} />
-        </TouchableOpacity> */}
-      </View>
+      <Header
+        title={t('bills.title')}
+        style={styles.header}
+      />
 
       {/* Total Due Card */}
       <View style={styles.totalDueCard}>
@@ -271,28 +267,9 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    paddingHorizontal: spacingX._20,
-    paddingTop: verticalScale(10),
+    paddingHorizontal: 0,
+    paddingTop: verticalScale(20),
     paddingBottom: verticalScale(20),
-  },
-  welcomeText: {
-    fontSize: scale(14),
-    color: colors.neutral400,
-    marginBottom: verticalScale(4),
-  },
-  headerTitle: {
-    fontSize: scale(26),
-    fontWeight: "700",
-    color: colors.white,
-  },
-  filterIconButton: {
-    width: scale(40),
-    height: scale(40),
-    alignItems: "center",
-    justifyContent: "center",
   },
 
   // Total Due Card

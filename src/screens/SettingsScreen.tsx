@@ -5,7 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/types/navigation';
 import Typo from '@/components/Typo';
 import { colors, spacingX, spacingY, radius } from "@/constant/theme";
-import BackButton from '@/components/BackButton';
+import Header from '@/components/Header';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import { Ionicons } from '@expo/vector-icons';
 import { scale } from '@/utils/styling';
@@ -151,7 +151,7 @@ export default function SettingsScreen() {
     // Contexts
     const { mode: themeMode, setMode: setThemeMode } = useTheme();
     const { currency, setCurrency } = useCurrency();
-    const { language, setLanguage } = useLanguage();
+    const { language, setLanguage, t } = useLanguage();
     const { hasPermission } = useNotification();
 
     // Modal States
@@ -159,6 +159,28 @@ export default function SettingsScreen() {
     const [showCurrencyModal, setShowCurrencyModal] = useState(false);
     const [showLanguageModal, setShowLanguageModal] = useState(false);
     const [biometricEnabled, setBiometricEnabled] = useState(false);
+
+    // Options with Translations
+    const themeOptions: Option[] = [
+        {
+            value: 'dark',
+            label: t('settings.darkMode'),
+            description: t('settings.darkModeDesc'),
+            icon: 'moon'
+        },
+        {
+            value: 'light',
+            label: t('settings.lightMode'),
+            description: t('settings.lightModeDesc'),
+            icon: 'sunny'
+        },
+        {
+            value: 'system',
+            label: t('settings.systemDefault'),
+            description: t('settings.systemDefaultDesc'),
+            icon: 'phone-portrait'
+        },
+    ];
 
     // Handlers
     const handleThemeChange = (newTheme: string) => {
@@ -175,8 +197,8 @@ export default function SettingsScreen() {
 
     // Display Values
     const getThemeLabel = () => {
-        const option = THEME_OPTIONS.find(opt => opt.value === themeMode);
-        return option?.label || 'Dark Mode';
+        const option = themeOptions.find(opt => opt.value === themeMode);
+        return option?.label || t('settings.darkMode');
     };
 
     const getCurrencyLabel = () => {
@@ -193,13 +215,11 @@ export default function SettingsScreen() {
         <ScreenWrapper>
             <View style={styles.container}>
                 {/* Header */}
-                <View style={styles.header}>
-                    <BackButton iconSize={24} />
-                    <Typo size={18} fontWeight="700" color={colors.white}>
-                        Settings
-                    </Typo>
-                    <View style={{ width: 40 }} />
-                </View>
+                <Header
+                    title={t('settings.title')}
+                    showBack
+                    style={styles.header}
+                />
 
                 <ScrollView
                     showsVerticalScrollIndicator={false}
@@ -208,7 +228,7 @@ export default function SettingsScreen() {
                     {/* GENERAL Section */}
                     <View style={styles.section}>
                         <Typo size={12} fontWeight="600" color={colors.white} style={styles.sectionHeader}>
-                            GENERAL
+                            {t('settings.general')}
                         </Typo>
                         <View style={styles.sectionContent}>
                             {/* Theme */}
@@ -223,7 +243,7 @@ export default function SettingsScreen() {
                                     </View>
                                     <View style={styles.settingTextContainer}>
                                         <Typo size={15} color={colors.white} fontWeight="500">
-                                            Theme
+                                            {t('settings.theme')}
                                         </Typo>
                                     </View>
                                 </View>
@@ -247,7 +267,7 @@ export default function SettingsScreen() {
                                     </View>
                                     <View style={styles.settingTextContainer}>
                                         <Typo size={15} color={colors.white} fontWeight="500">
-                                            Currency
+                                            {t('settings.currency')}
                                         </Typo>
                                     </View>
                                 </View>
@@ -271,7 +291,7 @@ export default function SettingsScreen() {
                                     </View>
                                     <View style={styles.settingTextContainer}>
                                         <Typo size={15} color={colors.white} fontWeight="500">
-                                            Language
+                                            {t('settings.language')}
                                         </Typo>
                                     </View>
                                 </View>
@@ -288,7 +308,7 @@ export default function SettingsScreen() {
                     {/* SECURITY Section */}
                     <View style={styles.section}>
                         <Typo size={12} fontWeight="600" color={colors.white} style={styles.sectionHeader}>
-                            SECURITY
+                            {t('settings.security')}
                         </Typo>
                         <View style={styles.sectionContent}>
                             {/* Security & Password */}
@@ -296,7 +316,7 @@ export default function SettingsScreen() {
                                 icon="lock-closed"
                                 iconColor={colors.white}
                                 iconBg={colors.primary}
-                                title="Security & Password"
+                                title={t('settings.securityAndPassword')}
                                 onPress={() => navigation.navigate('ChangePassword' as never)}
                             />
 
@@ -308,7 +328,7 @@ export default function SettingsScreen() {
                                     </View>
                                     <View style={styles.settingTextContainer}>
                                         <Typo size={15} color={colors.white} fontWeight="500">
-                                            Biometric Authentication
+                                            {t('settings.biometric')}
                                         </Typo>
                                     </View>
                                 </View>
@@ -327,7 +347,7 @@ export default function SettingsScreen() {
                     {/* ACCOUNT Section */}
                     <View style={styles.section}>
                         <Typo size={12} fontWeight="600" color={colors.white} style={styles.sectionHeader}>
-                            ACCOUNT
+                            {t('settings.account')}
                         </Typo>
                         <View style={styles.sectionContent}>
                             {/* Notification Settings */}
@@ -335,8 +355,8 @@ export default function SettingsScreen() {
                                 icon="notifications"
                                 iconColor={colors.white}
                                 iconBg={colors.primary}
-                                title="Notification Settings"
-                                subtitle={hasPermission ? 'Enabled' : 'Tap to enable'}
+                                title={t('settings.notifications')}
+                                subtitle={hasPermission ? t('settings.enabled') : t('settings.tapToEnable')}
                                 onPress={() => navigation.navigate('NotificationSettings' as never)}
                             />
 
@@ -345,7 +365,7 @@ export default function SettingsScreen() {
                                 icon="shield-checkmark"
                                 iconColor={colors.white}
                                 iconBg={colors.primary}
-                                title="Privacy Policy"
+                                title={t('settings.privacyPolicy')}
                                 onPress={() => {
                                     // TODO: Navigate to privacy policy
                                 }}
@@ -358,8 +378,8 @@ export default function SettingsScreen() {
                 <OptionSelectorModal
                     visible={showThemeModal}
                     onClose={() => setShowThemeModal(false)}
-                    title="Select Theme"
-                    options={THEME_OPTIONS}
+                    title={t('settings.selectTheme')}
+                    options={themeOptions}
                     selectedValue={themeMode}
                     onSelect={handleThemeChange}
                 />
@@ -367,7 +387,7 @@ export default function SettingsScreen() {
                 <OptionSelectorModal
                     visible={showCurrencyModal}
                     onClose={() => setShowCurrencyModal(false)}
-                    title="Select Currency"
+                    title={t('settings.selectCurrency')}
                     options={CURRENCY_OPTIONS}
                     selectedValue={currency}
                     onSelect={handleCurrencyChange}
@@ -376,7 +396,7 @@ export default function SettingsScreen() {
                 <OptionSelectorModal
                     visible={showLanguageModal}
                     onClose={() => setShowLanguageModal(false)}
-                    title="Select Language"
+                    title={t('settings.selectLanguage')}
                     options={LANGUAGE_OPTIONS}
                     selectedValue={language}
                     onSelect={handleLanguageChange}
@@ -391,11 +411,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: spacingX._20,
-        paddingVertical: spacingY._15,
+        marginBottom: spacingY._15,
+        paddingHorizontal: 0,
     },
     scrollContent: {
         paddingHorizontal: spacingX._20,

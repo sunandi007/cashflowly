@@ -93,15 +93,11 @@ export default function TagModal({
         <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
             <View style={styles.overlay}>
                 <View style={styles.modal}>
+                    <View style={styles.handleBar} />
                     {/* Header */}
                     <Header
                         title={isEditing ? "Edit Tag" : "Add New Tag"}
-                        style={{
-                            alignItems: "center",
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            marginBottom: spacingY._10,
-                        }}
+                        style={styles.header}
                         rightIcon={
                             <TouchableOpacity onPress={onClose}>
                                 <Ionicons name="close" size={24} color={colors.neutral400} />
@@ -158,6 +154,19 @@ const styles = StyleSheet.create({
         padding: spacingY._25,
         borderTopWidth: 1,
         borderTopColor: colors.neutral800,
+    },
+    header: {
+        marginBottom: verticalScale(20),
+        paddingHorizontal: 0,
+        paddingVertical: 0,
+        minHeight: 0,
+        paddingBottom: 6,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.neutral800,
+    },
+    handleBar: {
+        width: 40, height: 4, backgroundColor: colors.neutral700,
+        borderRadius: 2, alignSelf: 'center', marginTop: -5, marginBottom: 20
     },
     saveButton: {
         flex: 1,

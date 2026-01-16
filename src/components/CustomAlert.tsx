@@ -29,6 +29,7 @@ type CustomAlertProps = {
     onConfirm?: () => void;
     confirmText?: string;
     cancelText?: string;
+    icon?: boolean;
 };
 
 const ALERT_CONFIG = {
@@ -63,6 +64,7 @@ export default function CustomAlert({
     onConfirm,
     confirmText = "OK",
     cancelText = "Cancel",
+    icon = true,
 }: CustomAlertProps) {
     const [showModal, setShowModal] = useState(visible);
     const scaleValue = useSharedValue(0);
@@ -95,10 +97,12 @@ export default function CustomAlert({
             <View style={styles.overlay}>
                 <Animated.View style={[styles.alertContainer, animatedStyle]}>
                     {/* Icon Circle */}
-                    <View style={[styles.iconWrapper, { backgroundColor: config.bgColor }]}>
-                        <Ionicons name={config.icon as any} size={40} color={config.color} />
-                        {/* If type is error, maybe specifically use an exclamation icon if preferred, but 'alert' works */}
-                    </View>
+                    {icon && (
+                        <View style={[styles.iconWrapper, { backgroundColor: config.bgColor }]}>
+                            <Ionicons name={config.icon as any} size={40} color={config.color} />
+                            {/* If type is error, maybe specifically use an exclamation icon if preferred, but 'alert' works */}
+                        </View>
+                    )}
 
                     {/* Title */}
                     <Typo size={20} fontWeight="700" color={colors.white} style={styles.title}>
@@ -115,6 +119,14 @@ export default function CustomAlert({
                         {type === "warning" || onConfirm ? (
                             <>
                                 <TouchableOpacity
+                                    style={[styles.button, styles.cancelButton]}
+                                    onPress={onClose}
+                                    activeOpacity={0.8}
+                                >
+                                    <Text style={[styles.buttonText, { color: colors.white }]}>{cancelText}</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
                                     style={[styles.button, styles.confirmButton, { backgroundColor: config.color }]}
                                     onPress={onConfirm}
                                     activeOpacity={0.8}
@@ -122,14 +134,6 @@ export default function CustomAlert({
                                     <Text style={[styles.buttonText, { color: colors.neutral900, fontWeight: '700' }]}>
                                         {confirmText}
                                     </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[styles.button, styles.cancelButton]}
-                                    onPress={onClose}
-                                    activeOpacity={0.8}
-                                >
-                                    <Text style={[styles.buttonText, { color: colors.white }]}>{cancelText}</Text>
                                 </TouchableOpacity>
                             </>
                         ) : (
@@ -190,10 +194,11 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         width: "100%",
-        gap: verticalScale(12),
+        flexDirection: 'row',
+        gap: scale(12),
     },
     button: {
-        width: "100%",
+        flex: 1,
         paddingVertical: verticalScale(14),
         borderRadius: radius._20,
         alignItems: "center",

@@ -233,7 +233,23 @@
         "about": "About",
         "version": "Version",
         "rateApp": "Rate App",
-        "contactUs": "Contact Us"
+        "contactUs": "Contact Us",
+        "general": "GENERAL",
+        "account": "ACCOUNT",
+        "biometric": "Biometric Authentication",
+        "securityAndPassword": "Security & Password",
+        "enabled": "Enabled",
+        "tapToEnable": "Tap to enable",
+        "selectTheme": "Select Theme",
+        "selectCurrency": "Select Currency",
+        "selectLanguage": "Select Language",
+        "darkMode": "Dark Mode",
+        "lightMode": "Light Mode",
+        "systemDefault": "System Default",
+        "darkModeDesc": "Dark theme for comfortable viewing",
+        "lightModeDesc": "Bright and clear light theme",
+        "systemDefaultDesc": "Follow system settings",
+        "privacyPolicy": "Privacy Policy"
     },
     "profile": {
         "title": "Profile",
@@ -247,7 +263,18 @@
         "version": "Version",
         "build": "Build",
         "confirmLogout": "Confirm Logout",
-        "confirmLogoutMessage": "Are you sure you want to logout?"
+        "confirmLogoutMessage": "Are you sure you want to logout?",
+        "proMember": "PRO MEMBER",
+        "menu": {
+            "accountInfo": "Account Info",
+            "recurringBilling": "Recurring Billing",
+            "settings": "Settings",
+            "security": "Security & Password",
+            "helpSupport": "Help & Support",
+            "manageCategories": "Manage Categories",
+            "manageTags": "Manage Tags",
+            "dataManagement": "Data Management"
+        }
     },
     "errors": {
         "networkError": "Unable to connect to server",
@@ -308,5 +335,22 @@
             "title": "Success! 🎉",
             "message": "Your password has been changed successfully."
         }
+    },
+    "notifications": {
+        "title": "Notification Settings",
+        "simpleReminder": "Simple Daily Reminder",
+        "simpleReminderDesc": "You'll receive a daily notification at 7:00 PM every day to help you remember to log your expenses. Just toggle it on and you're all set!",
+        "enableDaily": "Enable Daily Reminder",
+        "dailyTime": "Every day at 19:00 (7:00 PM)",
+        "permissionRequired": "Notification Permission Required",
+        "permissionDesc": "Enable notifications to receive daily expense reminders. Toggle the switch above to grant permission.",
+        "testSent": "Test notification sent!",
+        "enabled": "Daily reminder enabled",
+        "disabled": "Daily reminder disabled",
+        "permissionDenied": "Permission denied. Please enable in device settings.",
+        "enableFirst": "Please enable notifications first",
+        "previewTitle": "📝 Don't Forget to Log Expenses!",
+        "previewBody": "Have you logged your expenses today?",
+        "previewMeta": "19:00 • Every day"
     }
 }

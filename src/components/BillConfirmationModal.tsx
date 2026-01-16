@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Typo from './Typo';
+import Header from './Header';
 import { useAlert } from '@/hooks/useAlert';
 import { colors, spacingX, spacingY, radius } from '@/constant/theme';
 import { toTitleCase } from '@/utils/text';
@@ -95,22 +96,16 @@ export default function BillConfirmationModal({
         >
             <View style={styles.overlay}>
                 <View style={styles.modal}>
+                    {/* Handle Bar */}
+                    <View style={styles.handleBar} />
                     {/* Header */}
-                    <View style={styles.header}>
-                        <View>
-                            <Text style={styles.headerTitle}>Bayar Tagihan</Text>
-                            <Text style={styles.headerSubtitle}>
-                                Konfirmasi pembayaran tagihan ini
-                            </Text>
-                        </View>
-                        <TouchableOpacity
-                            style={styles.closeButton}
-                            onPress={onClose}
-                            activeOpacity={0.7}
-                        >
-                            <Ionicons name="close" size={scale(20)} color={colors.neutral400} />
-                        </TouchableOpacity>
-                    </View>
+                    <Header
+                        title="Bayar Tagihan"
+                        subtitle="Konfirmasi pembayaran tagihan ini"
+                        showClose
+                        onClose={onClose}
+                        style={styles.header}
+                    />
 
                     {/* Bill Info Card */}
                     <View style={styles.billInfoCard}>
@@ -200,30 +195,13 @@ const styles = StyleSheet.create({
 
     // Header
     header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
         marginBottom: verticalScale(24),
+        paddingHorizontal: 0,
+        paddingVertical: 10,
+        minHeight: 0,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.neutral800,
     },
-    headerTitle: {
-        fontSize: scale(22),
-        fontWeight: '700',
-        color: colors.white,
-        marginBottom: verticalScale(4),
-    },
-    headerSubtitle: {
-        fontSize: scale(14),
-        color: colors.neutral400,
-    },
-    closeButton: {
-        width: scale(36),
-        height: scale(36),
-        borderRadius: scale(18),
-        backgroundColor: colors.neutral800,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
     // Bill Info Card
     billInfoCard: {
         flexDirection: 'row',
@@ -249,6 +227,10 @@ const styles = StyleSheet.create({
         fontSize: scale(17),
         fontWeight: '700',
         color: colors.white,
+    },
+    handleBar: {
+        width: 40, height: 5, backgroundColor: colors.neutral700,
+        borderRadius: 2, alignSelf: 'center', marginTop: -4, marginBottom: 10
     },
     billMeta: {
         flexDirection: 'row',

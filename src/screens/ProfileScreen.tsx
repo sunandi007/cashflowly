@@ -1,4 +1,5 @@
 import ScreenWrapper from "@/components/ScreenWrapper";
+import Header from "@/components/Header";
 import Typo from "@/components/Typo";
 import { colors, radius, spacingX, spacingY } from "@/constant/theme";
 import { supabase } from "@/services/supabaseClient";
@@ -56,11 +57,31 @@ const ProfileScreen = () => {
           onPress: () => handleLogOut(),
         },
       ],
-      { type: "warning" }
+      { type: "error" },
+      false
     );
   };
 
+  // Helper to translate menu titles
+  const getTranslatedTitle = (title: string) => {
+    switch (title) {
+      case "Account Info": return t('profile.menu.accountInfo');
+      case "Edit Profile": return t('profile.editProfile');
+      case "Recurring Billing": return t('profile.menu.recurringBilling');
+      case "Settings": return t('profile.menu.settings');
+      case "Security & Password": return t('profile.menu.security');
+      case "Manage Categories": return t('profile.menu.manageCategories');
+      case "Kustomisasi Kategori": return t('profile.menu.manageCategories'); // Handle varying data
+      case "Manage Tags": return t('profile.menu.manageTags');
+      case "Data Management": return t('profile.menu.dataManagement');
+      case "Help & Support": return t('profile.menu.helpSupport');
+      case "Logout": return t('auth.logout');
+      default: return title;
+    }
+  };
+
   const handlePress = async (item: AccountOptionType) => {
+    // Logic based on original English titles (or keys if changed later)
     if (item.title === "Logout") {
       showLogoutAlert();
     } else if (item.title === "Settings" || item.title === "Security & Password") {
@@ -96,7 +117,7 @@ const ProfileScreen = () => {
           />
         </View>
         <Typo size={16} fontWeight="500" color={colors.white} style={styles.menuTitle}>
-          {item.title}
+          {getTranslatedTitle(item.title)}
         </Typo>
         <View style={styles.menuRight}>
           {item.badge && item.badge > 0 && (
@@ -125,28 +146,18 @@ const ProfileScreen = () => {
       ) : (
         <View style={styles.container}>
           {/* Custom Header */}
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={styles.backButton}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="arrow-back" size={scale(24)} color={colors.white} />
-            </TouchableOpacity>
-
-            <Typo size={18} fontWeight="700" color={colors.white}>
-              {t('profile.title')}
-            </Typo>
-
-            <TouchableOpacity
-              onPress={() => setShowModal(true)}
-              activeOpacity={0.7}
-            >
-              <Typo size={16} fontWeight="600" color={colors.primary}>
-                {t('common.edit')}
-              </Typo>
-            </TouchableOpacity>
-          </View>
+          <Header
+            title={t('profile.title')}
+            rightComponent={
+              <TouchableOpacity
+                onPress={() => setShowModal(true)}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="create-outline" size={scale(28)} color={colors.white} />
+              </TouchableOpacity>
+            }
+            style={styles.header}
+          />
 
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -189,7 +200,7 @@ const ProfileScreen = () => {
               <View style={styles.proBadge}>
                 <Ionicons name="shield-checkmark" size={scale(16)} color={colors.primary} />
                 <Typo size={13} fontWeight="700" color={colors.primary}>
-                  PRO MEMBER
+                  {t('profile.proMember')}
                 </Typo>
               </View>
             </View>
@@ -253,17 +264,10 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacingX._20,
-    paddingVertical: verticalScale(16),
-  },
-  backButton: {
-    width: scale(40),
-    height: scale(40),
-    alignItems: "flex-start",
-    justifyContent: "center",
+    marginHorizontal: spacingX._15,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    marginTop: verticalScale(10), // Adjust spacing as needed
   },
 
   // Scroll Content

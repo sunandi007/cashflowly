@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useCategories } from "@/hooks/useCategories";
 import { useWallets } from "@/hooks/useWallets";
 import Typo from "@/components/Typo";
+import Header from "@/components/Header";
 import { colors, spacingY, spacingX, radius } from "@/constant/theme";
 import TransactionList from "@/components/TransactionList";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -131,14 +132,7 @@ export default function SearchScreen() {
     return (
         <ScreenWrapper style={styles.container}>
             {/* Header */}
-            <View style={styles.header}>
-                <Typo size={22} fontWeight="700" color={colors.white}>
-                    Search
-                </Typo>
-                {/* <TouchableOpacity style={styles.settingsButton}>
-                    <Ionicons name="settings-outline" size={scale(24)} color={colors.white} />
-                </TouchableOpacity> */}
-            </View>
+            <Header title="Search" style={styles.header} />
 
             {/* Search Input */}
             <View style={styles.searchInputContainer}>
@@ -347,10 +341,7 @@ const styles = StyleSheet.create({
 
     // Header
     header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingTop: verticalScale(10),
+        paddingHorizontal: 0,
         paddingBottom: verticalScale(20),
     },
     settingsButton: {

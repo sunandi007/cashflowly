@@ -5,6 +5,7 @@ import Typo from './Typo';
 import { colors, spacingX, spacingY, radius } from '@/constant/theme';
 import { toTitleCase } from '@/utils/text';
 import { scale, verticalScale } from '@/utils/styling';
+import Header from './Header';
 
 interface BillDetailModalProps {
     bill: any;
@@ -82,15 +83,12 @@ export default function BillDetailModal({ bill, visible, onClose, onEdit, onDele
                     <View style={styles.handleBar} />
 
                     {/* Header Top: Title & Close */}
-                    <View style={styles.headerRow}>
-                        <View style={{ width: 32 }} />
-                        <Typo size={14} fontWeight="700" color={colors.neutral400} style={{ letterSpacing: 1 }}>
-                            BAYAR TAGIHAN
-                        </Typo>
-                        <TouchableOpacity style={styles.closeBtnCircle} onPress={onClose}>
-                            <Ionicons name="close" size={20} color={colors.neutral400} />
-                        </TouchableOpacity>
-                    </View>
+                    <Header
+                        title="Bayar Tagihan"
+                        showClose
+                        onClose={onClose}
+                        style={styles.header}
+                    />
 
                     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
                         {/* Hero Section: Icon & Title */}
@@ -210,16 +208,14 @@ const styles = StyleSheet.create({
         width: 40, height: 4, backgroundColor: colors.neutral700,
         borderRadius: 2, alignSelf: 'center', marginTop: 12, marginBottom: 20
     },
-    headerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20
-    },
-    closeBtnCircle: {
-        width: 32, height: 32, borderRadius: 16,
-        backgroundColor: colors.neutral800,
-        justifyContent: 'center', alignItems: 'center'
+    header: {
+        marginBottom: verticalScale(24),
+        paddingHorizontal: 0,
+        paddingVertical: 0,
+        minHeight: 0,
+        borderBottomWidth: 1,
+        paddingBottom: 6,
+        borderBottomColor: colors.neutral800,
     },
     heroSection: {
         alignItems: 'center',

@@ -19,6 +19,7 @@ import Typo from "./Typo";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/constant/categoryOptions";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale } from "@/utils/styling";
+import Header from "./Header";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -105,15 +106,11 @@ export default function AddCategoryModal({
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-            <Ionicons name="close" size={scale(24)} color={colors.white} />
-          </TouchableOpacity>
-          <Typo size={18} fontWeight="700" color={colors.white}>
-            {title}
-          </Typo>
-          <View style={styles.closeButton} />
-        </View>
+        <Header
+          title={title}
+          showBack
+          style={styles.header}
+        />
 
         <ScrollView
           style={styles.scrollView}
@@ -431,10 +428,11 @@ const styles = StyleSheet.create({
 
   // Save Button
   saveButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: verticalScale(18),
-    borderRadius: radius._15,
-    alignItems: "center",
-    marginTop: verticalScale(12),
+    backgroundColor: colors.accentGreen,
+    borderRadius: 30,
+    height: 47,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 });

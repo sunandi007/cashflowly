@@ -11,10 +11,11 @@ import ScreenWrapper from '@/components/ScreenWrapper';
 import { colors, spacingX, spacingY, radius } from '@/constant/theme';
 import { scale, verticalScale } from '@/utils/styling';
 import Typo from '@/components/Typo';
-import BackButton from '@/components/BackButton';
+import Header from '@/components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useNotification } from '@/hooks/useNotification';
 import { useSnackbar } from '@/hooks/useSnackbar';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function NotificationSettingsScreen() {
     const navigation = useNavigation();
@@ -27,69 +28,71 @@ export default function NotificationSettingsScreen() {
     } = useNotification();
     const snackbar = useSnackbar();
 
+    const { t } = useLanguage();
+
     // Handle enable toggle
     const handleToggleNotification = async (value: boolean) => {
         if (value && !hasPermission) {
             // Need to request permission first
             const granted = await requestPermission();
             if (!granted) {
-                snackbar.error('Permission denied. Please enable in device settings.');
+                snackbar.error(t('notifications.permissionDenied'));
                 return;
             }
         }
 
         await updateSettings({ enabled: value });
-        snackbar.success(value ? 'Daily reminder enabled' : 'Daily reminder disabled');
+        snackbar.success(value ? t('notifications.enabled') : t('notifications.disabled'));
     };
 
     // Handle test notification
     const handleTestNotification = async () => {
         if (!hasPermission) {
-            snackbar.error('Please enable notifications first');
+            snackbar.error(t('notifications.enableFirst'));
             return;
         }
         await sendTestNotification();
-        snackbar.success('Test notification sent!');
+        snackbar.success(t('notifications.testSent'));
     };
 
     return (
         <ScreenWrapper>
             <View style={styles.container}>
                 {/* Header */}
-                <View style={styles.header}>
-                    <BackButton iconSize={24} />
-                    <Typo size={18} fontWeight="700" color={colors.white}>
-                        Notification Settings
-                    </Typo>
-                    <View style={{ width: 40 }} />
-                </View>
+                <Header
+                    title={t('notifications.title')}
+                    showBack
+                    style={styles.header}
+                />
 
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContent}
                 >
-                    {/* Daily Reminder Section */}
-                    <View style={styles.section}>
-                        <View style={styles.sectionHeader}>
-                            <Ionicons name="time" size={20} color={colors.primary} />
-                            <Typo size={14} fontWeight="600" color={colors.white} style={{ marginLeft: 8 }}>
-                                Daily Expense Reminder
+                    {/* Info Card */}
+                    <View style={styles.infoCard}>
+                        <Ionicons name="information-circle" size={24} color={colors.primary} />
+                        <View style={{ flex: 1, marginLeft: 12 }}>
+                            <Typo size={14} fontWeight="600" color={colors.white}>
+                                {t('notifications.simpleReminder')}
+                            </Typo>
+                            <Typo size={12} color={colors.neutral400} style={{ marginTop: 4 }}>
+                                {t('notifications.simpleReminderDesc')}
                             </Typo>
                         </View>
+                    </View>
 
-                        <Typo size={13} color={colors.neutral400} style={styles.sectionDescription}>
-                            Get reminded daily at 7:00 PM to log your expenses
-                        </Typo>
-
+                    {/* Daily Reminder Section */}
+                    <View style={styles.section}>
                         {/* Enable Toggle */}
                         <View style={styles.settingCard}>
                             <View style={styles.settingRow}>
                                 <View style={{ flex: 1 }}>
                                     <Typo size={15} fontWeight="600" color={colors.white}>
-                                        Enable Daily Reminder
+                                        {t('notifications.enableDaily')}
                                     </Typo>
                                     <Typo size={12} color={colors.neutral400} style={{ marginTop: 2 }}>
-                                        Every day at 19:00 (7:00 PM)
+                                        {t('notifications.dailyTime')}
                                     </Typo>
                                 </View>
                                 <Switch
@@ -109,45 +112,19 @@ export default function NotificationSettingsScreen() {
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Typo size={13} fontWeight="600" color={colors.white}>
-                                        📝 Jangan Lupa Catat Pengeluaran!
+                                        {t('notifications.previewTitle')}
                                     </Typo>
                                     <Typo size={12} color={colors.neutral400} style={{ marginTop: 2 }}>
-                                        Sudah catat pengeluaran hari ini?
+                                        {t('notifications.previewBody')}
                                     </Typo>
                                     <Typo size={11} color={colors.neutral500} style={{ marginTop: 4 }}>
-                                        19:00 • Every day
+                                        {t('notifications.previewMeta')}
                                     </Typo>
                                 </View>
                             </View>
                         )}
                     </View>
 
-                    {/* Test Notification */}
-                    {settings.enabled && (
-                        <TouchableOpacity
-                            style={styles.testButton}
-                            onPress={handleTestNotification}
-                            activeOpacity={0.8}
-                        >
-                            <Ionicons name="send" size={18} color={colors.white} />
-                            <Typo size={15} fontWeight="600" color={colors.white} style={{ marginLeft: 8 }}>
-                                Send Test Notification
-                            </Typo>
-                        </TouchableOpacity>
-                    )}
-
-                    {/* Info Card */}
-                    <View style={styles.infoCard}>
-                        <Ionicons name="information-circle" size={24} color={colors.primary} />
-                        <View style={{ flex: 1, marginLeft: 12 }}>
-                            <Typo size={14} fontWeight="600" color={colors.white}>
-                                Simple Daily Reminder
-                            </Typo>
-                            <Typo size={12} color={colors.neutral400} style={{ marginTop: 4 }}>
-                                You'll receive a daily notification at 7:00 PM every day to help you remember to log your expenses. Just toggle it on and you're all set!
-                            </Typo>
-                        </View>
-                    </View>
 
                     {/* Permission Info - Show when not granted */}
                     {!hasPermission && (
@@ -155,14 +132,15 @@ export default function NotificationSettingsScreen() {
                             <Ionicons name="warning" size={24} color={colors.rose} />
                             <View style={{ flex: 1, marginLeft: 12 }}>
                                 <Typo size={14} fontWeight="600" color={colors.white}>
-                                    Notification Permission Required
+                                    {t('notifications.permissionRequired')}
                                 </Typo>
                                 <Typo size={12} color={colors.neutral400} style={{ marginTop: 4 }}>
-                                    Enable notifications to receive daily expense reminders. Toggle the switch above to grant permission.
+                                    {t('notifications.permissionDesc')}
                                 </Typo>
                             </View>
                         </View>
                     )}
+
                 </ScrollView>
             </View>
         </ScreenWrapper>
@@ -174,11 +152,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: spacingX._20,
-        paddingVertical: verticalScale(16),
+        marginBottom: verticalScale(24),
+        paddingHorizontal: 0,
+        paddingVertical: 0,
+        minHeight: 0,
+        marginHorizontal: spacingX._15,
     },
     scrollContent: {
         paddingHorizontal: spacingX._20,

@@ -1,4 +1,5 @@
 import Button from "@/components/Button";
+import Header from "@/components/Header";
 import HomeCard from "@/components/HomeCard";
 import IconComponent from "@/components/Icons";
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -87,43 +88,47 @@ export default function DashboardScreen() {
     <ScreenWrapper>
       <View style={styles.container}>
         {/* Header Section */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            {/* Avatar with online indicator */}
-            <View style={styles.avatarContainer}>
-              <Image
-                source={
-                  profile?.avatar_url
-                    ? { uri: profile.avatar_url }
-                    : require("../../assets/images/defaultAvatar.png")
-                }
-                style={styles.avatar}
-                contentFit="cover"
-                transition={100}
+        {/* Header Section */}
+        <Header
+          style={styles.header}
+          leftComponent={
+            <View style={styles.headerLeft}>
+              {/* Avatar with online indicator */}
+              <View style={styles.avatarContainer}>
+                <Image
+                  source={
+                    profile?.avatar_url
+                      ? { uri: profile.avatar_url }
+                      : require("../../assets/images/defaultAvatar.png")
+                  }
+                  style={styles.avatar}
+                  contentFit="cover"
+                  transition={100}
+                />
+                <View style={styles.onlineIndicator} />
+              </View>
+
+              {/* Greeting */}
+              <View style={styles.greetingContainer}>
+                <Typo size={14} color={colors.neutral400}>
+                  {t(getGreetingKey())},
+                </Typo>
+                <Typo size={18} fontWeight="600" color={colors.white}>
+                  {firstName} 👋
+                </Typo>
+              </View>
+            </View>
+          }
+          rightComponent={
+            <TouchableOpacity style={styles.notificationButton}>
+              <Ionicons
+                name="notifications-outline"
+                size={scale(24)}
+                color={colors.white}
               />
-              <View style={styles.onlineIndicator} />
-            </View>
-
-            {/* Greeting */}
-            <View style={styles.greetingContainer}>
-              <Typo size={14} color={colors.neutral400}>
-                {t(getGreetingKey())},
-              </Typo>
-              <Typo size={18} fontWeight="600" color={colors.white}>
-                {firstName} 👋
-              </Typo>
-            </View>
-          </View>
-
-          {/* Notification Bell */}
-          <TouchableOpacity style={styles.notificationButton}>
-            <Ionicons
-              name="notifications-outline"
-              size={scale(24)}
-              color={colors.white}
-            />
-          </TouchableOpacity>
-        </View>
+            </TouchableOpacity>
+          }
+        />
 
         {/* Balance Card */}
         <View style={styles.cardSection}>
@@ -230,12 +235,11 @@ const styles = StyleSheet.create({
   },
 
   // Header
+  // Header
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     marginTop: verticalScale(8),
     marginBottom: spacingY._20,
+    paddingHorizontal: 0, // Header has internal padding
   },
   headerLeft: {
     flexDirection: "row",
