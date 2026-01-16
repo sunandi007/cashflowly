@@ -176,10 +176,9 @@ export default function BillDetailModal({ bill, visible, onClose, onEdit, onDele
                         </View>
 
                         <TouchableOpacity style={styles.payBtn} activeOpacity={0.8} onPress={() => onClose()}>
-                            <Typo size={16} fontWeight="700" color={colors.background}>
-                                Bayar Rp {formattedAmount.split(',')[0]}
+                            <Typo size={18} fontWeight="700" color={colors.background}>
+                                Bayar
                             </Typo>
-                            <Ionicons name="arrow-forward" size={20} color={colors.background} style={{ marginLeft: 8 }} />
                         </TouchableOpacity>
 
                     </ScrollView>
@@ -305,7 +304,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingVertical: 18,
-        borderRadius: 20
+        paddingVertical: 15,
+        borderRadius: radius._30
     }
 });

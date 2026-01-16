@@ -168,7 +168,7 @@ export default function BillConfirmationModal({
                         <Text style={styles.confirmButtonText}>
                             {isProcessing
                                 ? "Memproses..."
-                                : `Bayar ${formatMoney(numericAmount)}`
+                                : `Bayar`
                             }
                         </Text>
                     </TouchableOpacity>
@@ -302,8 +302,8 @@ const styles = StyleSheet.create({
     // Confirm Button
     confirmButton: {
         backgroundColor: colors.primary,
-        borderRadius: scale(16),
-        paddingVertical: verticalScale(18),
+        borderRadius: radius._30,
+        paddingVertical: verticalScale(15),
         alignItems: 'center',
         justifyContent: 'center',
     },

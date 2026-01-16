@@ -287,6 +287,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: verticalScale(56),
-    borderRadius: radius._20,
+    borderRadius: radius._30,
   }
 });
