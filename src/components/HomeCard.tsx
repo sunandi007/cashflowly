@@ -1,4 +1,4 @@
-import { colors, spacingX, spacingY, radius } from "@/constant/theme";
+import { spacingX, spacingY, radius } from "@/constant/theme";
 import { scale, verticalScale } from "@/utils/styling";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useMemo } from "react";
@@ -10,12 +10,14 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useWallets } from "@/hooks/useWallets";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const HomeCard = () => {
   const { session } = useAuth();
   const userId = session?.user?.id;
   const { formatMoney } = useCurrency(); // Get formatMoney from context
   const { t } = useLanguage();
+  const { colors, isDark } = useTheme(); // Get dynamic colors
 
   // 1. Ambil data WALLET untuk Total Balance
   const { wallets } = useWallets();
@@ -75,16 +77,17 @@ const HomeCard = () => {
     return formatMoney(amount);
   };
 
+  // Dynamic gradient colors based on theme
+  const gradientColors = isDark
+    ? (['#1A3A2E', '#14261F', '#0C1A14'] as const)  // Dark: forest gradient
+    : (['#3a5a77ff', '#3a5a77ff', '#29425aff', '#1b2e3fff'] as const);  // Light: solid dark card
+
   return (
     <LinearGradient
-      colors={[
-        '#1A3A2E',  // Dark forest green (top)
-        '#14261F',  // Medium dark (middle)
-        '#0C1A14',  // Darkest (bottom)
-      ]}
+      colors={gradientColors}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.card}
+      end={{ x: 0, y: 1 }}
+      style={[styles.card, { borderColor: `${colors.primary}40` }]}
     >
       {/* Top Section */}
       <View style={styles.topSection}>
@@ -110,8 +113,8 @@ const HomeCard = () => {
       {/* Income & Expense Pills */}
       <View style={styles.pillsContainer}>
         {/* Income Pill */}
-        <View style={styles.pill}>
-          <View style={styles.pillIcon}>
+        <View style={[styles.pill, { backgroundColor: colors.neutral700 }]}>
+          <View style={[styles.pillIcon, { backgroundColor: `${colors.primary}20` }]}>
             <Ionicons
               name="arrow-down"
               size={scale(16)}
@@ -127,8 +130,8 @@ const HomeCard = () => {
         </View>
 
         {/* Expense Pill */}
-        <View style={styles.pill}>
-          <View style={[styles.pillIcon, styles.expenseIcon]}>
+        <View style={[styles.pill, { backgroundColor: colors.neutral700 }]}>
+          <View style={[styles.pillIcon, { backgroundColor: `${colors.rose}20` }]}>
             <Ionicons
               name="arrow-up"
               size={scale(16)}
@@ -137,7 +140,7 @@ const HomeCard = () => {
           </View>
           <View>
             <Typo size={12} color={colors.neutral400}>{t('dashboard.expense')}</Typo>
-            <Typo size={14} fontWeight="600" color={colors.white}>
+            <Typo size={14} fontWeight="600" color={colors.rose}>
               -{formatCompact(expense)}
             </Typo>
           </View>
@@ -155,9 +158,7 @@ const styles = StyleSheet.create({
     padding: spacingX._20,
     paddingVertical: verticalScale(24),
     borderWidth: 1,
-    borderColor: `${colors.primary}40`,
     // Shadow untuk depth
-    shadowColor: colors.primary,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -184,7 +185,6 @@ const styles = StyleSheet.create({
     width: scale(36),
     height: scale(36),
     borderRadius: scale(18),
-    backgroundColor: colors.neutral700,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -197,7 +197,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: scale(10),
-    backgroundColor: colors.neutral700,
     paddingVertical: verticalScale(12),
     paddingHorizontal: spacingX._12,
     borderRadius: radius._30,
@@ -206,11 +205,10 @@ const styles = StyleSheet.create({
     width: scale(32),
     height: scale(32),
     borderRadius: scale(16),
-    backgroundColor: `${colors.primary}20`,
     alignItems: "center",
     justifyContent: "center",
   },
   expenseIcon: {
-    backgroundColor: `${colors.rose}20`,
+    // Will use inline style
   },
 });

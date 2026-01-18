@@ -2,7 +2,7 @@ import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-import { colors, spacingX, spacingY, radius } from "@/constant/theme";
+import { spacingX, spacingY, radius } from "@/constant/theme";
 import { scale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/Typo";
 import type { TransactionItemProps } from "@/types/model";
@@ -10,6 +10,7 @@ import { toTitleCase } from "@/utils/text";
 import IconComponent from "./Icons";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // Format date to display like "Today, 09:41 AM" or "Oct 24, 08:15 AM"
 const formatTransactionDate = (dateValue: any, t: (key: string) => string): string => {
@@ -81,8 +82,21 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
 }) => {
   const { formatMoney } = useCurrency();
   const { t } = useLanguage();
+  const { colors, isDark } = useTheme();
   const isTransfer = item?.is_transfer === true;
   const isMergedTransfer = item?.type === "transfer";
+
+  // Dynamic gradient colors based on theme
+  const gradientColors = isDark
+    ? (['#1A3A2E', '#14261F', '#0C1A14'] as const)  // Dark mode: forest green gradient
+    : ([colors.card, colors.card, colors.card] as const);  // Light mode: solid white/card color
+
+  // Dynamic border style for light mode
+  const cardBorderStyle = {
+    borderWidth: 1,
+    borderRadius: radius._20,
+    borderColor: isDark ? 'transparent' : colors.neutral600,  // Border only in light mode
+  };
 
   // 🔁 CASE: GABUNGAN TRANSFER (dari hasil mergeTransfers)
   if (isMergedTransfer) {
@@ -96,14 +110,10 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
           activeOpacity={0.7}
         >
           <LinearGradient
-            colors={[
-              '#1A3A2E',  // Dark forest green (top)
-              '#14261F',  // Medium dark (middle)
-              '#0C1A14',  // Darkest (bottom)
-            ]}
+            colors={gradientColors}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.card}
+            style={[styles.card, cardBorderStyle]}
           >
             {/* 🔄 Icon Transfer */}
             <View style={[styles.icon, { backgroundColor: colors.neutral700 }]}>
@@ -119,7 +129,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
               <Typo
                 size={16}
                 fontWeight="600"
-                color={colors.white}
+                color={isDark ? colors.white : colors.text}
                 textProps={{ numberOfLines: 1 }}
               >
                 {t('transaction.transfer')}
@@ -158,14 +168,10 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
         activeOpacity={0.7}
       >
         <LinearGradient
-          colors={[
-            '#1A3A2E',  // Dark forest green (top)
-            '#14261F',  // Medium dark (middle)
-            '#0C1A14',  // Darkest (bottom)
-          ]}
+          colors={gradientColors}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.card}
+          style={[styles.card, cardBorderStyle]}
         >
           {/* Icon */}
           <View
@@ -177,7 +183,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             <IconComponent
               item={item?.categories as any}
               size={verticalScale(22)}
-              color={colors.white}
+              color={isDark ? colors.white : colors.text}
             />
           </View>
 
@@ -186,7 +192,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
             <Typo
               size={16}
               fontWeight="600"
-              color={colors.white}
+              color={isDark ? colors.white : colors.text}
               textProps={{ numberOfLines: 1 }}
             >
               {item?.note || toTitleCase(item?.categories?.name as any) || t('transaction.defaultLabel')}
@@ -226,8 +232,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(12),
     gap: spacingX._15,
     borderRadius: radius._20,
-    // borderWidth: 1,
-    // borderColor: colors.neutral700,
   },
   icon: {
     width: scale(48),

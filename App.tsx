@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import RootNavigator from "@/navigation/RootNavigation";
-import { colors } from "@/constant/theme";
 import { AlertProvider } from "@/contexts/AlertContext";
 import { SnackbarProvider } from "@/contexts/SnackbarContext";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
@@ -12,6 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import * as Linking from 'expo-linking';
 import '@/i18n'; // Initialize i18n
+import { View } from "react-native";
 
 const queryClient = new QueryClient();
 

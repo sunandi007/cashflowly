@@ -96,35 +96,35 @@ export const themes = {
   light: {
     mode: 'light',
 
-    // Background & Surfaces - Soft & Clean
-    background: "#F8F9FA",        // Very light gray background
-    backgroundAlt: "#FFFFFF",     // Pure white for cards
+    // Background & Surfaces - Match design reference
+    background: "#F8F9FA",        // Light gray background
+    backgroundAlt: "#FFFFFF",     // Pure white
     card: "#FFFFFF",              // White cards with shadow
-    input: "#F3F4F6",             // Light gray for inputs
+    input: "#F5F5F5",             // Light gray for inputs
 
-    // Text - Good contrast
-    text: "#1F2937",              // Dark gray for primary text
+    // Text - Strong contrast on light background
+    text: "#1F2937",              // Dark gray/black for primary text
     textLight: "#6B7280",         // Medium gray for secondary
     textLighter: "#9CA3AF",       // Light gray for tertiary
 
     // Borders & Dividers
-    border: "#E5E7EB",            // Very light border
+    border: "#E5E7EB",            // Very light gray border
 
-    // Primary - Keep the green vibrant
-    primary: "#23C16B",
-    primaryLight: "#35E086",
-    primaryDark: "#1A8B4D",
-    accentGreen: "#23C16B",
+    // Primary - Neon Lime/Chartreuse (from design)
+    primary: "#ABE7B2",           // Neon lime - main accent
+    primaryLight: "#bcdfc0ff",      // Lighter neon lime
+    primaryDark: "#80a888ff",       // Darker lime
+    accentGreen: "#ABE7B2",       // Neon accent
 
     // Semantic Colors
     rose: "#FF4D4D",
     roseLight: "#FB7185",
-    green: "#23C16B",
+    green: "#ABE7B2",             // Use neon lime for green
 
     // Neutral Scale (Light Mode Specific)
     neutral900: "#F8F9FA",        // Lightest (background)
     neutral800: "#FFFFFF",        // White (cards)
-    neutral700: "#F3F4F6",        // Light gray (inputs/secondary bg)
+    neutral700: "#2D3748",        // Dark card (for contrast sections like balance card)
     neutral600: "#E5E7EB",        // Borders
     neutral500: "#D1D5DB",        // Disabled states
     neutral400: "#9CA3AF",        // Tertiary text
@@ -138,15 +138,15 @@ export const themes = {
     white: "#FFFFFF",
     black: "#000000",
 
-    // Special Cards & Components (Soft colors)
-    cardSecondary: "#F0FDF4",     // Very light green tint
-    cardTertiary: "#EFF6FF",      // Very light blue tint
+    // Special Cards & Components
+    cardSecondary: "#2D3748",     // Dark card for contrast (like balance card)
+    cardTertiary: "#F5F5F5",      // Very light gray card
 
-    // Shadows & Overlays
-    shadow: "rgba(0, 0, 0, 0.05)",
-    shadowMedium: "rgba(0, 0, 0, 0.1)",
-    shadowStrong: "rgba(0, 0, 0, 0.15)",
-    overlay: "rgba(0, 0, 0, 0.3)",
+    // Shadows & Overlays (subtle for light mode)
+    shadow: "rgba(0, 0, 0, 0.08)",
+    shadowMedium: "rgba(0, 0, 0, 0.12)",
+    shadowStrong: "rgba(0, 0, 0, 0.16)",
+    overlay: "rgba(0, 0, 0, 0.4)",
   },
 };
 

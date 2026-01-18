@@ -4,10 +4,11 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Typo from './Typo';
-import { colors, spacingX, spacingY, radius } from '@/constant/theme';
+import { spacingX, spacingY, radius } from '@/constant/theme';
 import { toTitleCase } from '@/utils/text';
 import { scale, verticalScale } from '@/utils/styling';
 import { format } from 'date-fns';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface BillItemProps {
     item: any;
@@ -28,6 +29,7 @@ export default function UpcomingBillItem({
     formatCurrency,
     onDetailPress
 }: BillItemProps) {
+    const { colors, isDark } = useTheme(); // Get dynamic colors
 
     const categoryName = item.categories?.name || item.note || "Bill";
     const iconName = item.categories?.icon || "receipt-outline";
@@ -63,33 +65,40 @@ export default function UpcomingBillItem({
 
     const dateDisplay = formatDueDate(dueDate);
 
+    // Dynamic border style for light mode (same as TransactionItem)
+    const cardBorderStyle = {
+        borderWidth: 1,
+        borderRadius: scale(16),
+        borderColor: isDark ? 'transparent' : colors.neutral600,  // Border only in light mode
+    };
+
     return (
         <TouchableOpacity
-            style={styles.billItem}
+            style={[styles.billItem, cardBorderStyle, { backgroundColor: colors.neutral800 }]}
             activeOpacity={0.7}
             onPress={() => onDetailPress(item)}
         >
             {/* Left: Icon */}
             <View style={[styles.iconWrapper, { backgroundColor: item.categories?.bgColor || colors.neutral700 }]}>
-                <Ionicons name={iconName as any} size={scale(22)} color={colors.white} />
+                <Ionicons name={iconName as any} size={scale(22)} color={isDark ? colors.white : colors.text} />
             </View>
 
             {/* Middle: Info */}
             <View style={styles.infoSection}>
-                <Text style={styles.billName}>{toTitleCase(categoryName)}</Text>
-                <Text style={styles.billSubtitle}>
+                <Text style={[styles.billName, { color: isDark ? colors.white : colors.text }]}>{toTitleCase(categoryName)}</Text>
+                <Text style={[styles.billSubtitle, { color: colors.neutral400 }]}>
                     {dateDisplay} • {formatCurrency(item.amount)}
                 </Text>
             </View>
 
             {/* Right: Pay Button */}
             <TouchableOpacity
-                style={styles.payButton}
+                style={[styles.payButton, { borderColor: colors.primary }]}
                 onPress={() => onPayPress(item)}
                 disabled={isProcessing}
                 activeOpacity={0.7}
             >
-                <Text style={styles.payButtonText}>Pay</Text>
+                <Text style={[styles.payButtonText, { color: colors.primary }]}>Pay</Text>
             </TouchableOpacity>
         </TouchableOpacity>
     );
@@ -99,7 +108,6 @@ const styles = StyleSheet.create({
     billItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.neutral800,
         borderRadius: scale(16),
         padding: scale(16),
         marginBottom: verticalScale(12),
@@ -119,16 +127,13 @@ const styles = StyleSheet.create({
     billName: {
         fontSize: scale(16),
         fontWeight: '600',
-        color: colors.white,
     },
     billSubtitle: {
         fontSize: scale(13),
-        color: colors.neutral400,
     },
     payButton: {
         backgroundColor: 'transparent',
         borderWidth: 2,
-        borderColor: colors.primary,
         paddingHorizontal: scale(24),
         paddingVertical: verticalScale(10),
         borderRadius: scale(20),
@@ -136,6 +141,5 @@ const styles = StyleSheet.create({
     payButtonText: {
         fontSize: scale(14),
         fontWeight: '600',
-        color: colors.primary,
     },
 });

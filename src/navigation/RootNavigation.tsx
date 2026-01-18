@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "@/constant/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 
 import AuthScreen from "@/screens/AuthScreen";
 import WelcomeScreen from "@/screens/WelcomeScreen";
@@ -79,23 +79,34 @@ export default function RootNavigation() {
 }
 
 function MainTabs() {
+  const { colors } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: colors.neutral900,
-          borderTopColor: colors.neutral800,
-          borderTopWidth: 1,
+          position: 'absolute',
+          bottom: 5,
+          left: 20,
+          right: 20,
+          backgroundColor: colors.neutral700,
+          borderTopColor: 'transparent',
+          borderTopWidth: 0,
           height: 70,
           paddingBottom: 10,
-          paddingTop: 10,
-          elevation: 0,
+          paddingTop: 15,
+          elevation: 8,
           shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.2,
+          shadowRadius: 10,
+          borderRadius: 25,
+          marginHorizontal: 20,
+        },
+        sceneContainerStyle: {
+          backgroundColor: colors.background,
         },
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap = "home-outline";
@@ -135,9 +146,11 @@ function MainTabs() {
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
                   elevation: 8,
+                  borderWidth: 3,
+                  borderColor: colors.neutral800,
                 }}
               >
-                <Ionicons name={iconName} size={32} color={colors.white} />
+                <Ionicons name={iconName} size={32} color={colors.neutral900} />
               </View>
             );
           }

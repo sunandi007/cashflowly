@@ -335,7 +335,7 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.neutral900,
+        backgroundColor: colors.neutral50,
         paddingHorizontal: spacingX._20,
     },
 

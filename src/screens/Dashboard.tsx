@@ -50,7 +50,7 @@ export default function DashboardScreen() {
   const { data: allTransactions = [], isLoading } = useTransactions(userId);
   const { data: upcomingBills = [], isLoading: billsLoading } = useUpcomingBills();
   const { formatMoney } = useCurrency();
-  const { mode: themeMode, setMode: setThemeMode, isDark } = useTheme();
+  const { colors, mode: themeMode, setMode: setThemeMode, isDark } = useTheme();
 
   // Theme toggle handler - Toggle between dark and light only
   const handleToggleTheme = () => {
@@ -173,31 +173,6 @@ export default function DashboardScreen() {
           <HomeCard />
         </View>
 
-        {/* Quick Actions */}
-        {/* <View style={styles.quickActionsContainer}>
-          {QUICK_ACTIONS.map((action) => (
-            <TouchableOpacity
-              key={action.id}
-              style={styles.quickActionItem}
-              onPress={() => handleQuickAction(action.id)}
-              activeOpacity={0.7}
-            >
-              <View style={[
-                styles.quickActionIcon,
-                action.id === "more" && styles.quickActionIconAlt
-              ]}>
-                <Ionicons
-                  name={action.icon as any}
-                  size={scale(22)}
-                  color={action.id === "more" ? action.color : colors.primary}
-                />
-              </View>
-              <Typo size={12} color={colors.neutral400} style={styles.quickActionLabel}>
-                {action.label}
-              </Typo>
-            </TouchableOpacity>
-          ))}
-        </View> */}
 
         {/* Recent Transactions */}
         <FlatList
@@ -206,7 +181,7 @@ export default function DashboardScreen() {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <View style={styles.sectionHeader}>
-              <Typo size={18} fontWeight="600" color={colors.white}>
+              <Typo size={18} fontWeight="600" color={colors.textLighter}>
                 {t('dashboard.recentTransactions')}
               </Typo>
               <TouchableOpacity
@@ -249,31 +224,52 @@ export default function DashboardScreen() {
           ListFooterComponent={
             upcomingBills.length > 0 ? (
               <View style={styles.upcomingBillsSection}>
-                <View style={styles.sectionHeader}>
-                  <Typo size={18} fontWeight="600" color={colors.white}>
-                    {t('dashboard.upcomingBills')}
-                  </Typo>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("BillsScreen" as never)}
-                  >
-                    <Typo size={14} fontWeight="500" color={colors.primary}>
-                      {t('dashboard.viewAll')}
-                    </Typo>
-                  </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                  style={[
+                    styles.billsSummaryCard,
+                    {
+                      backgroundColor: colors.neutral700,
+                      borderWidth: 1,
+                      borderColor: isDark ? 'transparent' : colors.neutral600,
+                    }
+                  ]}
+                  activeOpacity={0.7}
+                  onPress={() => navigation.navigate("BillsScreen" as never)}
+                >
+                  {/* Header */}
+                  <View style={styles.billsSummaryHeader}>
+                    <View style={[styles.billsIcon, { backgroundColor: `${colors.primary}20` }]}>
+                      <Ionicons
+                        name="receipt-outline"
+                        size={scale(24)}
+                        color={colors.primary}
+                      />
+                    </View>
+                    <View style={styles.billsSummaryInfo}>
+                      <Typo size={16} fontWeight="600" color={colors.white}>
+                        {t('dashboard.upcomingBills')}
+                      </Typo>
+                      <Typo size={13} color={colors.neutral400}>
+                        {upcomingBills.length} {upcomingBills.length === 1 ? 'bill' : 'bills'} pending
+                      </Typo>
+                    </View>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={scale(20)}
+                      color={colors.neutral400}
+                    />
+                  </View>
 
-                {upcomingBills.slice(0, 3).map((bill: any, index: number) => (
-                  <UpcomingBillItem
-                    key={bill.id}
-                    item={bill}
-                    onPayPress={handleBillPayPress}
-                    onDeletePress={handleBillDeletePress}
-                    onEditPress={handleBillEditPress}
-                    onDetailPress={handleBillDetailPress}
-                    isProcessing={false}
-                    formatCurrency={formatMoney}
-                  />
-                ))}
+                  {/* Total Amount */}
+                  <View style={styles.billsTotalSection}>
+                    <Typo size={13} color={colors.neutral400}>
+                      Total Amount
+                    </Typo>
+                    <Typo size={20} fontWeight="700" color={colors.primary}>
+                      {formatMoney(upcomingBills.reduce((sum, bill) => sum + Number(bill.amount || 0), 0))}
+                    </Typo>
+                  </View>
+                </TouchableOpacity>
               </View>
             ) : null
           }
@@ -356,6 +352,35 @@ const styles = StyleSheet.create({
   upcomingBillsSection: {
     marginBottom: spacingY._25,
     marginTop: spacingY._20,
+  },
+
+  // Bills Summary Card
+  billsSummaryCard: {
+    borderRadius: scale(20),
+    padding: scale(20),
+    gap: verticalScale(16),
+  },
+  billsSummaryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: scale(12),
+  },
+  billsIcon: {
+    width: scale(48),
+    height: scale(48),
+    borderRadius: scale(24),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  billsSummaryInfo: {
+    flex: 1,
+    gap: verticalScale(4),
+  },
+  billsTotalSection: {
+    paddingTop: verticalScale(12),
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    gap: verticalScale(4),
   },
 
   // Quick Actions
