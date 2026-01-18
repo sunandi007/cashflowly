@@ -321,7 +321,7 @@ export default function SettingsScreen() {
                             />
 
                             {/* Biometric Authentication */}
-                            <View style={styles.settingItem}>
+                            {/* <View style={styles.settingItem}>
                                 <View style={styles.settingLeft}>
                                     <View style={[styles.iconWrapper, { backgroundColor: colors.primary + '30' }]}>
                                         <Ionicons name="finger-print" size={20} color={colors.white} />
@@ -340,7 +340,7 @@ export default function SettingsScreen() {
                                         thumbColor={biometricEnabled ? colors.primary : colors.neutral400}
                                     />
                                 </View>
-                            </View>
+                            </View> */}
                         </View>
                     </View>
 

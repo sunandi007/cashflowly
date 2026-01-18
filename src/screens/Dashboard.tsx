@@ -4,11 +4,14 @@ import HomeCard from "@/components/HomeCard";
 import IconComponent from "@/components/Icons";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import TransactionList from "@/components/TransactionList";
+import UpcomingBillItem from "@/components/UpcomingBillItem";
 import Typo from "@/components/Typo";
 import { colors, spacingX, spacingY, radius } from "@/constant/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useUpcomingBills } from "@/hooks/useUpcomingBills";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { scale, verticalScale } from "@/utils/styling";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
@@ -16,6 +19,7 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // Quick Action Button Data
 const QUICK_ACTIONS = [
@@ -44,6 +48,14 @@ export default function DashboardScreen() {
   const [editItem, setEditItem] = useState<any | null>(null);
 
   const { data: allTransactions = [], isLoading } = useTransactions(userId);
+  const { data: upcomingBills = [], isLoading: billsLoading } = useUpcomingBills();
+  const { formatMoney } = useCurrency();
+  const { mode: themeMode, setMode: setThemeMode, isDark } = useTheme();
+
+  // Theme toggle handler - Toggle between dark and light only
+  const handleToggleTheme = () => {
+    setThemeMode(isDark ? 'light' : 'dark');
+  };
 
   const handleCloseModal = () => {
     setEditItem(null);
@@ -77,6 +89,28 @@ export default function DashboardScreen() {
     if (actionId === "more") {
       navigation.navigate("SearchScreen" as never);
     }
+  };
+
+  const handleBillPayPress = (item: any) => {
+    // Navigate to Bills screen for payment
+    navigation.navigate("BillsScreen" as never);
+  };
+
+  const handleBillDeletePress = (item: any) => {
+    // Navigate to Bills screen for deletion
+    navigation.navigate("BillsScreen" as never);
+  };
+
+  const handleBillEditPress = (item: any) => {
+    // Navigate to edit transaction
+    navigation.navigate("TransactionScreen", {
+      initialData: item,
+    } as never);
+  };
+
+  const handleBillDetailPress = (item: any) => {
+    // Navigate to Bills screen for details
+    navigation.navigate("BillsScreen" as never);
   };
 
   // Get first name from full name
@@ -120,9 +154,13 @@ export default function DashboardScreen() {
             </View>
           }
           rightComponent={
-            <TouchableOpacity style={styles.notificationButton}>
+            <TouchableOpacity
+              style={styles.notificationButton}
+              onPress={handleToggleTheme}
+              activeOpacity={0.7}
+            >
               <Ionicons
-                name="notifications-outline"
+                name={isDark ? 'sunny-outline' : 'moon-outline'}
                 size={scale(24)}
                 color={colors.white}
               />
@@ -208,6 +246,37 @@ export default function DashboardScreen() {
               </Typo>
             </View>
           }
+          ListFooterComponent={
+            upcomingBills.length > 0 ? (
+              <View style={styles.upcomingBillsSection}>
+                <View style={styles.sectionHeader}>
+                  <Typo size={18} fontWeight="600" color={colors.white}>
+                    {t('dashboard.upcomingBills')}
+                  </Typo>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("BillsScreen" as never)}
+                  >
+                    <Typo size={14} fontWeight="500" color={colors.primary}>
+                      {t('dashboard.viewAll')}
+                    </Typo>
+                  </TouchableOpacity>
+                </View>
+
+                {upcomingBills.slice(0, 3).map((bill: any, index: number) => (
+                  <UpcomingBillItem
+                    key={bill.id}
+                    item={bill}
+                    onPayPress={handleBillPayPress}
+                    onDeletePress={handleBillDeletePress}
+                    onEditPress={handleBillEditPress}
+                    onDetailPress={handleBillDetailPress}
+                    isProcessing={false}
+                    formatCurrency={formatMoney}
+                  />
+                ))}
+              </View>
+            ) : null
+          }
           contentContainerStyle={styles.scrollViewStyle}
         />
 
@@ -281,6 +350,12 @@ const styles = StyleSheet.create({
   // Card Section
   cardSection: {
     marginBottom: spacingY._25,
+  },
+
+  // Upcoming Bills Section
+  upcomingBillsSection: {
+    marginBottom: spacingY._25,
+    marginTop: spacingY._20,
   },
 
   // Quick Actions

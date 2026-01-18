@@ -113,6 +113,7 @@
         "income": "Pemasukan",
         "expense": "Pengeluaran",
         "recentTransactions": "Transaksi Terbaru",
+        "upcomingBills": "Tagihan Mendatang",
         "viewAll": "Lihat Semua",
         "noTransactions": "Belum ada transaksi",
         "tapToAdd": "Ketuk + untuk menambah transaksi pertama Anda"
