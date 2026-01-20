@@ -172,6 +172,7 @@ export default function BillsScreen() {
       {/* Header */}
       <Header
         title={t('bills.title')}
+        showBack
         style={styles.header}
       />
 
@@ -267,7 +268,7 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    paddingHorizontal: 0,
+    paddingHorizontal: scale(15),
     paddingTop: verticalScale(20),
     paddingBottom: verticalScale(20),
   },

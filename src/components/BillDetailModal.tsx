@@ -75,6 +75,36 @@ export default function BillDetailModal({ bill, visible, onClose, onEdit, onDele
     const amount = Number(bill.amount) || 0;
     const formattedAmount = amount.toLocaleString('id-ID'); // Format lokal
 
+    // Format tanggal jatuh tempo berikutnya
+    const nextDueDate = bill.nextDueDate || bill.date;
+    const formattedDueDate = new Date(nextDueDate).toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    // Hitung hari tersisa (tanpa memperhitungkan jam, hanya tanggal)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset ke tengah malam
+
+    const dueDate = new Date(nextDueDate);
+    dueDate.setHours(0, 0, 0, 0); // Reset ke tengah malam
+
+    const daysUntilDue = Math.round((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    const getDaysText = () => {
+        if (daysUntilDue < 0) {
+            const daysLate = Math.abs(daysUntilDue);
+            if (daysLate === 1) return 'TERLAMBAT 1 HARI';
+            return `TERLAMBAT ${daysLate} HARI`;
+        }
+        if (daysUntilDue === 0) return 'Jatuh Tempo Hari Ini';
+        if (daysUntilDue === 1) return 'Jatuh Tempo Besok';
+        if (daysUntilDue <= 3) return `Jatuh Tempo ${daysUntilDue} Hari Lagi`;
+        return `${daysUntilDue} hari lagi`;
+    };
+
     return (
         <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
             <View style={styles.overlay}>
@@ -142,6 +172,40 @@ export default function BillDetailModal({ bill, visible, onClose, onEdit, onDele
                                             {progress.sub}
                                         </Typo>
                                     ) : null}
+                                </View>
+                            </View>
+
+                            <View style={styles.divider} />
+
+                            {/* Next Due Date Row */}
+                            <View style={styles.detailRow}>
+                                <View style={styles.detailLeft}>
+                                    <View style={styles.smallIconBox}>
+                                        <Ionicons name="time-outline" size={16} color={colors.neutral400} />
+                                    </View>
+                                    <Typo size={14} color={colors.neutral200} fontWeight="500">Jatuh Tempo</Typo>
+                                </View>
+                                <View style={{ alignItems: 'flex-end', maxWidth: '60%' }}>
+                                    <Typo size={14} fontWeight="600" color={colors.white}>
+                                        {formattedDueDate}
+                                    </Typo>
+                                    <View style={[
+                                        styles.dueBadge,
+                                        daysUntilDue <= 3 && daysUntilDue >= 0 ? styles.dueBadgeUrgent : {},
+                                        daysUntilDue < 0 ? styles.dueBadgeOverdue : {}
+                                    ]}>
+                                        <Typo
+                                            size={11}
+                                            color={
+                                                daysUntilDue < 0 ? colors.rose :
+                                                    daysUntilDue <= 3 ? colors.primary :
+                                                        colors.neutral400
+                                            }
+                                            fontWeight="600"
+                                        >
+                                            {getDaysText()}
+                                        </Typo>
+                                    </View>
                                 </View>
                             </View>
                         </View>
@@ -306,5 +370,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 15,
         borderRadius: radius._30
+    },
+    dueBadge: {
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 6,
+        marginTop: 4
+    },
+    dueBadgeUrgent: {
+        backgroundColor: 'rgba(5, 199, 126, 0.15)',
+    },
+    dueBadgeOverdue: {
+        backgroundColor: 'rgba(244, 63, 94, 0.15)',
     }
 });
