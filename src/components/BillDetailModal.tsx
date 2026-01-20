@@ -33,13 +33,12 @@ export default function BillDetailModal({ bill, visible, onClose, onEdit, onDele
 
     const getProgressText = () => {
         const paidCount = Number(bill.transaction_count) || 0;
-        const nextPaymentIndex = paidCount + 1;
 
         if (bill.end_condition === 'never') {
             return {
                 label: 'Status',
                 value: 'Berulang',
-                sub: `Pembayaran ke-${nextPaymentIndex}`,
+                sub: `Pembayaran ke-${paidCount}`,
                 total: null
             };
         }
@@ -50,8 +49,8 @@ export default function BillDetailModal({ bill, visible, onClose, onEdit, onDele
 
             return {
                 label: 'Progres',
-                value: `${nextPaymentIndex} dari ${totalTarget}`,
-                sub: `Sisa ${remaining} bulan`, // Asumsi frekuensi bulanan untuk text
+                value: `${paidCount} dari ${totalTarget}`,
+                sub: `Sisa ${remaining} bulan`,
                 total: totalTarget
             };
         }
@@ -75,8 +74,7 @@ export default function BillDetailModal({ bill, visible, onClose, onEdit, onDele
     const amount = Number(bill.amount) || 0;
     const formattedAmount = amount.toLocaleString('id-ID'); // Format lokal
 
-    // Format tanggal jatuh tempo berikutnya
-    const nextDueDate = bill.nextDueDate || bill.date;
+    const nextDueDate = bill.next_due_date || bill.date;
     const formattedDueDate = new Date(nextDueDate).toLocaleDateString('id-ID', {
         weekday: 'long',
         day: 'numeric',

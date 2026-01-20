@@ -137,13 +137,23 @@ export default function TransactionScreen() {
       setCategoryId(initialData.category_id);
       setDate(new Date(initialData.date));
 
-      // Inisialisasi Tagihan Berulang
-      setIsRecurring(initialData.is_recurring || false);
-      setRecurrenceRule(initialData.recurrence_rule || "none");
-      setEndCondition(initialData.end_condition || "never");
-      setEndValue(initialData.end_value || "");
+      // ===================================================================
+      // Initialize Recurring Bill Settings (Handle snake_case from DB)
+      // ===================================================================
+      // Check directly for 'is_recurring' key from database
+      const isRec = initialData.is_recurring === true;
+      setIsRecurring(isRec);
 
-      // Inisialisasi Wallet/Transfer
+      if (isRec) {
+        // Mapping snake_case (DB) to state
+        setRecurrenceRule(initialData.recurrence_rule || "monthly");
+        setEndCondition(initialData.end_condition || "never");
+        setEndValue(initialData.end_value ? String(initialData.end_value) : "");
+      }
+
+      // ===================================================================
+      // Initialize Wallet/Transfer Settings
+      // ===================================================================
       if (initialData.is_transfer) {
         // ... (Logic find wallets untuk Transfer dipertahankan) ...
         const fromWallet =
@@ -160,15 +170,9 @@ export default function TransactionScreen() {
         setCategoryId(initialData.category_id);
       }
 
-      // Cek langsung ke key database 'is_recurring'
-      const isRec = initialData.is_recurring === true;
-      setIsRecurring(isRec);
-
-      if (isRec) {
-        // Mapping snake_case (DB) ke state
-        setRecurrenceRule(initialData.recurrence_rule || "monthly");
-        setEndCondition(initialData.end_condition || "never");
-        setEndValue(initialData.end_value ? String(initialData.end_value) : "");
+      // Initialize tags if present
+      if (initialData.tag_ids && Array.isArray(initialData.tag_ids)) {
+        setSelectedTagIds(initialData.tag_ids);
       }
     } else {
       // MODE CREATE (Reset Penuh)
@@ -193,18 +197,38 @@ export default function TransactionScreen() {
     if (selectedDate) setDate(selectedDate);
   };
 
-  const calculateNextDate = (currentDate: Date, rule: string) => {
+  /**
+   * Calculate the next due date for a recurring transaction
+   * @param currentDate - The base date to calculate from
+   * @param rule - The recurrence frequency ('daily', 'weekly', 'monthly', 'yearly')
+   * @returns The next due date as a Date object
+   */
+  const calculateNextDate = (currentDate: Date, rule: string): Date => {
     const nextDate = new Date(currentDate);
-    // Reset jam ke 00:00 agar murni tanggal
+    // Reset to midnight (00:00:00) for consistent date-only comparison
     nextDate.setHours(0, 0, 0, 0);
-    if (rule === 'weekly') {
-      nextDate.setDate(nextDate.getDate() + 7);
-    } else if (rule === 'monthly') {
-      nextDate.setMonth(nextDate.getMonth() + 1);
-    } else if (rule === 'yearly') {
-      nextDate.setFullYear(nextDate.getFullYear() + 1);
-    } else if (rule === 'daily') {
-      nextDate.setDate(nextDate.getDate() + 1);
+
+    switch (rule) {
+      case 'daily':
+        nextDate.setDate(nextDate.getDate() + 1);
+        break;
+      case 'weekly':
+        nextDate.setDate(nextDate.getDate() + 7);
+        break;
+      case 'monthly':
+        // Handle month-end edge cases (e.g., Jan 31 -> Feb 28/29)
+        const currentDay = nextDate.getDate();
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        // If the day changed due to month-end overflow, set to last day of month
+        if (nextDate.getDate() !== currentDay) {
+          nextDate.setDate(0); // Set to last day of previous month
+        }
+        break;
+      case 'yearly':
+        nextDate.setFullYear(nextDate.getFullYear() + 1);
+        break;
+      default:
+        console.warn(`Unknown recurrence rule: ${rule}`);
     }
 
     return nextDate;
@@ -223,50 +247,88 @@ export default function TransactionScreen() {
     let recurringPayload = {};
 
     if (isRecurring) {
-      let nextDueDateValue = null;
+      let nextDueDateValue: string | null = null;
       let txCount = 0;
 
       if (!isEditing) {
-        // 🔥 KASUS BUAT BARU (CREATE):
-        // 1. Transaksi Hari Ini (date) -> Tercatat di History
-        // 2. Tagihan Berikutnya (next_due_date) -> Harus BULAN DEPAN (atau sesuai frekuensi)
-        const nextDate = calculateNextDate(date, recurrenceRule);
+        // 🔥 CREATION MODE - New Recurring Bill
+        // ===================================================================
+        // CRITICAL LOGIC:
+        // 1. `date` = TODAY (currentDate) -> Saved as FIRST PAYMENT in History
+        // 2. `next_due_date` = FUTURE (calculated) -> Scheduled for NEXT occurrence
+        // 3. `transaction_count` = 1 -> First payment is counted as paid
+        // ===================================================================
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize to midnight
+
+        // Calculate the NEXT due date (e.g., if today is Jan 20 and monthly -> Feb 20)
+        const nextDate = calculateNextDate(today, recurrenceRule);
         nextDueDateValue = nextDate.toISOString();
 
-        // 3. Count = 1 (Karena transaksi hari ini dianggap pembayaran pertama)
+        // Start count at 1 (first payment is being made today)
         txCount = 1;
-      } else {
-        // 🔥 KASUS EDIT:
-        // Gunakan data lama dari DB agar jadwal tidak berantakan, 
-        // kecuali jika user mengubah tanggal transaksi secara manual.
-        nextDueDateValue = initialData?.next_due_date;
-        txCount = initialData?.transaction_count || 0;
 
-        // Fallback: Jika kolom next_due_date di DB masih kosong (karena update kolom baru)
-        if (!nextDueDateValue) {
+        console.log('📅 [CREATE RECURRING]', {
+          today: today.toISOString(),
+          frequency: recurrenceRule,
+          nextDueDate: nextDueDateValue,
+          count: txCount
+        });
+
+      } else {
+        // 🔥 EDIT MODE - Existing Recurring Bill
+        // ===================================================================
+        // PRESERVE existing schedule to avoid disrupting recurring cycle
+        // Only recalculate if user explicitly changed recurring settings
+        // ===================================================================
+
+        // Check if recurrence settings have changed
+        const recurrenceChanged =
+          initialData?.recurrence_rule !== recurrenceRule ||
+          initialData?.is_recurring !== isRecurring;
+
+        if (recurrenceChanged) {
+          // User changed the recurrence settings -> Recalculate
           const nextDate = calculateNextDate(date, recurrenceRule);
           nextDueDateValue = nextDate.toISOString();
+          console.log('🔄 [EDIT - RECURRENCE CHANGED] Recalculated next_due_date:', nextDueDateValue);
+        } else {
+          // Preserve existing schedule
+          nextDueDateValue = initialData?.next_due_date || null;
+
+          // Fallback: If DB column was NULL (legacy data), calculate it
+          if (!nextDueDateValue && recurrenceRule !== 'none') {
+            const nextDate = calculateNextDate(date, recurrenceRule);
+            nextDueDateValue = nextDate.toISOString();
+            console.log('🔧 [EDIT - BACKFILL] Generated missing next_due_date:', nextDueDateValue);
+          }
         }
+
+        // Preserve transaction count (don't reset on edit)
+        txCount = initialData?.transaction_count || 0;
       }
 
       recurringPayload = {
         is_recurring: true,
         recurrence_rule: recurrenceRule,
         end_condition: endCondition,
-        end_value: endCondition === "until_date" ? new Date(endValue).toISOString() : (endCondition === "after_count" ? String(endValue) : null),
+        end_value: endCondition === "until_date"
+          ? new Date(endValue).toISOString()
+          : (endCondition === "after_count" ? String(endValue) : null),
 
-        // 🟢 PENTING: Simpan ke kolom 'next_due_date'
+        // 🟢 CRITICAL: Save the calculated next_due_date
         next_due_date: nextDueDateValue,
         transaction_count: txCount
       };
     } else {
-      // Jika Recurring Dimatikan (Switch OFF)
+      // 🔴 Recurring is DISABLED (Switch OFF)
       recurringPayload = {
         is_recurring: false,
         recurrence_rule: null,
         end_condition: "never",
         end_value: null,
-        next_due_date: null, // Hapus jadwal
+        next_due_date: null, // Clear schedule
         transaction_count: null
       };
     }

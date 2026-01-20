@@ -10,6 +10,7 @@ interface RecurringBill {
   amount: number;
   type: "income" | "expense";
   date: string;
+  next_due_date?: string;
   recurrence_rule: string;
   end_condition: string;
   category_id: string;
@@ -37,7 +38,7 @@ export function useUpcomingBills() {
       const { data, error } = await supabase
         .from("transactions")
         .select(
-          `id, amount, type, date, note, is_recurring, recurrence_rule, end_condition, end_value, category_id, wallet_id, transaction_count, categories(name, icon, bgColor)`
+          `id, amount, type, date, note, is_recurring, recurrence_rule, end_condition, end_value, category_id, wallet_id, transaction_count, next_due_date, categories(name, icon, bgColor)`
         )
         .eq("user_id", userId)
         .eq("is_recurring", true)
@@ -67,6 +68,6 @@ export function useUpcomingBills() {
       });
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 }

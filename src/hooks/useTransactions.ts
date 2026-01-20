@@ -34,6 +34,12 @@ export function useTransactions(
           transfer_id,
           created_at,
           updated_at,
+          is_recurring,
+          recurrence_rule,
+          next_due_date,
+          transaction_count,
+          end_condition,
+          end_value,
           categories(name, icon, type, bgColor),
           wallet:wallets(name),
           transfers:transfer_id (

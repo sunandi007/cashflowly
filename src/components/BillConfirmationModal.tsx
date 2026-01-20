@@ -125,7 +125,7 @@ export default function BillConfirmationModal({
                                 <View style={styles.tagBadge}>
                                     <Text style={styles.tagBadgeText}>TAGIHAN</Text>
                                 </View>
-                                <Text style={styles.billDate}>{formatDate(bill.date)}</Text>
+                                <Text style={styles.billDate}>{formatDate(bill.next_due_date || bill.date)}</Text>
                             </View>
                         </View>
 

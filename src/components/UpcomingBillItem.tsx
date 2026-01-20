@@ -33,7 +33,7 @@ export default function UpcomingBillItem({
 
     const categoryName = item.categories?.name || item.note || "Bill";
     const iconName = item.categories?.icon || "receipt-outline";
-    const dueDate = new Date(item.date);
+    const dueDate = new Date(item.next_due_date || item.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
