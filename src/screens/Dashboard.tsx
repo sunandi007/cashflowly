@@ -275,19 +275,6 @@ export default function DashboardScreen() {
           }
           contentContainerStyle={styles.scrollViewStyle}
         />
-
-        {/* FAB */}
-        {/* <TouchableOpacity
-          style={styles.fab}
-          onPress={handleAddPress}
-          activeOpacity={0.8}
-        >
-          <Ionicons
-            name="add"
-            size={scale(28)}
-            color={colors.neutral900}
-          />
-        </TouchableOpacity> */}
       </View>
     </ScreenWrapper>
   );

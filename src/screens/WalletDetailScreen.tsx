@@ -20,6 +20,7 @@ import {
     isWithinInterval, startOfDay, endOfDay, format
 } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import FloatingAddButton from '@/components/FloatingAddButton';
 
 const PERIOD_OPTIONS = [
     { label: 'All Time', value: 'all_time', icon: 'list' },
@@ -409,6 +410,9 @@ export default function WalletDetailScreen() {
                     }}
                 />
             )}
+
+            {/* Floating Add Button */}
+            <FloatingAddButton />
         </ScreenWrapper>
     );
 }

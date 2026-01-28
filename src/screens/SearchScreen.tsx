@@ -29,6 +29,7 @@ import {
 } from 'date-fns';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { scale, verticalScale } from "@/utils/styling";
+import FloatingAddButton from "@/components/FloatingAddButton";
 
 const PERIOD_OPTIONS = [
     { label: 'All Time', value: 'all_time', icon: 'list' },
@@ -132,7 +133,7 @@ export default function SearchScreen() {
     return (
         <ScreenWrapper style={styles.container}>
             {/* Header */}
-            <Header title="Search" style={styles.header} />
+            <Header title="Search" showBack style={styles.header} />
 
             {/* Search Input */}
             <View style={styles.searchInputContainer}>
@@ -328,6 +329,9 @@ export default function SearchScreen() {
                     }}
                 />
             )}
+
+            {/* Floating Add Button */}
+            <FloatingAddButton />
         </ScreenWrapper>
     );
 }

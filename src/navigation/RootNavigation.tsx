@@ -56,11 +56,11 @@ export default function RootNavigation() {
             component={SearchScreen}
             options={{ animation: 'fade_from_bottom' }} // Opsional: animasi muncul
           />
-          <Stack.Screen name="WalletDetail" component={WalletDetailScreen} />
           <Stack.Screen name="TagList" component={TagListScreen} />
           <Stack.Screen name="DataManagement" component={DataManagementScreen} />
           <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
           <Stack.Screen name="Settings" component={SettingsScreen} />
+          <Stack.Screen name="WalletDetail" component={WalletDetailScreen} />
           <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
           <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
           <Stack.Screen name="EmailSupport" component={EmailSupportScreen} />

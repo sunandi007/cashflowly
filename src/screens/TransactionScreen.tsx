@@ -272,12 +272,7 @@ export default function TransactionScreen() {
         // Start count at 1 (first payment is being made today)
         txCount = 1;
 
-        console.log('📅 [CREATE RECURRING]', {
-          today: today.toISOString(),
-          frequency: recurrenceRule,
-          nextDueDate: nextDueDateValue,
-          count: txCount
-        });
+
 
       } else {
         // 🔥 EDIT MODE - Existing Recurring Bill
@@ -295,7 +290,7 @@ export default function TransactionScreen() {
           // User changed the recurrence settings -> Recalculate
           const nextDate = calculateNextDate(date, recurrenceRule);
           nextDueDateValue = nextDate.toISOString();
-          console.log('🔄 [EDIT - RECURRENCE CHANGED] Recalculated next_due_date:', nextDueDateValue);
+
         } else {
           // Preserve existing schedule
           nextDueDateValue = initialData?.next_due_date || null;
@@ -304,7 +299,7 @@ export default function TransactionScreen() {
           if (!nextDueDateValue && recurrenceRule !== 'none') {
             const nextDate = calculateNextDate(date, recurrenceRule);
             nextDueDateValue = nextDate.toISOString();
-            console.log('🔧 [EDIT - BACKFILL] Generated missing next_due_date:', nextDueDateValue);
+
           }
         }
 
