@@ -34,10 +34,10 @@ export function useTransactionMutations() {
 
       // 1. Insert Transaksi Utama
       const { data, error } = await supabase
-          .from("transactions")
-          .insert(txData)
-          .select()
-          .single();
+        .from("transactions")
+        .insert(txData)
+        .select()
+        .single();
 
       if (error) throw error;
 
@@ -49,8 +49,8 @@ export function useTransactionMutations() {
         }));
 
         const { error: tagError } = await supabase
-            .from("transaction_tags")
-            .insert(tagInserts);
+          .from("transaction_tags")
+          .insert(tagInserts);
 
         if (tagError) console.error("Error inserting tags:", tagError);
       }
@@ -72,16 +72,38 @@ export function useTransactionMutations() {
       const { tag_ids, ...txUpdates } = updates;
 
       const { data, error } = await supabase
-          .from("transactions")
-          .update(txUpdates)
-          .eq("id", id)
-          .select()
-          .single();
+        .from("transactions")
+        .update(txUpdates)
+        .eq("id", id)
+        .select()
+        .single();
 
       if (error) throw error;
 
-      // Catatan: Logic update tags lebih kompleks (delete old -> insert new),
-      // bisa ditambahkan nanti jika fitur tag sudah full.
+      // 🟢 Update tags: Delete old tags and insert new ones
+      if (tag_ids !== undefined) {
+        // 1. Delete all existing tags for this transaction
+        const { error: deleteError } = await supabase
+          .from("transaction_tags")
+          .delete()
+          .eq("transaction_id", id);
+
+        if (deleteError) console.error("Error deleting old tags:", deleteError);
+
+        // 2. Insert new tags if any
+        if (tag_ids && tag_ids.length > 0) {
+          const tagInserts = tag_ids.map((tagId: string) => ({
+            transaction_id: id,
+            tag_id: tagId,
+          }));
+
+          const { error: insertError } = await supabase
+            .from("transaction_tags")
+            .insert(tagInserts);
+
+          if (insertError) console.error("Error inserting new tags:", insertError);
+        }
+      }
 
       return data;
     },
@@ -97,9 +119,9 @@ export function useTransactionMutations() {
   const deleteTransaction = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-          .from("transactions")
-          .delete()
-          .eq("id", id);
+        .from("transactions")
+        .delete()
+        .eq("id", id);
 
       if (error) throw error;
       return id;

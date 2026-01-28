@@ -173,6 +173,8 @@ export default function TransactionScreen() {
       // Initialize tags if present
       if (initialData.tag_ids && Array.isArray(initialData.tag_ids)) {
         setSelectedTagIds(initialData.tag_ids);
+      } else {
+        setSelectedTagIds([]);
       }
     } else {
       // MODE CREATE (Reset Penuh)
@@ -188,6 +190,7 @@ export default function TransactionScreen() {
       setRecurrenceRule("none");
       setEndCondition("never");
       setEndValue("");
+      setSelectedTagIds([]);
     }
   }, [initialData, wallets, isEditing]);
 

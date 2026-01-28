@@ -49,7 +49,8 @@ export function useTransactions(
             date,
             source_wallet:source_wallet_id(name),
             destination_wallet:destination_wallet_id(name)
-          )
+          ),
+          transaction_tags(tag_id)
         `
         )
         .eq("user_id", userId)
@@ -62,6 +63,7 @@ export function useTransactions(
       }
 
       const { data, error } = await query;
+
       if (error) throw error;
 
       // 🔁 Gabungkan hasil mirror transaksi transfer menjadi satu
@@ -78,11 +80,15 @@ function mergeTransfers(transactions: any[]) {
   for (const tx of transactions) {
     if (!tx.transfer_id) {
       // Transaksi Normal: Income atau Expense
+      const extractedTagIds = tx.transaction_tags?.map((tt: any) => tt.tag_id) || [];
+
       normalTx.push({
         ...tx,
         is_transfer: false,
         // Konversi amount menjadi Number di sini untuk memastikan konsistensi tipe data
         amount: Number(tx.amount) || 0,
+        // Extract tag_ids dari transaction_tags relationship
+        tag_ids: extractedTagIds,
       });
       continue;
     }

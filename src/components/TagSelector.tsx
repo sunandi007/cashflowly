@@ -13,14 +13,14 @@ interface TagSelectorProps {
 }
 
 export default function TagSelector({ selectedTagIds, onToggleTag }: TagSelectorProps) {
-    const { tags, createTag } = useTags();
+    const { tags, addTag } = useTags();
     const [newTagName, setNewTagName] = useState('');
     const [isAdding, setIsAdding] = useState(false);
 
     const handleAddTag = async () => {
         if (!newTagName.trim()) return;
         try {
-            const newTag = await createTag.mutateAsync(newTagName.trim());
+            const newTag = await addTag.mutateAsync(newTagName.trim());
             onToggleTag(newTag.id); // Otomatis pilih tag baru
             setNewTagName('');
             setIsAdding(false);
