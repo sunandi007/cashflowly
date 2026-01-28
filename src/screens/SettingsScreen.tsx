@@ -232,7 +232,7 @@ export default function SettingsScreen() {
                         </Typo>
                         <View style={styles.sectionContent}>
                             {/* Theme */}
-                            <TouchableOpacity
+                            {/* <TouchableOpacity
                                 style={styles.settingItem}
                                 onPress={() => setShowThemeModal(true)}
                                 activeOpacity={0.7}
@@ -253,7 +253,7 @@ export default function SettingsScreen() {
                                     </Typo>
                                     <Ionicons name="chevron-forward" size={20} color={colors.neutral500} />
                                 </View>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
 
                             {/* Currency */}
                             <TouchableOpacity

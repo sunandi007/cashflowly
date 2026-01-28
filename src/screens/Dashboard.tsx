@@ -153,19 +153,19 @@ export default function DashboardScreen() {
               </View>
             </View>
           }
-          rightComponent={
-            <TouchableOpacity
-              style={styles.notificationButton}
-              onPress={handleToggleTheme}
-              activeOpacity={0.7}
-            >
-              <Ionicons
-                name={isDark ? 'sunny-outline' : 'moon-outline'}
-                size={scale(24)}
-                color={colors.white}
-              />
-            </TouchableOpacity>
-          }
+        // rightComponent={
+        //   <TouchableOpacity
+        //     style={styles.notificationButton}
+        //     onPress={handleToggleTheme}
+        //     activeOpacity={0.7}
+        //   >
+        //     <Ionicons
+        //       name={isDark ? 'sunny-outline' : 'moon-outline'}
+        //       size={scale(24)}
+        //       color={colors.white}
+        //     />
+        //   </TouchableOpacity>
+        // }
         />
 
         {/* Balance Card */}

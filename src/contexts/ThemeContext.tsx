@@ -20,7 +20,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     const systemScheme = useColorScheme();
     const { session } = useAuth();
     const user = session?.user;
-    const [mode, setModeState] = useState<ThemeMode>('system');
+    const [mode, setModeState] = useState<ThemeMode>('dark');
 
     // 1. Load dari Local Storage & Database saat mount/user berubah
     useEffect(() => {
