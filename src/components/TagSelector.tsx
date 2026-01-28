@@ -1,11 +1,12 @@
 // src/components/TagSelector.tsx
 
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput, FlatList } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Typo from './Typo';
 import { colors, radius, spacingX, spacingY } from '@/constant/theme';
 import { useTags } from '@/hooks/useTags';
 import { Ionicons } from '@expo/vector-icons';
+import TagModal from './TagModal';
 
 interface TagSelectorProps {
     selectedTagIds: string[];
@@ -14,18 +15,17 @@ interface TagSelectorProps {
 
 export default function TagSelector({ selectedTagIds, onToggleTag }: TagSelectorProps) {
     const { tags, addTag } = useTags();
-    const [newTagName, setNewTagName] = useState('');
-    const [isAdding, setIsAdding] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
-    const handleAddTag = async () => {
-        if (!newTagName.trim()) return;
+    const handleAddTag = async (name: string) => {
         try {
-            const newTag = await addTag.mutateAsync(newTagName.trim());
+            const newTag = await addTag.mutateAsync(name);
             onToggleTag(newTag.id); // Otomatis pilih tag baru
-            setNewTagName('');
-            setIsAdding(false);
-        } catch (e) {
-            console.error(e);
+            setShowModal(false);
+        } catch (error) {
+            // Error akan ditangani oleh TagModal (via snackbar)
+            // Modal tidak akan close jika ada error
+            throw error;
         }
     };
 
@@ -53,26 +53,21 @@ export default function TagSelector({ selectedTagIds, onToggleTag }: TagSelector
                 })}
 
                 {/* Tombol Tambah Tag */}
-                {isAdding ? (
-                    <View style={[styles.tagChip, styles.inputChip]}>
-                        <TextInput
-                            value={newTagName}
-                            onChangeText={setNewTagName}
-                            placeholder="Nama Tag..."
-                            placeholderTextColor={colors.neutral500}
-                            style={styles.input}
-                            autoFocus
-                            onSubmitEditing={handleAddTag}
-                            onBlur={() => setIsAdding(false)} // Batal jika lepas fokus
-                        />
-                    </View>
-                ) : (
-                    <TouchableOpacity style={[styles.tagChip, styles.addBtn]} onPress={() => setIsAdding(true)}>
-                        <Ionicons name="add" size={14} color={colors.neutral300} />
-                        <Typo size={12} color={colors.neutral300}>New</Typo>
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                    style={[styles.tagChip, styles.addBtn]}
+                    onPress={() => setShowModal(true)}
+                >
+                    <Ionicons name="add" size={14} color={colors.neutral300} />
+                    <Typo size={12} color={colors.neutral300}>New</Typo>
+                </TouchableOpacity>
             </View>
+
+            {/* Tag Modal */}
+            <TagModal
+                visible={showModal}
+                onClose={() => setShowModal(false)}
+                onSave={handleAddTag}
+            />
         </View>
     );
 }
@@ -99,13 +94,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 4,
     },
-    inputChip: {
-        minWidth: 80,
-        paddingVertical: 2, // Sesuaikan padding input
-    },
-    input: {
-        color: colors.white,
-        fontSize: 12,
-        padding: 0,
-    }
 });

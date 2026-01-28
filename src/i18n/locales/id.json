@@ -300,7 +300,22 @@
         "editTag": "Edit Tag",
         "noTags": "Tidak ada tag. Tambahkan satu untuk memulai!",
         "transactionCount": "{{count}} transaksi",
-        "noTransactions": "0 transaksi"
+        "noTransactions": "0 transaksi",
+        "modal": {
+            "addTitle": "Tambah Tag Baru",
+            "editTitle": "Edit Tag",
+            "placeholder": "Nama Tag (contoh: Belanja)",
+            "saveChanges": "Simpan Perubahan",
+            "deleteConfirmTitle": "Hapus Tag",
+            "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus tag ini?",
+            "errors": {
+                "nameRequired": "Nama tag wajib diisi."
+            },
+            "success": {
+                "added": "Tag baru berhasil ditambahkan.",
+                "updated": "Tag berhasil diperbarui."
+            }
+        }
     },
     "changePassword": {
         "title": "Ubah Password",

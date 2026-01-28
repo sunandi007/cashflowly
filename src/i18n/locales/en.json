@@ -300,7 +300,22 @@
         "editTag": "Edit Tag",
         "noTags": "No tags found. Add one to get started!",
         "transactionCount": "{{count}} transactions",
-        "noTransactions": "0 transactions"
+        "noTransactions": "0 transactions",
+        "modal": {
+            "addTitle": "Add New Tag",
+            "editTitle": "Edit Tag",
+            "placeholder": "Tag Name (e.g. Groceries)",
+            "saveChanges": "Save Changes",
+            "deleteConfirmTitle": "Delete Tag",
+            "deleteConfirmMessage": "Are you sure you want to delete this tag?",
+            "errors": {
+                "nameRequired": "Tag name is required."
+            },
+            "success": {
+                "added": "New tag added successfully.",
+                "updated": "Tag updated successfully."
+            }
+        }
     },
     "changePassword": {
         "title": "Change Password",

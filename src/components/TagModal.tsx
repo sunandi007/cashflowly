@@ -15,6 +15,7 @@ import Input from "./Input";
 import { Ionicons } from "@expo/vector-icons";
 import { scale, verticalScale } from "@/utils/styling";
 import { useSnackbar } from "@/hooks/useSnackbar";
+import { useTranslation } from "react-i18next";
 
 export default function TagModal({
     visible,
@@ -31,6 +32,7 @@ export default function TagModal({
     onDelete?: (id: string) => void;
     initialData?: any;
 }) {
+    const { t } = useTranslation();
     const isEditing = !!initialData;
     const [name, setName] = useState(initialData?.name || "");
     const [loading, setLoading] = useState(false);
@@ -43,7 +45,7 @@ export default function TagModal({
 
     const handleSubmit = async () => {
         if (!name.trim()) {
-            snackbar.error("Error", "Tag name is required.");
+            snackbar.error(t('common.error'), t('tags.modal.errors.nameRequired'));
             return;
         }
 
@@ -54,14 +56,14 @@ export default function TagModal({
                     id: initialData.id,
                     name: name.trim(),
                 });
-                snackbar.success("Success", "Tag updated successfully.");
+                snackbar.success(t('common.success'), t('tags.modal.success.updated'));
             } else if (onSave) {
                 await onSave(name.trim());
-                snackbar.success("Success", "New tag added successfully.");
+                snackbar.success(t('common.success'), t('tags.modal.success.added'));
             }
             onClose();
         } catch (err: any) {
-            snackbar.error("Error", err.message || "An error occurred while saving.");
+            snackbar.error(t('common.error'), err.message || "An error occurred while saving.");
         } finally {
             setLoading(false);
         }
@@ -69,24 +71,28 @@ export default function TagModal({
 
     const handleDelete = () => {
         if (!onDelete || !initialData?.id) return;
-        Alert.alert("Delete Tag", "Are you sure you want to delete this tag?", [
-            { text: "Cancel", style: "cancel" },
-            {
-                text: "Delete",
-                style: "destructive",
-                onPress: async () => {
-                    setLoading(true);
-                    try {
-                        await onDelete(initialData.id);
-                        onClose();
-                    } catch (err: any) {
-                        snackbar.error("Error", err.message);
-                    } finally {
-                        setLoading(false);
-                    }
+        Alert.alert(
+            t('tags.modal.deleteConfirmTitle'),
+            t('tags.modal.deleteConfirmMessage'),
+            [
+                { text: t('common.cancel'), style: "cancel" },
+                {
+                    text: t('common.delete'),
+                    style: "destructive",
+                    onPress: async () => {
+                        setLoading(true);
+                        try {
+                            await onDelete(initialData.id);
+                            onClose();
+                        } catch (err: any) {
+                            snackbar.error(t('common.error'), err.message);
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
                 },
-            },
-        ]);
+            ]
+        );
     };
 
     return (
@@ -96,7 +102,7 @@ export default function TagModal({
                     <View style={styles.handleBar} />
                     {/* Header */}
                     <Header
-                        title={isEditing ? "Edit Tag" : "Add New Tag"}
+                        title={isEditing ? t('tags.modal.editTitle') : t('tags.modal.addTitle')}
                         style={styles.header}
                         rightIcon={
                             <TouchableOpacity onPress={onClose}>
@@ -107,7 +113,7 @@ export default function TagModal({
 
                     {/* Input */}
                     <Input
-                        placeholder="Tag Name (e.g. Groceries)"
+                        placeholder={t('tags.modal.placeholder')}
                         value={name}
                         onChangeText={setName}
                         containerStyle={{ marginBottom: spacingY._20 }}
@@ -130,7 +136,7 @@ export default function TagModal({
                                 <ActivityIndicator color="#fff" />
                             ) : (
                                 <Typo size={16} color="#fff" fontWeight="600">
-                                    {isEditing ? "Save Changes" : "Add Tag"}
+                                    {isEditing ? t('tags.modal.saveChanges') : t('tags.addTag')}
                                 </Typo>
                             )}
                         </Button>
@@ -170,10 +176,12 @@ const styles = StyleSheet.create({
     },
     saveButton: {
         flex: 1,
+        borderRadius: radius._30,
     },
     deleteButton: {
         paddingHorizontal: spacingX._15,
         backgroundColor: colors.rose,
+        borderRadius: radius._30,
     },
     footer: {
         alignItems: "center",
