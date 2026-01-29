@@ -9,6 +9,8 @@ import {
     ScrollView,
     FlatList,
     TextInput,
+    ActivityIndicator,
+    Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useCategories } from "@/hooks/useCategories";
@@ -30,6 +32,8 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { scale, verticalScale } from "@/utils/styling";
 import FloatingAddButton from "@/components/FloatingAddButton";
+import PdfService from "@/services/PdfService";
+import { useSnackbar } from "@/hooks/useSnackbar";
 
 const PERIOD_OPTIONS = [
     { label: 'All Time', value: 'all_time', icon: 'list' },
@@ -42,6 +46,7 @@ export default function SearchScreen() {
     const navigation = useNavigation<any>();
     const { session } = useAuth();
     const userId = session?.user?.id;
+    const snackbar = useSnackbar();
 
     const { data: categories = [] } = useCategories(userId);
     const { wallets } = useWallets();
@@ -53,6 +58,7 @@ export default function SearchScreen() {
 
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+    const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
     const timeFilteredTransactions = useMemo(() => {
         const now = new Date();
@@ -130,10 +136,120 @@ export default function SearchScreen() {
         return iconMap[name?.toLowerCase()] || 'pricetag';
     };
 
+    // Check if any filter is active
+    const hasActiveFilter = useMemo(() => {
+        return (
+            activePeriod !== 'all_time' ||
+            search.trim().length > 0 ||
+            category !== null ||
+            walletId !== null
+        );
+    }, [activePeriod, search, category, walletId]);
+
+    // Calculate summary for PDF
+    const transactionSummary = useMemo(() => {
+        const totalIncome = filteredTransactions
+            .filter(tx => tx.type === 'income')
+            .reduce((sum, tx) => sum + tx.amount, 0);
+
+        const totalExpense = filteredTransactions
+            .filter(tx => tx.type === 'expense')
+            .reduce((sum, tx) => sum + tx.amount, 0);
+
+        const balance = totalIncome - totalExpense;
+
+        return { totalIncome, totalExpense, balance };
+    }, [filteredTransactions]);
+
+    // Handle PDF Export
+    const handleExportPdf = async () => {
+        // Validation: Must have active filter
+        if (!hasActiveFilter) {
+            Alert.alert(
+                'Filter Required',
+                'Please apply at least one filter before exporting to PDF.\n\nYou can filter by period, search term, category, or wallet.',
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+
+        // Validation: Must have transactions
+        if (filteredTransactions.length === 0) {
+            Alert.alert(
+                'No Transactions',
+                'No transactions found with the current filters. Please adjust your filters.',
+                [{ text: 'OK' }]
+            );
+            return;
+        }
+
+        setIsGeneratingPdf(true);
+
+        try {
+            // Get wallet name if walletId exists
+            const selectedWallet = wallets.find((w: any) => w.id === walletId);
+            const walletName = selectedWallet?.name || null;
+
+            // Get category name if category exists
+            const selectedCategory = categories.find((cat: any) => cat.id === category);
+            const categoryName = selectedCategory?.name || null;
+
+            const result = await PdfService.generateTransactionsPdf({
+                transactions: filteredTransactions,
+                filters: {
+                    period: activePeriod,
+                    startDate: activePeriod === 'custom' ? customStartDate : undefined,
+                    endDate: activePeriod === 'custom' ? customEndDate : undefined,
+                    category,
+                    categoryName,
+                    walletId,
+                    walletName,
+                },
+                summary: transactionSummary,
+            });
+
+            if (result.success) {
+                snackbar.success('Success', 'PDF exported successfully!');
+            } else {
+                Alert.alert('Export Failed', result.error || 'Failed to generate PDF');
+            }
+        } catch (error) {
+            console.error('Error exporting PDF:', error);
+            Alert.alert('Error', 'An unexpected error occurred while generating PDF.');
+        } finally {
+            setIsGeneratingPdf(false);
+        }
+    };
+
     return (
         <ScreenWrapper style={styles.container}>
-            {/* Header */}
-            <Header title="Search" showBack style={styles.header} />
+            {/* Header with Download Button */}
+            <Header
+                title="Search"
+                showBack
+                style={styles.header}
+                rightComponent={
+                    <TouchableOpacity
+                        onPress={handleExportPdf}
+                        disabled={!hasActiveFilter || isGeneratingPdf}
+                        style={[
+                            styles.downloadButton,
+                            (!hasActiveFilter || isGeneratingPdf) && styles.downloadButtonDisabled
+                        ]}
+                        activeOpacity={0.7}
+                    >
+                        {isGeneratingPdf ? (
+                            <ActivityIndicator size="small" color={colors.white} />
+                        ) : (
+                            <Ionicons
+                                name="download-outline"
+                                size={scale(22)}
+                                color={hasActiveFilter ? colors.white : colors.neutral500}
+                            />
+                        )}
+                    </TouchableOpacity>
+                }
+            />
 
             {/* Search Input */}
             <View style={styles.searchInputContainer}>
@@ -349,6 +465,19 @@ const styles = StyleSheet.create({
     },
     settingsButton: {
         padding: scale(8),
+    },
+    downloadButton: {
+        padding: scale(8),
+        backgroundColor: colors.primary,
+        borderRadius: scale(20),
+        width: scale(40),
+        height: scale(40),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    downloadButtonDisabled: {
+        backgroundColor: colors.neutral800,
+        opacity: 0.5,
     },
 
     // Search Input
