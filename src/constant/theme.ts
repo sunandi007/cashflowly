@@ -1,162 +1,145 @@
 import { scale, verticalScale } from "@/utils/styling";
 
-// 1. PALETTE (Warna Mentah)
+// 1. PALETTE (WhatsApp Style)
 const palette = {
-  primary: "#23C16B",
-  primaryLight: "#35E086",
-  primaryDark: "#1A8B4D",
+  // --- USER REQUESTED COLORS ---
+  tealDark: "#075e54",    // (7,94,84) - Header/Primary Dark
+  teal: "#128c7e",        // (18,140,126) - Secondary/Accent
+  greenBright: "#25d366", // (37,211,102) - FAB/Success/Checkmarks
+  greenPale: "#dcf8c6",   // (220,248,198) - Income BG/Chat Bubble
+  beige: "#ece5dd",       // (236,229,221) - Light Mode Background
 
-  rose: "#FF4D4D",
-  roseLight: "#FB7185",
+  // --- OFFICIAL WA DARK MODE COLORS (Complementary) ---
+  waDarkBg: "#0b141a",    // Very dark blue-ish gray (Background)
+  waDarkCard: "#202c33",  // Dark gray (Card Surface)
+  waDarkInput: "#2a3942", // Slightly lighter (Input)
+
+  // Commons
   white: "#FFFFFF",
   black: "#000000",
+  rose: "#ef5350",        // Red for expense (Material Red)
 
-  // Dark Forest (Warna Lama Anda)
-  forest900: "#0C1A14",
-  forest800: "#14261F",
-  forest700: "#1A2E26",
-  forest600: "#475569",
-  forest500: "#64748b",
-  forest400: "#94a3b8",
-  forest300: "#d4d4d4",
-  forest200: "#e5e5e5",
-  forest100: "#E6E9E7",
-  forest50: "#F2F4F3",
-
-  forestText: "#FFFFFF",
-  forestTextLight: "#A9B3AD",
-  forestTextLighter: "#7C8A82",
-
-  // Light Mode (Warna Baru)
-  lightBg: "#FFFFFF",
-  lightCard: "#F3F4F6",
-  lightInput: "#E5E7EB",
-  lightText: "#111827",
-  lightTextSoft: "#4B5563",
+  // Text
+  textDark: "#111b21",    // Black-ish for Light Mode
+  textLight: "#e9edef",   // White-ish for Dark Mode
+  textGrey: "#8696a0",    // Muted text
 };
 
 // 2. THEMES (Logic Mapping)
 export const themes = {
+  // 🌑 DARK MODE (WhatsApp Dark Style)
   dark: {
     mode: 'dark',
 
     // Background & Surfaces
-    background: palette.forest900,
-    backgroundAlt: palette.forest800,
-    card: palette.forest700,
-    input: palette.forest800,
+    background: palette.waDarkBg,   // #0b141a
+    backgroundAlt: palette.waDarkCard,
+    card: palette.waDarkCard,       // #202c33
+    input: palette.waDarkInput,     // #2a3942
 
     // Text
-    text: palette.forestText,
-    textLight: palette.forestTextLight,
-    textLighter: palette.forestTextLighter,
+    text: palette.textLight,        // #e9edef
+    textLight: palette.textGrey,    // #8696a0
+    textLighter: "#536773",
 
     // Borders
-    border: palette.forest800,
+    border: palette.waDarkInput,
 
-    // Primary
-    primary: palette.primary,
-    primaryLight: palette.primaryLight,
-    primaryDark: palette.primaryDark,
-    accentGreen: palette.primary,
+    // Primary - Menggunakan Bright Green (#25d366) agar kontras di gelap
+    primary: palette.greenBright,
+    primaryLight: "#4ce283",        // Slightly lighter green
+    primaryDark: palette.teal,      // Darker teal for gradients/shadows
+    accentGreen: palette.greenBright,
 
     // Semantic Colors
     rose: palette.rose,
-    roseLight: palette.roseLight,
-    green: palette.primary,
+    roseLight: "#ff867c",
+    green: palette.greenBright,
 
-    // Neutral Scale (Legacy Support)
-    neutral900: palette.forest900,
-    neutral800: palette.forest800,
-    neutral700: palette.forest700,
-    neutral600: palette.forest600,
-    neutral500: palette.forest500,
-    neutral400: palette.forest400,
-    neutral300: palette.forest300,
-    neutral200: palette.forest200,
-    neutral100: palette.forest100,
-    neutral50: palette.forest50,
-    neutral350: "#CCCCCC",
+    // Neutral Scale (Adapted for Dark)
+    neutral900: palette.waDarkBg,
+    neutral800: palette.waDarkCard,
+    neutral700: palette.waDarkInput,
+    neutral600: "#374248",
+    neutral500: palette.textGrey,
+    neutral400: "#536773",
+    neutral300: palette.textGrey,
+    neutral200: palette.textLight,
+    neutral100: palette.white,
+    neutral50: palette.white,
+    neutral350: "#374248",
 
-    // Extended Palette
     white: palette.white,
     black: palette.black,
+    cardSecondary: palette.waDarkInput,
+    cardTertiary: palette.waDarkBg,
 
-    // Special Cards & Components
-    cardSecondary: palette.forest700,
-    cardTertiary: palette.forest700,
-
-    // Shadows & Overlays
+    // Shadows
     shadow: "rgba(0, 0, 0, 0.3)",
     shadowMedium: "rgba(0, 0, 0, 0.5)",
-    shadowStrong: "rgba(0, 0, 0, 0.7)",
-    overlay: "rgba(0, 0, 0, 0.6)",
+    shadowStrong: "rgba(0, 0, 0, 0.8)",
+    overlay: "rgba(0, 0, 0, 0.8)",
   },
 
+  // ☀️ LIGHT MODE (Classic WhatsApp Style)
   light: {
     mode: 'light',
 
-    // Background & Surfaces - Match design reference
-    background: "#F8F9FA",        // Light gray background
-    backgroundAlt: "#FFFFFF",     // Pure white
-    card: "#FFFFFF",              // White cards with shadow
-    input: "#F5F5F5",             // Light gray for inputs
+    // Background & Surfaces
+    background: palette.beige,      // #ece5dd (Khas WhatsApp)
+    backgroundAlt: palette.white,
+    card: palette.white,            // Kartu Putih di atas Beige
+    input: "#f0f2f5",               // Light gray input
 
-    // Text - Strong contrast on light background
-    text: "#1F2937",              // Dark gray/black for primary text
-    textLight: "#6B7280",         // Medium gray for secondary
-    textLighter: "#9CA3AF",       // Light gray for tertiary
+    // Text
+    text: palette.textDark,         // #111b21
+    textLight: palette.textGrey,    // #8696a0
+    textLighter: "#d1d7db",
 
-    // Borders & Dividers
-    border: "#E5E7EB",            // Very light gray border
+    // Borders
+    border: "#e2e4e6",
 
-    // Primary - Neon Lime/Chartreuse (from design)
-    primary: "#ABE7B2",           // Neon lime - main accent
-    primaryLight: "#bcdfc0ff",      // Lighter neon lime
-    primaryDark: "#80a888ff",       // Darker lime
-    accentGreen: "#ABE7B2",       // Neon accent
+    // Primary - Menggunakan Teal (#075e54) khas Header WA
+    primary: palette.tealDark,
+    primaryLight: palette.teal,     // #128c7e
+    primaryDark: "#054c44",
+    accentGreen: palette.greenBright, // Tetap gunakan hijau terang untuk FAB
 
     // Semantic Colors
-    rose: "#FF4D4D",
-    roseLight: "#FB7185",
-    green: "#ABE7B2",             // Use neon lime for green
+    rose: "#d32f2f",
+    roseLight: "#ff6659",
+    green: palette.teal,            // Text hijau menggunakan Teal agar mudah dibaca
 
-    // Neutral Scale (Light Mode Specific)
-    neutral900: "#F8F9FA",        // Lightest (background)
-    neutral800: "#FFFFFF",        // White (cards)
-    neutral700: "#2D3748",        // Dark card (for contrast sections like balance card)
-    neutral600: "#E5E7EB",        // Borders
-    neutral500: "#D1D5DB",        // Disabled states
-    neutral400: "#9CA3AF",        // Tertiary text
-    neutral300: "#6B7280",        // Secondary text
-    neutral200: "#4B5563",        // Active text
-    neutral100: "#374151",        // Strong text
-    neutral50: "#1F2937",         // Darkest (primary text)
-    neutral350: "#D1D5DB",        // Special disabled
+    // Neutral Scale
+    neutral900: palette.beige,
+    neutral800: palette.white,
+    neutral700: "#f0f2f5",
+    neutral600: "#e2e4e6",
+    neutral500: "#8696a0",
+    neutral400: "#667781",
+    neutral300: "#41525d",
+    neutral200: "#111b21",
+    neutral100: "#0b141a",
+    neutral50: "#000000",
+    neutral350: "#e2e4e6",
 
-    // Extended Palette for Light Mode
-    white: "#FFFFFF",
-    black: "#000000",
+    white: palette.white,
+    black: palette.black,
+    cardSecondary: palette.greenPale, // #dcf8c6 (Kartu Income/Special)
+    cardTertiary: "#ffffff",
 
-    // Special Cards & Components
-    cardSecondary: "#2D3748",     // Dark card for contrast (like balance card)
-    cardTertiary: "#F5F5F5",      // Very light gray card
-
-    // Shadows & Overlays (subtle for light mode)
-    shadow: "rgba(0, 0, 0, 0.08)",
-    shadowMedium: "rgba(0, 0, 0, 0.12)",
-    shadowStrong: "rgba(0, 0, 0, 0.16)",
+    // Shadows
+    shadow: "rgba(0, 0, 0, 0.05)",
+    shadowMedium: "rgba(0, 0, 0, 0.1)",
+    shadowStrong: "rgba(0, 0, 0, 0.15)",
     overlay: "rgba(0, 0, 0, 0.4)",
   },
 };
 
 // ==========================================================
-// 👇 SOLUSI ERROR ANDA ADA DI SINI
+// DEFAULT EXPORT (Gunakan Dark Mode WA sebagai default)
 // ==========================================================
-// Kita export 'colors' sebagai alias ke tema 'dark' secara default.
-// Ini membuat `import { colors }` di file lama Anda tetap jalan.
 export const colors = themes.dark;
-
 
 // 3. SPACING & RADIUS
 export const spacingX = {

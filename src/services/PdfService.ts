@@ -362,10 +362,10 @@ class PdfService {
               <div class="label">Total Expense</div>
               <div class="amount">${this.formatCurrency(summary.totalExpense)}</div>
             </div>
-            <div class="summary-card balance">
+            <!--<div class="summary-card balance">
               <div class="label">Balance</div>
               <div class="amount">${this.formatCurrency(summary.balance)}</div>
-            </div>
+            </div>-->
           </div>
           
           <!-- Transaction Count -->

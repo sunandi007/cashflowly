@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   // Scroll Content
   scrollContent: {
     paddingHorizontal: spacingX._20,
-    paddingBottom: verticalScale(75),
+    paddingBottom: verticalScale(100),
   },
 
   // Net Worth Section

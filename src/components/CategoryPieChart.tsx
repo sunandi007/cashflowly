@@ -27,19 +27,19 @@ export default function CategoryPieChart({
     data.length > 0
       ? data
       : [
-          { name: "Food", value: 350000, color: "#FF5733" },
-          { name: "Shopping", value: 200000, color: "#FBBF24" },
-          { name: "Transport", value: 150000, color: "#177AD5" },
-          { name: "Other", value: 50000, color: "#E91E63" },
-        ];
+        { name: "Food", value: 350000, color: "#FF5733" },
+        { name: "Shopping", value: 200000, color: "#FBBF24" },
+        { name: "Transport", value: 150000, color: "#177AD5" },
+        { name: "Other", value: 50000, color: "#E91E63" },
+      ];
 
   // Hitung total pengeluaran untuk label tengah Donut Chart
   const totalExpense = chartData.reduce((sum, item) => sum + item.value, 0);
   const formattedTotal =
     totalExpense > 0
       ? new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(
-          totalExpense / 1000
-        ) + "K"
+        totalExpense / 1000
+      ) + "K"
       : "Rp 0";
 
   // Format data untuk PieChart (menambahkan text dan persentase)
@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral900,
     borderRadius: 16,
     marginTop: 20,
+    marginBottom: 60,
     alignItems: "center",
   },
   title: {

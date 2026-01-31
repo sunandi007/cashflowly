@@ -1,6 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/contexts/ThemeContext";
+import { BlurView } from "expo-blur";
+import { CustomTabBarBackground } from "@/components/CustomTabBar";
 
 import AuthScreen from "@/screens/AuthScreen";
 import WelcomeScreen from "@/screens/WelcomeScreen";
@@ -88,23 +90,24 @@ function MainTabs() {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 5,
+          bottom: 20,
           left: 20,
           right: 20,
-          backgroundColor: colors.neutral700,
-          borderTopColor: 'transparent',
+          backgroundColor: 'transparent',
           borderTopWidth: 0,
           height: 70,
           paddingBottom: 10,
           paddingTop: 15,
+          borderRadius: 35,
+          paddingHorizontal: 20,
+          // Shadow
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.25,
+          shadowRadius: 16,
           elevation: 8,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.2,
-          shadowRadius: 10,
-          borderRadius: 25,
-          marginHorizontal: 20,
         },
+        tabBarBackground: () => <CustomTabBarBackground colors={colors} />,
         sceneContainerStyle: {
           backgroundColor: colors.background,
         },
@@ -116,7 +119,7 @@ function MainTabs() {
               iconName = focused ? "home" : "home-outline";
               break;
             case "Analitics":
-              iconName = focused ? "bar-chart" : "bar-chart-outline";
+              iconName = focused ? "stats-chart" : "stats-chart-outline";
               break;
             case "AddTransaction":
               iconName = "add";
@@ -134,33 +137,48 @@ function MainTabs() {
             return (
               <View
                 style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
+                  width: 64,
+                  height: 64,
+                  borderRadius: 32,
                   backgroundColor: colors.primary,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginBottom: 30,
+                  marginBottom: 32,
+
+                  // Shadow & glow effect
                   shadowColor: colors.primary,
                   shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  elevation: 8,
-                  borderWidth: 3,
-                  borderColor: colors.neutral800,
+                  shadowOpacity: 0.5,
+                  shadowRadius: 12,
+                  elevation: 10,
+
+                  // Border putih bersih
+                  borderWidth: 5,
+                  borderColor: 'rgba(255, 255, 255, 0.02)',
                 }}
               >
-                <Ionicons name={iconName} size={32} color={colors.neutral900} />
+                <Ionicons name={iconName} size={40} color={colors.white} />
               </View>
             );
           }
 
           return (
-            <Ionicons
-              name={iconName}
-              size={26}
-              color={focused ? colors.primary : colors.neutral500}
-            />
+            <View
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                backgroundColor: focused ? colors.primary : 'transparent', // Solid green when focused, subtle background when not
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Ionicons
+                name={iconName}
+                size={26}
+                color={focused ? colors.white : colors.neutral900} // Dark color on green bg, lighter when not focused
+              />
+            </View>
           );
         },
       })}
