@@ -12,13 +12,9 @@
       "distribution": "internal"
     },
     "production": {
-      "env": {
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ehlascpnadaraaltoopa.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_uBnQltKtVSCY1sRZrxZ3Og_rQlu1A2S"
-      },
       "autoIncrement": true,
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       }
     }
   },
