@@ -20,6 +20,7 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useBillNotificationSync } from "@/hooks/useBillNotificationSync";
 
 // Quick Action Button Data
 const QUICK_ACTIONS = [
@@ -51,6 +52,9 @@ export default function DashboardScreen() {
   const { data: upcomingBills = [], isLoading: billsLoading } = useUpcomingBills();
   const { formatMoney } = useCurrency();
   const { colors, mode: themeMode, setMode: setThemeMode, isDark } = useTheme();
+
+  // Sync bill reminders with OS on every app open
+  useBillNotificationSync();
 
   // Theme toggle handler - Toggle between dark and light only
   const handleToggleTheme = () => {
