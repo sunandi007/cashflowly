@@ -27,6 +27,8 @@ interface NotificationContextType {
     requestPermission: () => Promise<boolean>;
     sendTestNotification: () => Promise<void>;
     getScheduledNotifications: () => Promise<Notifications.NotificationRequest[]>;
+    pendingRoute: string | null;
+    clearPendingRoute: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -47,6 +49,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const [settings, setSettings] = useState<NotificationSettings>(DEFAULT_SETTINGS);
     const [hasPermission, setHasPermission] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [pendingRoute, setPendingRoute] = useState<string | null>(null);
     const notificationListener = useRef<Notifications.Subscription | undefined>(undefined);
     const responseListener = useRef<Notifications.Subscription | undefined>(undefined);
 
@@ -72,9 +75,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
         // This listener is triggered when a user taps on or interacts with a notification
         responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-            console.log('Notification response:', response);
-            // Navigation will be handled by the screen component that renders inside NavigationContainer
-            // We just log the data here. The actual navigation is handled via deep linking or direct navigation in screens.
+            const data = response.notification.request.content.data;
+            if (data?.type === 'bill_reminder' && data?.screen) {
+                setPendingRoute(data.screen as string);
+            }
         });
     };
 
@@ -181,6 +185,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         return await NotificationService.getScheduledNotifications();
     };
 
+    const clearPendingRoute = () => {
+        setPendingRoute(null);
+    };
+
     const value: NotificationContextType = {
         settings,
         hasPermission,
@@ -189,6 +197,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         requestPermission,
         sendTestNotification,
         getScheduledNotifications,
+        pendingRoute,
+        clearPendingRoute,
     };
 
     return (
