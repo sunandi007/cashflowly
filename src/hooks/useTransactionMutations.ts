@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
 import { useAuth } from "./useAuth";
+import { NotificationService } from "@/services/NotificationService";
 
 export function useTransactionMutations() {
   const queryClient = useQueryClient();
@@ -22,6 +23,14 @@ export function useTransactionMutations() {
 
     keysToInvalidate.forEach((key) => {
       queryClient.invalidateQueries({ queryKey: key });
+    });
+  };
+
+  // Sync bill reminders after any mutation (fire and forget)
+  const syncBillNotifications = () => {
+    if (!userId) return;
+    NotificationService.scheduleBillReminders(userId).catch(() => {
+      // Non-critical: ignore scheduling errors silently
     });
   };
 
@@ -59,6 +68,7 @@ export function useTransactionMutations() {
     },
     onSuccess: () => {
       invalidateAllData();
+      syncBillNotifications();
     },
     onError: (err: any) => {
       throw new Error(err.message);
@@ -109,6 +119,7 @@ export function useTransactionMutations() {
     },
     onSuccess: () => {
       invalidateAllData();
+      syncBillNotifications();
     },
     onError: (err: any) => {
       throw new Error(err.message);
@@ -128,6 +139,7 @@ export function useTransactionMutations() {
     },
     onSuccess: () => {
       invalidateAllData();
+      syncBillNotifications();
     },
     onError: (err: any) => {
       throw new Error(err.message);
