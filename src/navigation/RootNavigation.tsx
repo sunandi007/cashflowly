@@ -1,6 +1,9 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useEffect } from "react";
+import { useNotification } from "@/hooks/useNotification";
+import { useNavigation } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
 import { CustomTabBarBackground } from "@/components/CustomTabBar";
 
@@ -82,6 +85,16 @@ export default function RootNavigation() {
 
 function MainTabs() {
   const { colors } = useTheme();
+
+  // Handle notification tap → navigate to bill reminder screen
+  const { pendingRoute, clearPendingRoute } = useNotification();
+  const navigation = useNavigation<any>();
+
+  useEffect(() => {
+    if (!pendingRoute) return;
+    navigation.navigate(pendingRoute);
+    clearPendingRoute();
+  }, [pendingRoute]);
 
   return (
     <Tab.Navigator

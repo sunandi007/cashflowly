@@ -28,7 +28,7 @@
 **Files:**
 - Modify: `src/services/NotificationService.ts`
 
-- [ ] **Step 1: Tambah import `date-fns` dan `supabase` di bagian atas file**
+- [x] **Step 1: Tambah import `date-fns` dan `supabase` di bagian atas file**
 
   Tambahkan import berikut tepat setelah baris import yang sudah ada:
 
@@ -37,7 +37,7 @@
   import { supabase } from '@/services/supabaseClient';
   ```
 
-- [ ] **Step 2: Tambah tipe lokal `RecurringBillForNotif`**
+- [x] **Step 2: Tambah tipe lokal `RecurringBillForNotif`**
 
   Tambahkan tepat sebelum `export class NotificationService {`:
 
@@ -54,7 +54,7 @@
   }
   ```
 
-- [ ] **Step 3: Tambah Android channel `bill_reminders` ke dalam `requestPermissions()`**
+- [x] **Step 3: Tambah Android channel `bill_reminders` ke dalam `requestPermissions()`**
 
   Di dalam `requestPermissions()`, setelah block channel `'default'` yang sudah ada, tambahkan:
 
@@ -68,7 +68,7 @@
   });
   ```
 
-- [ ] **Step 4: Tambah method `cancelBillReminders()` di dalam class**
+- [x] **Step 4: Tambah method `cancelBillReminders()` di dalam class**
 
   Tambahkan method ini di dalam `NotificationService`, setelah method `cancelDailyReminder()` yang sudah ada:
 
@@ -91,7 +91,7 @@
   }
   ```
 
-- [ ] **Step 5: Tambah method `scheduleBillReminders(userId)` di dalam class**
+- [x] **Step 5: Tambah method `scheduleBillReminders(userId)` di dalam class**
 
   Tambahkan method ini setelah `cancelBillReminders()`:
 
@@ -202,7 +202,7 @@
   }
   ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
   ```
   git add src/services/NotificationService.ts
@@ -216,7 +216,7 @@
 **Files:**
 - Create: `src/hooks/useBillNotificationSync.ts`
 
-- [ ] **Step 1: Buat file baru `src/hooks/useBillNotificationSync.ts`**
+- [x] **Step 1: Buat file baru `src/hooks/useBillNotificationSync.ts`**
 
   ```ts
   import { useEffect } from 'react';
@@ -242,7 +242,7 @@
   }
   ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
   ```
   git add src/hooks/useBillNotificationSync.ts
@@ -256,7 +256,7 @@
 **Files:**
 - Modify: `src/screens/Dashboard.tsx`
 
-- [ ] **Step 1: Tambah import di Dashboard**
+- [x] **Step 1: Tambah import di Dashboard**
 
   Tambahkan import setelah baris import `useTheme`:
 
@@ -264,7 +264,7 @@
   import { useBillNotificationSync } from '@/hooks/useBillNotificationSync';
   ```
 
-- [ ] **Step 2: Panggil hook di dalam `DashboardScreen`**
+- [x] **Step 2: Panggil hook di dalam `DashboardScreen`**
 
   Di dalam fungsi `DashboardScreen`, tambahkan satu baris setelah deklarasi `const { colors, ... } = useTheme()`:
 
@@ -273,7 +273,7 @@
   useBillNotificationSync();
   ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
   ```
   git add src/screens/Dashboard.tsx
@@ -287,7 +287,7 @@
 **Files:**
 - Modify: `src/hooks/useTransactionMutations.ts`
 
-- [ ] **Step 1: Import `NotificationService`**
+- [x] **Step 1: Import `NotificationService`**
 
   Tambahkan import setelah baris import `useAuth`:
 
@@ -295,7 +295,7 @@
   import { NotificationService } from '@/services/NotificationService';
   ```
 
-- [ ] **Step 2: Tambah helper `syncBillNotifications` di dalam hook**
+- [x] **Step 2: Tambah helper `syncBillNotifications` di dalam hook**
 
   Tambahkan tepat setelah deklarasi `invalidateAllData`:
 
@@ -309,7 +309,7 @@
   };
   ```
 
-- [ ] **Step 3: Panggil `syncBillNotifications()` di `onSuccess` semua 3 mutation**
+- [x] **Step 3: Panggil `syncBillNotifications()` di `onSuccess` semua 3 mutation**
 
   Update `createTransaction.onSuccess`:
   ```ts
@@ -335,7 +335,7 @@
   },
   ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
   ```
   git add src/hooks/useTransactionMutations.ts
@@ -349,7 +349,7 @@
 **Files:**
 - Modify: `src/contexts/NotificationContext.tsx`
 
-- [ ] **Step 1: Update `NotificationContextType` interface**
+- [x] **Step 1: Update `NotificationContextType` interface**
 
   Tambahkan 2 field baru ke interface `NotificationContextType`:
 
@@ -358,7 +358,7 @@
   clearPendingRoute: () => void;
   ```
 
-- [ ] **Step 2: Tambah state `pendingRoute` di `NotificationProvider`**
+- [x] **Step 2: Tambah state `pendingRoute` di `NotificationProvider`**
 
   Di dalam `NotificationProvider`, tambahkan state baru setelah `const [isLoading, setIsLoading] = useState(true)`:
 
@@ -366,7 +366,7 @@
   const [pendingRoute, setPendingRoute] = useState<string | null>(null);
   ```
 
-- [ ] **Step 3: Extend `addNotificationResponseReceivedListener` untuk Bill Reminder**
+- [x] **Step 3: Extend `addNotificationResponseReceivedListener` untuk Bill Reminder**
 
   Di dalam `setupNotificationListeners()`, update `responseListener.current` menjadi:
 
@@ -379,7 +379,7 @@
   });
   ```
 
-- [ ] **Step 4: Tambah `clearPendingRoute` function**
+- [x] **Step 4: Tambah `clearPendingRoute` function**
 
   Tambahkan setelah `getScheduledNotifications`:
 
@@ -389,7 +389,7 @@
   };
   ```
 
-- [ ] **Step 5: Expose di objek `value`**
+- [x] **Step 5: Expose di objek `value`**
 
   Update objek `value` yang dikembalikan provider:
 
@@ -407,7 +407,7 @@
   };
   ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
   ```
   git add src/contexts/NotificationContext.tsx
@@ -421,7 +421,7 @@
 **Files:**
 - Modify: `src/navigation/RootNavigation.tsx`
 
-- [ ] **Step 1: Import tambahan yang dibutuhkan**
+- [x] **Step 1: Import tambahan yang dibutuhkan**
 
   Tambahkan import berikut di `src/navigation/RootNavigation.tsx`:
 
@@ -430,7 +430,7 @@
   import { useNotification } from '@/hooks/useNotification';
   ```
 
-- [ ] **Step 2: Tambah useEffect di dalam `MainTabs` untuk consume pendingRoute**
+- [x] **Step 2: Tambah useEffect di dalam `MainTabs` untuk consume pendingRoute**
 
   Di dalam `function MainTabs()`, tambahkan import `useNavigation` lokal dan useEffect **tepat setelah** `const { colors } = useTheme()`:
 
@@ -456,7 +456,7 @@
   > import { useNavigation } from '@react-navigation/native';
   > ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
   ```
   git add src/navigation/RootNavigation.tsx
