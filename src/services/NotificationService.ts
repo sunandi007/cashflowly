@@ -2,6 +2,19 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { addDays, startOfDay, isBefore } from 'date-fns';
+import { supabase } from '@/services/supabaseClient';
+
+interface RecurringBillForNotif {
+  id: string;
+  next_due_date: string | null;
+  note: string | null;
+  amount: number;
+  end_condition: string;
+  end_value: string | null;
+  transaction_count: number;
+  categories: { name: string } | null;
+}
 
 // Configure notification behavior
 Notifications.setNotificationHandler({
@@ -35,13 +48,20 @@ export class NotificationService {
             return false;
         }
 
-        // Configure Android notification channel
+        // Configure Android notification channels
         if (Platform.OS === 'android') {
             await Notifications.setNotificationChannelAsync('default', {
                 name: 'default',
                 importance: Notifications.AndroidImportance.MAX,
                 vibrationPattern: [0, 250, 250, 250],
                 lightColor: '#4ADE80',
+            });
+            await Notifications.setNotificationChannelAsync('bill_reminders', {
+                name: 'Pengingat Tagihan',
+                importance: Notifications.AndroidImportance.HIGH,
+                vibrationPattern: [0, 300, 200, 300],
+                lightColor: '#FF4D4D',
+                sound: 'default',
             });
         }
 
@@ -112,6 +132,128 @@ export class NotificationService {
             console.log('Daily reminders cancelled');
         } catch (error) {
             console.error('Error cancelling daily reminder:', error);
+        }
+    }
+
+    /**
+     * Cancel all scheduled bill reminder notifications
+     */
+    static async cancelBillReminders(): Promise<void> {
+        try {
+            const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+            const billReminders = scheduled.filter(
+                (n) => n.content.data?.type === 'bill_reminder'
+            );
+            for (const n of billReminders) {
+                await Notifications.cancelScheduledNotificationAsync(n.identifier);
+            }
+        } catch (error) {
+            console.error('Error cancelling bill reminders:', error);
+        }
+    }
+
+    /**
+     * Schedule H-2, H-1, H-0 reminders at 09:00 for all active recurring bills.
+     * @param userId - The authenticated user's ID
+     */
+    static async scheduleBillReminders(userId: string): Promise<void> {
+        try {
+            // 1. Cancel existing bill reminders
+            await this.cancelBillReminders();
+
+            // 2. Query active recurring bills from Supabase
+            const { data, error } = await supabase
+                .from('transactions')
+                .select(
+                    'id, next_due_date, note, amount, end_condition, end_value, transaction_count, categories(name)'
+                )
+                .eq('user_id', userId)
+                .eq('is_recurring', true);
+
+            if (error) {
+                console.error('Error fetching bills for notification:', error);
+                return;
+            }
+
+            if (!data || data.length === 0) return;
+
+            const bills = data as unknown as RecurringBillForNotif[];
+
+            // 3. Filter only active bills (same logic as useUpcomingBills)
+            const activeBills = bills.filter((bill) => {
+                if (bill.end_condition === 'never' || bill.end_condition === 'until_date') {
+                    return true;
+                }
+                if (bill.end_condition === 'after_count') {
+                    const target = Number(bill.end_value);
+                    const current = Number(bill.transaction_count) || 0;
+                    return current < target;
+                }
+                return true;
+            });
+
+            const today = startOfDay(new Date());
+
+            // 4. Schedule notifications for each active bill
+            for (const bill of activeBills) {
+                if (!bill.next_due_date) continue;
+
+                const categoryName = bill.categories?.name ?? 'Tagihan';
+                const dueDate = startOfDay(new Date(bill.next_due_date));
+
+                const offsets: Array<{ days: number; title: string; body: string }> = [
+                    {
+                        days: -2,
+                        title: '🔔 Tagihan Mendatang',
+                        body: `${categoryName} perlu dibayar 2 hari lagi`,
+                    },
+                    {
+                        days: -1,
+                        title: '⚠️ Tagihan Jatuh Tempo Besok',
+                        body: `${categoryName} jatuh tempo besok!`,
+                    },
+                    {
+                        days: 0,
+                        title: '🚨 Tagihan Jatuh Tempo Hari Ini',
+                        body: `${categoryName} harus dibayar hari ini!`,
+                    },
+                ];
+
+                for (const offset of offsets) {
+                    const notifDate = addDays(dueDate, offset.days);
+
+                    // Skip dates already in the past
+                    if (isBefore(notifDate, today)) continue;
+
+                    // Set trigger time to 09:00 AM
+                    const triggerDate = new Date(notifDate);
+                    triggerDate.setHours(9, 0, 0, 0);
+
+                    const trigger: Notifications.DateTriggerInput = {
+                        type: Notifications.SchedulableTriggerInputTypes.DATE,
+                        date: triggerDate,
+                        channelId: 'bill_reminders',
+                    };
+
+                    await Notifications.scheduleNotificationAsync({
+                        content: {
+                            title: offset.title,
+                            body: offset.body,
+                            sound: true,
+                            priority: Notifications.AndroidNotificationPriority.HIGH,
+                            data: {
+                                type: 'bill_reminder',
+                                screen: 'BillsScreen',
+                                billId: bill.id,
+                                offset: offset.days,
+                            },
+                        },
+                        trigger,
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error scheduling bill reminders:', error);
         }
     }
 
