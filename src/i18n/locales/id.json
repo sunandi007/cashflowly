@@ -213,6 +213,15 @@
             "noPaymentData": "Data pembayaran atau Wallet Utama tidak tersedia",
             "createWalletFirst": "Silakan buat Main Wallet terlebih dahulu",
             "stopFailed": "Gagal menghentikan tagihan berulang"
+        },
+        "notifications": {
+            "upcoming_title": "🔔 Tagihan Mendatang",
+            "upcoming_body": "{{category}} perlu dibayar 2 hari lagi",
+            "due_tomorrow_title": "⚠️ Tagihan Jatuh Tempo Besok",
+            "due_tomorrow_body": "{{category}} jatuh tempo besok!",
+            "due_today_title": "🚨 Tagihan Jatuh Tempo Hari Ini",
+            "due_today_body": "{{category}} harus dibayar hari ini!",
+            "default_category": "Tagihan"
         }
     },
     "settings": {

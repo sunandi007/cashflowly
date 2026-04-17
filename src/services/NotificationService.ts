@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { addDays, startOfDay, isBefore } from 'date-fns';
 import { supabase } from '@/services/supabaseClient';
+import i18n from '@/i18n';
 
 interface RecurringBillForNotif {
   id: string;
@@ -198,24 +199,24 @@ export class NotificationService {
             for (const bill of activeBills) {
                 if (!bill.next_due_date) continue;
 
-                const categoryName = bill.categories?.name ?? 'Tagihan';
+                const categoryName = bill.categories?.name ?? i18n.t('bills.notifications.default_category');
                 const dueDate = startOfDay(new Date(bill.next_due_date));
 
                 const offsets: Array<{ days: number; title: string; body: string }> = [
                     {
                         days: -2,
-                        title: '🔔 Tagihan Mendatang',
-                        body: `${categoryName} perlu dibayar 2 hari lagi`,
+                        title: i18n.t('bills.notifications.upcoming_title'),
+                        body: i18n.t('bills.notifications.upcoming_body', { category: categoryName }),
                     },
                     {
                         days: -1,
-                        title: '⚠️ Tagihan Jatuh Tempo Besok',
-                        body: `${categoryName} jatuh tempo besok!`,
+                        title: i18n.t('bills.notifications.due_tomorrow_title'),
+                        body: i18n.t('bills.notifications.due_tomorrow_body', { category: categoryName }),
                     },
                     {
                         days: 0,
-                        title: '🚨 Tagihan Jatuh Tempo Hari Ini',
-                        body: `${categoryName} harus dibayar hari ini!`,
+                        title: i18n.t('bills.notifications.due_today_title'),
+                        body: i18n.t('bills.notifications.due_today_body', { category: categoryName }),
                     },
                 ];
 

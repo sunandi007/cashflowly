@@ -213,6 +213,15 @@
             "noPaymentData": "Payment data or Main Wallet not available",
             "createWalletFirst": "Please create a Main Wallet first",
             "stopFailed": "Failed to stop recurring bill"
+        },
+        "notifications": {
+            "upcoming_title": "🔔 Upcoming Bill",
+            "upcoming_body": "{{category}} needs to be paid in 2 days",
+            "due_tomorrow_title": "⚠️ Bill Due Tomorrow",
+            "due_tomorrow_body": "{{category}} is due tomorrow!",
+            "due_today_title": "🚨 Bill Due Today",
+            "due_today_body": "{{category}} must be paid today!",
+            "default_category": "Bill"
         }
     },
     "settings": {
