@@ -1,6 +1,6 @@
 {
   "name": "cashflowly",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
@@ -62,6 +62,7 @@
   "devDependencies": {
     "@types/lodash": "^4.17.20",
     "@types/papaparse": "^5.5.2",
-    "@types/react": "^19.2.2"
+    "@types/react": "^19.2.2",
+    "babel-plugin-transform-remove-console": "^6.9.4"
   }
 }
