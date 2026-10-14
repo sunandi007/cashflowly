@@ -7,6 +7,7 @@ import { useSnackbar } from "./useSnackbar";
 
 export function useUploadImage() {
   const [uploading, setUploading] = useState(false);
+  const snackbar = useSnackbar();
 
   const uploadImage = async (
     uri: string,
@@ -15,7 +16,6 @@ export function useUploadImage() {
   ): Promise<string | null> => {
     try {
       setUploading(true);
-      const snackbar = useSnackbar();
 
       // 1️⃣ Baca file dari uri ke base64
       const base64 = await FileSystem.readAsStringAsync(uri, {

@@ -42,7 +42,7 @@ export function useUpcomingBills() {
         )
         .eq("user_id", userId)
         .eq("is_recurring", true)
-        .order("date", { ascending: true });
+        .order("next_due_date", { ascending: true });
 
       if (error) throw error;
 

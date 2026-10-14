@@ -1,6 +1,7 @@
 import { supabase } from "@/services/supabaseClient";
 import { Session } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "./useSnackbar";
 
 export function useAuth() {
@@ -8,6 +9,7 @@ export function useAuth() {
   const [isReady, setIsReady] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const queryClient = useQueryClient();
   const snackbar = useSnackbar();
   useEffect(() => {
     // Fungsi async untuk mengambil sesi dan menyiapkan listener
@@ -58,6 +60,9 @@ export function useAuth() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      // Bersihkan semua cache TanStack Query agar data finansial user
+      // tidak bocor ke sesi berikutnya (security.md & supabase.md)
+      queryClient.clear();
     } catch (error: any) {
       console.error("Logout Error:", error.message);
       throw error; // Throw error untuk di-handle oleh component

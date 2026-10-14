@@ -17,7 +17,7 @@ export function useCategories(userId?: string) {
       if (!userId) return [];
       const { data, error } = await supabase
         .from("categories")
-        .select("*")
+        .select('id, name, icon, type, bgColor, user_id, created_at')
         .eq("user_id", userId)
         .order("created_at", { ascending: true });
       if (error) throw error;

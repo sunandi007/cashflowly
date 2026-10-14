@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/services/supabaseClient";
 import { addRecurrenceToDate } from "@/utils/dateUtils";
 import { useAuth } from "./useAuth";
+import { NotificationService } from "@/services/NotificationService";
 
 // Payload yang diperlukan untuk pembayaran tagihan manual
 interface BillPaymentPayload {
@@ -57,11 +58,11 @@ export function useBillPayment() {
             const newCount = currentCount + 1; // 🟢 Tambah 1
             const nextDueDate = addRecurrenceToDate(payload.currentDueDate, payload.recurrenceRule);
 
-            // C. Update ke Database (Tanggal DAN Count)
+            // C. Update ke Database (next_due_date DAN Count)
             const { error: updateError } = await supabase
                 .from('transactions')
                 .update({
-                    date: nextDueDate.toISOString(),
+                    next_due_date: nextDueDate.toISOString(), // 🟢 Perbarui next_due_date untuk NotificationService
                     transaction_count: newCount // 🟢 Simpan count baru
                 })
                 .eq('id', payload.billId);
@@ -76,6 +77,13 @@ export function useBillPayment() {
             queryClient.invalidateQueries({ queryKey: ["transactions"] });
             queryClient.invalidateQueries({ queryKey: ["wallets"] });
             queryClient.invalidateQueries({ queryKey: ["billsSummary"] });
+
+            // Reschedule notifikasi agar sinkron dengan next_due_date terbaru
+            if (userId) {
+                NotificationService.scheduleBillReminders(userId).catch(() => {
+                    // Gagal reschedule tidak boleh membatalkan flow pembayaran
+                });
+            }
         },
     });
 

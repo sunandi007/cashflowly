@@ -36,6 +36,11 @@ export const CurrencyProvider = ({ children }: { children: React.ReactNode }) =>
             }
 
             // B. Database Sync
+            // NOTE (Tech Debt): CurrencyContext membaca kolom `currency` dari tabel `profiles`,
+            // sementara useProfile.ts menggunakan kolom `currency_code`. Kedua kolom ini
+            // ada di DB (hasil migrasi yang tidak selesai). Jangan ubah ini tanpa koordinasi
+            // karena kedua sistem berjalan independen dan sudah sesuai kebutuhan bisnis.
+            // Ref: Audit Bug A4 — 2026-10-14
             if (user) {
                 const { data } = await supabase
                     .from('profiles')

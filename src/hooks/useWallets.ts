@@ -23,7 +23,7 @@ export function useWallets() {
     if (!userId) return [];
     const { data, error } = await supabase
       .from("wallets")
-      .select("*")
+      .select("id, user_id, name, balance, icon, created_at, updated_at")
       .eq("user_id", userId)
       .order("created_at", { ascending: true });
 

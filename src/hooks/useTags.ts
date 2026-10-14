@@ -15,7 +15,7 @@ export function useTags() {
         // Attempt to fetch tags
         const { data, error } = await supabase
             .from("tags")
-            .select("*")
+            .select("id, name, user_id, created_at")
             .eq("user_id", userId)
             .order("created_at", { ascending: true });
 

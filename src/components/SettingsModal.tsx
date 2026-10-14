@@ -9,6 +9,11 @@ import BaseDropdown from './Dropdown';
 import Button from './Button';
 import { useProfile } from '@/hooks/useProfile';
 import { useSnackbar } from '@/hooks/useSnackbar';
+// NOTE (Tech Debt): SettingsModal menggunakan useProfile.updateCurrency() yang menulis ke
+// kolom `currency_code`, sementara CurrencyContext membaca kolom `currency` secara terpisah.
+// Kedua sistem berjalan independen dan sudah sesuai kebutuhan bisnis saat ini.
+// Jangan digabung tanpa mempertimbangkan dampak ke data user yang sudah ada.
+// Ref: Audit Bug A4 — 2026-10-14
 
 const CURRENCIES = [
     { label: 'Rupiah (IDR)', value: 'IDR' },

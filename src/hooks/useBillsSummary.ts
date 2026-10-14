@@ -22,10 +22,10 @@ export function useBillsSummary() {
             // Query untuk mendapatkan semua Tagihan Induk
             const {data: bills, error} = await supabase
                 .from('transactions')
-                .select(`amount, date, end_condition, end_value, transaction_count`)
+                .select(`amount, date, next_due_date, end_condition, end_value, transaction_count`)
                 .eq('user_id', userId)
                 .eq('is_recurring', true)
-                .order('date', {ascending: true}); // Urutkan untuk mendapatkan tanggal terdekat
+                .order('next_due_date', {ascending: true}); // Urutkan berdasarkan next_due_date
 
             if (error) throw error;
 
@@ -70,7 +70,7 @@ export function useBillsSummary() {
             return {
                 count: count,
                 totalAmount: totalAmount,
-                nextDueDate: activeBills[0].date, // Tanggal jatuh tempo terdekat
+                nextDueDate: activeBills[0].next_due_date || activeBills[0].date, // Gunakan next_due_date, fallback ke date
             };
         },
         enabled: !!userId,
